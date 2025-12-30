@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include <Windows.h>
 #include <iostream>
 
 Renderer::Renderer(int w, int h) :width(w), height(h), buffer(w* h, ClearChar)
@@ -7,8 +8,9 @@ Renderer::Renderer(int w, int h) :width(w), height(h), buffer(w* h, ClearChar)
 
 void Renderer::Present()
 {
-    std::cout << ToString();
-    std::cout.flush();
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    WriteConsoleA(hOut, buffer.data(), buffer.size(), nullptr, nullptr);
 }
 
 void Renderer::Put(int x, int y, char c)
@@ -23,6 +25,10 @@ void Renderer::Put(int x, int y, char c)
 void Renderer::Clear()
 {
     std::fill(buffer.begin(), buffer.end(), ClearChar);
+
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD home = { 0, 0 };
+    SetConsoleCursorPosition(hOut, home);
 }
 
 std::string Renderer::ToString() const

@@ -127,6 +127,7 @@
     <ClInclude Include="BattleService.h" />
     <ClInclude Include="BuffPotion.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="HealthPotion.h" />
     <ClInclude Include="Inventory.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="BattleService.cpp" />
     <ClCompile Include="BuffPotion.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="HealthPotion.cpp" />
     <ClCompile Include="Inventory.cpp" />
