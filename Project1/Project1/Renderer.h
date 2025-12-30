@@ -8,7 +8,7 @@ class Renderer {
 public:
     Renderer(int w, int h);
 
-    void Present();
+    void Present(); // Buffer에 있는 것을 화면에 출력
 
     void Put(int x, int y, char c); // 특정 위치에 문자 그리기
     void Clear();
