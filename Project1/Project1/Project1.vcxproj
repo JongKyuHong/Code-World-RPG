@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Actor.h" />
     <ClInclude Include="BattleService.h" />
     <ClInclude Include="BuffPotion.h" />
     <ClInclude Include="Character.h" />
@@ -133,12 +134,14 @@
     <ClInclude Include="ItemFactory.h" />
     <ClInclude Include="KeyBoard.h" />
     <ClInclude Include="Monster.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Reward.h" />
     <ClInclude Include="Shop.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="VariableSlime.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="BattleService.cpp" />
     <ClCompile Include="BuffPotion.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -149,6 +152,7 @@
     <ClCompile Include="ItemFactory.cpp" />
     <ClCompile Include="KeyBoard.cpp" />
     <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Reward.cpp" />
     <ClCompile Include="Shop.cpp" />
     <ClCompile Include="UIManager.cpp" />
