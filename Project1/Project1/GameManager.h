@@ -6,6 +6,15 @@
 #include "Item.h"
 #include "Character.h"
 
+struct MonsterData {
+    std::string name;
+    std::string info;
+
+    MonsterData(const std::string& n, const std::string& i)
+        : name(n), info(i) {
+    }
+};
+
 enum class GameState {
     MAIN_MENU,
     CHARACTER_CREATION,
@@ -38,9 +47,9 @@ private:
     int currentRound;
     int totalRoundsInPhase;
 
-    std::vector<std::string> phase1Monsters;
-    std::vector<std::string> phase2Monsters;
-    std::vector<std::string> phase3Monsters;
+    std::vector<MonsterData> phase1Monsters;
+    std::vector<MonsterData> phase2Monsters;
+    std::vector<MonsterData> phase3Monsters;
     std::map<std::string, int> mobKillCounts;
 
     // 상태별 메서드들
