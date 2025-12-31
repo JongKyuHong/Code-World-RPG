@@ -59,6 +59,9 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -120,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="VariableSlime.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

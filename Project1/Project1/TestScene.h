@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Input.h"
 
 class TeetActor :public GameObject {
 public:
@@ -7,13 +8,18 @@ public:
 
     }
     void Update(float deltaTime) override {
-        dTime += deltaTime;
-        if (dTime > 0.05f) {
-            dTime = 0.0f;
-            x += direction;
-            if (x == 160 || x == 0) {
-                direction *= -1;
-            }
+
+        if(Input::GetKey(KeyCode::A)) {
+            x--;
+        }
+        else if (Input::GetKey(KeyCode::W)) {
+            y--;
+        }
+        else if (Input::GetKey(KeyCode::S)) {
+            y++;
+        }
+        else if(Input::GetKey(KeyCode::DownArrow)) {
+            x++;
         }
     }
 

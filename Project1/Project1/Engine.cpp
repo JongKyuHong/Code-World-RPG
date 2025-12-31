@@ -2,6 +2,7 @@
 #include <chrono>
 #include "SceneManager.h"
 #include "TestScene.h"
+#include "Input.h"
 #include <Windows.h>
 
 Engine::Engine(int w, int h):renderer(w, h)
@@ -17,6 +18,7 @@ void Engine::Update(float deltaTime)
     Scene* scene = sceneManager->GetCurrent();
     if (scene)
     {
+        Input::Update();
         scene->Update(deltaTime);
         scene->Render(renderer);
     }
