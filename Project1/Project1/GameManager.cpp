@@ -68,3 +68,41 @@ void GameManager::createCharacter() {
     player = Character::getInstance(InpName);
     // std::cout << "환영합니다 용사 ... 님" << std::endl;
 }
+
+void GameManager::startPhase(PhaseType phase) {
+    currentPhase = phase;
+    currentRound = 0;
+
+    switch (phase) {
+    case PhaseType::PHASE_1:
+        // std::cout << "변수의 숲" << std::endl;
+        phase1Monsters = { "VariableSlime", "ConstantGolem", "TypeSpirit"
+        ,"InitWisp", "DeclareShadow" };
+        totalRoundsInPhase = 5;
+        break;
+    case PhaseType::PHASE_2:
+        // std::cout << "클래스의 성" << std::endl;
+        phase1Monsters = { "ClassMimic", "ObjectOrc", "MemberSpider"
+        ,"FunctionMage", "ConstructGargoyle", "DestructReaper" };
+        totalRoundsInPhase = 6;
+        break;
+    case PhaseType::PHASE_3:
+        // std::cout << "디자인 패턴의 탑" << std::endl;
+        phase1Monsters = { "SingletonKing", "DecoratorKnight", "ObserverBeholder"
+        ,"StrategyGeneral" };
+        totalRoundsInPhase = 4;
+        break;
+    }
+
+    // 3페이즈에서는 변주주기
+    while (currentRound < totalRoundsInPhase) {
+        if (askShopVisit()) {
+            currentState = GameState::SHOP;
+            return;
+        }
+        currentState = GameState::BATTLE;
+        return;
+    }
+
+    currentState = GameState::BOSS_BATTLE;
+}
