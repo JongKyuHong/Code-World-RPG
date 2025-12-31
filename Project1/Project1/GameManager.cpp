@@ -106,3 +106,15 @@ void GameManager::startPhase(PhaseType phase) {
 
     currentState = GameState::BOSS_BATTLE;
 }
+
+void GameManager::runBattle() {
+    Monster* monster = generateMonster();
+
+    // std::cout << 전투관련 내용들 << std::endl;
+
+    // 전투 전 버프적용, 자동전투한다면 구현
+    //applyBuffItems();
+
+    // 전투 시작 battleService
+    //battleService->startBattle(player, monster);
+}
