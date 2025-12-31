@@ -34,6 +34,7 @@ private:
     GameState currentState;
     PhaseType currentPhase;
 
+    bool isRunning;
     int currentRound;
     int totalRoundsInPhase;
 
