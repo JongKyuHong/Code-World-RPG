@@ -1,4 +1,4 @@
-#include "Actor.h"
+#include "GameObject.h"
 
 void GameObject::Destroy()
 {
