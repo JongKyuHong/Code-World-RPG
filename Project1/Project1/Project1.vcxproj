@@ -135,6 +135,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemFactory.h" />
     <ClInclude Include="KeyBoard.h" />
+    <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Reward.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="ItemFactory.cpp" />
     <ClCompile Include="KeyBoard.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Reward.cpp" />
