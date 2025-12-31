@@ -15,6 +15,11 @@ bool Input::Update()
     int key;
     while(TryReadKey(key))
     {
+        if (key >= 'a' && key <= 'z')
+        {
+            key = key - 'a' + 'A';
+        }
+
         if (key >= 0 && key < 256)
         {
             pressed[key] = true;
@@ -43,6 +48,22 @@ bool Input::TryReadKey(int& outKey)
     int ch = _getch();
     if (ch == 0 || ch == 0xE0) {
         int ext = _getch();
+        switch (ext)
+        {
+            case 72:
+                outKey = (int)KeyCode::UpArrow;
+                return true;
+            case 80:
+                outKey = (int)KeyCode::DownArrow;
+                return true;
+            case 75:
+                outKey = (int)KeyCode::LeftArrow;
+                return true;
+            case 77:
+                outKey = (int)KeyCode::RightArrow;
+                return true;
+
+        }
         return true;
     }
     outKey = ch;
