@@ -134,32 +134,31 @@ void GameManager::runBattle() {
     // battleService->battle();
 
     // 전투정보 받아와서 처리
-    //if (player->isAlive()) {
-    //    // mob킬수저장
-    //    // mobKillCount[monster->getName()]++;
-    //    
-    //    // reward 받음
-    //    // battleService->battle()에서 처리?
+    if (player->isAlive()) {
+        //mob킬수저장
+        mobKillCounts[monster->getName()]++;
+        
+        // reward 받는거 처리
 
-    //    delete monster;
+        // 몬스터 삭제
+        delete monster;
 
-    //    // 다음라운드 실행
-    //    currentRound++;
-    //    if (currentRound >= totalRoundsInPhase) {
-    //        currentState = GameState::BOSS_BATTLE;
-    //    } else {
-    //        // 상점에 방문하는가?
-    //        if (askShopVisit()) {
-    //            currentState = GameState::SHOP;
-    //        } else {
-    //            currentState = GameState::BATTLE;
-
-    //        }
-    //    }
-    //} else {
-    //    delete monster;
-    //    handlePlayerDeath();
-    //}
+        //다음라운드 실행
+        currentRound++;
+        if (currentRound >= totalRoundsInPhase) {
+            currentState = GameState::BOSS_BATTLE;
+        } else {
+             //상점에 방문하는가?
+            if (askShopVisit()) {
+                currentState = GameState::SHOP;
+            } else {
+                currentState = GameState::BATTLE;
+            }
+        }
+    } else {
+        delete monster;
+        handlePlayerDeath();
+    }
 }
 
 Monster* GameManager::generateMonster() {
@@ -228,6 +227,7 @@ Monster* GameManager::generateBoss() {
 
 void GameManager::runShop() {}
 
+// 보스전, 클리어시 다음 페이즈로 넘겨주는 역할
 void GameManager::runBossBattle() {}
 
 void GameManager::showPhaseClearScreen() {}
@@ -237,3 +237,7 @@ void GameManager::showGameOverScreen() {}
 void GameManager::showEndingScreen() {}
 
 bool GameManager::askShopVisit() { return false; }
+
+void GameManager::checkLevelUp() {}
+
+void GameManager::checkPhaseCompletion() {}
