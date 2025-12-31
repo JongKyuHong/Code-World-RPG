@@ -2,14 +2,26 @@
 
 #include <string>
 #include "Item.h"
+#include "Entity.h"
 
-class Monster
+class Monster : public Entity
 {
+protected:
+    std::string mobInfo;
+    bool isBoss;
+
 public:
-    virtual std::string getName() = 0;
-    virtual std::string getMobInfo() = 0;
-    virtual int getHealth() = 0;
-    virtual int getAttack() = 0;
-    virtual void takeDamage(int damage) = 0;
-    virtual ~Monster() {}
+    Monster(const std::string& n, const std::string& info,
+        int hp, int atk, bool boss = false) : Entity(n, hp, atk),
+        mobInfo(info), isBoss(boss) {
+    }
+
+    virtual ~Monster() override {}
+
+    std::string getMobInfo() {
+        return mobInfo;
+    };
+    bool isBossMonster() const { return isBoss; }
+
+    virtual void onDeath() = 0;
 };

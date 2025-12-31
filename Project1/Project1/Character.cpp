@@ -1,2 +1,2 @@
-﻿#include "Character.h"
-#include <string> //수정 사항
+#include "Character.h"
+Character* Character::instance = nullptr;
