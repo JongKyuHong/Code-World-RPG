@@ -8,6 +8,8 @@ public:
 
     Renderer& GetRenderer();
 
+    bool IsRunning() const { return isRunning; };
+
 private:
     bool isRunning = true;
     Renderer renderer;
