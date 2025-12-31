@@ -126,15 +126,21 @@
     <ClInclude Include="BattleService.h" />
     <ClInclude Include="BuffPotion.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="HealthPotion.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemFactory.h" />
     <ClInclude Include="KeyBoard.h" />
     <ClInclude Include="Monster.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Reward.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shop.h" />
+    <ClInclude Include="TestScene.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="VariableSlime.h" />
   </ItemGroup>
@@ -142,7 +148,9 @@
     <ClCompile Include="BattleService.cpp" />
     <ClCompile Include="BuffPotion.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HealthPotion.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
@@ -150,7 +158,10 @@
     <ClCompile Include="KeyBoard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Reward.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shop.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VariableSlime.cpp" />
