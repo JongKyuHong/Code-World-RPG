@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "Monster.h"
 #include <string>
 #include <iostream>
 
@@ -118,3 +119,48 @@ void GameManager::runBattle() {
     // 전투 시작 battleService
     //battleService->startBattle(player, monster);
 }
+
+
+// 추후에 수정
+//Monster* GameManager::generateBoss() {
+//    std::string bossName;
+//    float multiplier = 0.0f;
+//    bool isFinalBoss = false;
+//
+//    switch (currentPhase) {
+//    case PhaseType::PHASE_1:
+//        bossName = "PointerLich";
+//        multiplier = 1.2f;
+//        break;
+//    case PhaseType::PHASE_2:
+//        bossName = "PolyDragon";
+//        multiplier = 1.2f;
+//        break;
+//    case PhaseType::PHASE_3:
+//        bossName = "TeamProjectDevil";
+//        multiplier = 1.5f;
+//        isFinalBoss = true;
+//        break;
+//    }
+//
+//    // 스텟은 우선 요구사항 따라서
+//    int baseHealth = (currentRound + 1) * 20;
+//    int baseAttack = (currentRound + 1) * 5;
+//
+//    int health = static_cast<int>(baseHealth * multiplier);
+//    int attack = static_cast<int>(baseAttack * multiplier);
+//
+//    return new Monster();
+//}
+
+void GameManager::runShop() {}
+
+void GameManager::runBossBattle() {}
+
+void GameManager::showPhaseClearScreen() {}
+
+void GameManager::showGameOverScreen() {}
+
+void GameManager::showEndingScreen() {}
+
+bool GameManager::askShopVisit() { return false; }

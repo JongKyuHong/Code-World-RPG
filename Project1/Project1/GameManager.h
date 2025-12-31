@@ -58,7 +58,7 @@ private:
 
     // 유틸리티 메서드들
     Monster* generateMonster();
-    Monster* generateBoss(bool isFinalBoss);
+    Monster* generateBoss();
     void handlePlayerDeath();
     void applyBuffItems();
     bool askShopVisit();
@@ -69,9 +69,7 @@ public:
     // call Main Menu에서 게임시작을했을때
     // 여기로 불러와서 게임진행
     // 처음오면 캐릭터생성
-    void play() {
-        
-    }
+    void play();
 
     // 전투
     void battle() {};
