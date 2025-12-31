@@ -66,11 +66,6 @@ private:
     void waitForInput();
 
 public:
-    Monster* generateMonster(int level) {
-        
-    };
-    Character* generateCharacter() {};
-
     // call Main Menu에서 게임시작을했을때
     // 여기로 불러와서 게임진행
     // 처음오면 캐릭터생성
