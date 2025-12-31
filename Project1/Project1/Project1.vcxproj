@@ -148,6 +148,7 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemFactory.cpp" />
     <ClCompile Include="KeyBoard.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Reward.cpp" />
     <ClCompile Include="Shop.cpp" />
