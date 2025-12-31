@@ -161,6 +161,14 @@ void GameManager::runBattle() {
     }
 }
 
+void GameManager::handlePlayerDeath() {
+    std::cout << "캐릭터 사망" << std::endl;
+    
+    // 인풋받아서 처리
+    // 추후에 세이브를 통해서 싸우던 라운드 혹은 페이즈로 넘어가게
+    isRunning = false;
+}
+
 Monster* GameManager::generateMonster() {
     std::vector<MonsterData>* monsterInfo;
 
@@ -187,7 +195,6 @@ Monster* GameManager::generateMonster() {
     // 추후에 Monster 추상클래스를 상속하는 NormalMonster클래스 추가 
     return new NormalMonster(Info.name, Info.info, baseHealth, baseAttack);
 }
-
 
 // 추후에 수정
 Monster* GameManager::generateBoss() {
@@ -251,5 +258,3 @@ bool GameManager::askShopVisit() {
 }
 
 void GameManager::checkLevelUp() {}
-
-void GameManager::checkPhaseCompletion() {}

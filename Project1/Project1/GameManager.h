@@ -60,7 +60,6 @@ private:
     void runBattle();
     void runBossBattle();
     void checkLevelUp();
-    void checkPhaseCompletion();
     void showPhaseClearScreen();
     void showGameOverScreen();
     void showEndingScreen();
