@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "Monster.h"
 #include <string>
+#include <vector>
 #include <iostream>
 
 void GameManager::play() {
@@ -116,9 +117,66 @@ void GameManager::runBattle() {
     // 전투 전 버프적용, 자동전투한다면 구현
     //applyBuffItems();
 
-    // 전투 시작 battleService
-    //battleService->startBattle(player, monster);
+    // 실제 전투
+    // battleService->battle();
+
+    // 전투정보 받아와서 처리
+    //if (player->isAlive()) {
+    //    // mob킬수저장
+    //    // mobKillCount[monster->getName()]++;
+    //    
+    //    // reward 받음
+    //    // battleService->battle()에서 처리?
+
+    //    // 다음 라운드 실행
+    //    if (currentRound >= totalRoundsInPhase) {
+    //        currentState = GameState::BOSS_BATTLE;
+    //    } else {
+    //        switch (currentPhase) {
+    //        case PhaseType::PHASE_1:
+    //            currentState = GameState::PHASE_1;
+    //            break;
+    //        case PhaseType::PHASE_2:
+    //            currentState = GameState::PHASE_2;
+    //            break;
+    //        case PhaseType::PHASE_3:
+    //            currentState = GameState::PHASE_3;
+    //            break;
+    //        }
+    //    }
+    //} else {
+    //    handlePlayerDeath();
+    //}
 }
+
+//Monster* GameManager::generateMonster() {
+//    std::vector<std::string>* monsterNames;
+//
+//    switch (currentPhase) {
+//    case PhaseType::PHASE_1:
+//        monsterNames = &phase1Monsters;
+//        break;
+//    case PhaseType::PHASE_2:
+//        monsterNames = &phase2Monsters;
+//        break;
+//    case PhaseType::PHASE_3:
+//        monsterNames = &phase3Monsters;
+//        break;
+//    default:
+//        break;
+//    }
+//
+//    // 현재 라운드에 맞는 몬스터
+//    std::string name = (*monsterNames)[currentRound % monsterNames->size()];
+//    
+//
+//    // 스텟은 추후에 변경
+//    int baseHealth = (currentRound + 1) * 20;
+//    int baseAttack = (currentRound + 1) * 5;
+//    
+//    // 추후에 Monster 추상클래스를 상속하는 NormalMonster클래스 추가 
+//    return new NormalMonster();
+//}
 
 
 // 추후에 수정
