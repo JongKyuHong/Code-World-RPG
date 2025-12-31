@@ -236,7 +236,19 @@ void GameManager::showGameOverScreen() {}
 
 void GameManager::showEndingScreen() {}
 
-bool GameManager::askShopVisit() { return false; }
+
+bool GameManager::askShopVisit() { 
+    std::cout << "상점 방문 1, 아니면 2 " << std::endl;
+    int choice;
+    std::cin >> choice;
+    if (choice == 1) {
+        std::cout << "상점 방문" << std::endl;
+        return true;
+    } else {
+        std::cout << "즉시 전투" << std::endl;
+        return false;
+    }
+}
 
 void GameManager::checkLevelUp() {}
 
