@@ -61,3 +61,10 @@ void GameManager::play() {
 void GameManager::showMainMenu() {
     // std::cout << "메인메뉴" << std::endl;
 }
+
+void GameManager::createCharacter() {
+    std::string InpName;
+    std::cin >> InpName;
+    player = Character::getInstance(InpName);
+    // std::cout << "환영합니다 용사 ... 님" << std::endl;
+}
