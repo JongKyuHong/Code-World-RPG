@@ -72,41 +72,37 @@ void GameManager::createCharacter() {
 }
 
 void GameManager::startPhase(PhaseType phase) {
-    currentPhase = phase;
-    currentRound = 0;
+    if (currentPhase != phase) {
+        currentPhase = phase;
+        currentRound = 0;
 
-    switch (phase) {
-    case PhaseType::PHASE_1:
-        // std::cout << "변수의 숲" << std::endl;
-        phase1Monsters = { "VariableSlime", "ConstantGolem", "TypeSpirit"
-        ,"InitWisp", "DeclareShadow" };
-        totalRoundsInPhase = 5;
-        break;
-    case PhaseType::PHASE_2:
-        // std::cout << "클래스의 성" << std::endl;
-        phase1Monsters = { "ClassMimic", "ObjectOrc", "MemberSpider"
-        ,"FunctionMage", "ConstructGargoyle", "DestructReaper" };
-        totalRoundsInPhase = 6;
-        break;
-    case PhaseType::PHASE_3:
-        // std::cout << "디자인 패턴의 탑" << std::endl;
-        phase1Monsters = { "SingletonKing", "DecoratorKnight", "ObserverBeholder"
-        ,"StrategyGeneral" };
-        totalRoundsInPhase = 4;
-        break;
-    }
-
-    // 3페이즈에서는 변주주기
-    while (currentRound < totalRoundsInPhase) {
-        if (askShopVisit()) {
-            currentState = GameState::SHOP;
-            return;
+        switch (phase) {
+        case PhaseType::PHASE_1:
+            // std::cout << "변수의 숲" << std::endl;
+            phase1Monsters = { "VariableSlime", "ConstantGolem", "TypeSpirit"
+            ,"InitWisp", "DeclareShadow" };
+            totalRoundsInPhase = 5;
+            break;
+        case PhaseType::PHASE_2:
+            // std::cout << "클래스의 성" << std::endl;
+            phase1Monsters = { "ClassMimic", "ObjectOrc", "MemberSpider"
+            ,"FunctionMage", "ConstructGargoyle", "DestructReaper" };
+            totalRoundsInPhase = 6;
+            break;
+        case PhaseType::PHASE_3:
+            // std::cout << "디자인 패턴의 탑" << std::endl;
+            phase1Monsters = { "SingletonKing", "DecoratorKnight", "ObserverBeholder"
+            ,"StrategyGeneral" };
+            totalRoundsInPhase = 4;
+            break;
         }
-        currentState = GameState::BATTLE;
-        return;
     }
-
-    currentState = GameState::BOSS_BATTLE;
+    // 상점 방문 여부
+    if (askShopVisit()) {
+        currentState = GameState::SHOP;
+    } else {
+        currentState = GameState::BATTLE;
+    }
 }
 
 void GameManager::runBattle() {
@@ -128,23 +124,23 @@ void GameManager::runBattle() {
     //    // reward 받음
     //    // battleService->battle()에서 처리?
 
-    //    // 다음 라운드 실행
+    //    delete monster;
+
+    //    // 다음라운드 실행
+    //    currentRound++;
     //    if (currentRound >= totalRoundsInPhase) {
     //        currentState = GameState::BOSS_BATTLE;
     //    } else {
-    //        switch (currentPhase) {
-    //        case PhaseType::PHASE_1:
-    //            currentState = GameState::PHASE_1;
-    //            break;
-    //        case PhaseType::PHASE_2:
-    //            currentState = GameState::PHASE_2;
-    //            break;
-    //        case PhaseType::PHASE_3:
-    //            currentState = GameState::PHASE_3;
-    //            break;
+    //        // 상점에 방문하는가?
+    //        if (askShopVisit()) {
+    //            currentState = GameState::SHOP;
+    //        } else {
+    //            currentState = GameState::BATTLE;
+
     //        }
     //    }
     //} else {
+    //    delete monster;
     //    handlePlayerDeath();
     //}
 }
