@@ -7,37 +7,70 @@
 class Character
 {
 private:
-    static Character* instance; // ?깃????몄뒪?댁뒪
+    static Character* instance; // 싱글톤 인스턴스
 
-    std::string name; // 罹먮┃?곗씠由?
-    int level; // ?덈꺼
-    int health; // 泥대젰
-    int maxHeight; // 理쒕?泥대젰
-    int attack; // 怨듦꺽??
-    int experience; // 寃쏀뿕移?
-    int gold; // 怨⑤뱶
+    std::string name; // 캐릭터이름
+    int level; // 레벨
+    int health; // 체력
+    int maxHealth; // 최대체력
+    int attack; // 공격력
+    int experience; // 경험치
+    int gold; // 골드
 
-    std::vector<Item*> equipment; // ?꾩옱 ?λ퉬???꾩씠??
-    std::vector<Item*> Inventory; // ?뚮퉬, ?λ퉬, 湲고?
+    std::vector<Item*> equipment; // 현재 장비한 아이템
+    std::vector<Item*> inventory; // 소비, 장비, 기타
+
+    Character(const std::string& n)
+        : name(n), level(1), health(200), maxHealth(200),
+        attack(30), experience(0), gold(0) {
+    }
+
+    Character(const Character&) = delete;
+    Character& operator=(const Character&) = delete;
 
 public:
-    Character(const std::string& name) : name(name) {}
+    ~Character() {
+        for (auto item : equipment) {
+            delete item;
+        }
+        for (auto item : inventory) {
+            delete item;
+        }
+    }
+    static Character* getInstance(const std::string& name = "") {
+        if (instance == nullptr) {
+            instance = new Character(name);
+        }
+        return instance;
+    };
 
-    static Character* getInstance(const std::string& name = "") {};
+    static void destroyInstance() {
+        if (instance != nullptr) {
+            delete instance;
+            instance = nullptr;
+        }
+    }
 
-    // ?곹깭 異쒕젰
+    std::string getName() const { return name; }
+    int getLevel() const { return level; }
+    int getHealth() const { return health; }
+    int getMaxHealth() const { return maxHealth; }
+    int getAttack() const { return attack; }
+    int getExperience() const { return experience; }
+    int getGold() const { return gold; }
+
+    // 상태 출력
     void displayStatus() {}
 
-    // ?덈꺼??
+    // 레벨업
     void levelUp() {}
 
-    // ?꾩씠???ъ슜
+    // 아이템 사용
     void useItem(int index) {}
 
-    // ?λ퉬 ?꾩씠??李⑹슜
+    // 장비 아이템 착용
     void equipItem(int index) {}
 
-    // ?λ퉬 ?꾩씠???댁젣
+    // 장비 아이템 해제
     void UnequipItem(int index) {}
 };
-
