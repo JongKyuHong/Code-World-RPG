@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include <string>
+#include <iostream>
 
 void GameManager::play() {
     isRunning = true;
@@ -55,4 +56,8 @@ void GameManager::play() {
             break;
         }
     }
+}
+
+void GameManager::showMainMenu() {
+    // std::cout << "메인메뉴" << std::endl;
 }
