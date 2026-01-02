@@ -149,3 +149,15 @@ void BattleService::monsterTurn() {
 
     addLog(monster->getName() + "의 공격: " + std::to_string(damage) + " 데미지");
 }
+
+void BattleService::displayBattleStatus() {
+    std::cout << "\n┌────────────────────────────────────────┐\n";
+    std::cout << "│ 플레이어: " << player->getName() << "\n";
+    std::cout << "│ HP: " << player->getHealth() << " / " << player->getMaxHealth()
+        << " | 공격력: " << player->getAttack() << "\n";
+    std::cout << "├────────────────────────────────────────┤\n";
+    std::cout << "│ 적: " << monster->getName() << "\n";
+    std::cout << "│ HP: " << monster->getHealth() << " / " << monster->getMaxHealth()
+        << " | 공격력: " << monster->getAttack() << "\n";
+    std::cout << "└────────────────────────────────────────┘\n";
+}
