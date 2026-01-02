@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Character.h"
+#include "Monster.h"
+
 // 전투에 관련된 계산
 class BattleService
 {

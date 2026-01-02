@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BattleResult.h" />
     <ClInclude Include="BattleService.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BuffPotion.h" />
