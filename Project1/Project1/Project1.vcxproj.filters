@@ -65,7 +65,7 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="VariableSlime.cpp">
+    <ClCompile Include="BossMonster.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -136,7 +136,10 @@
     <ClInclude Include="UIManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="VariableSlime.h">
+    <ClInclude Include="BossMonster.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleResult.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
