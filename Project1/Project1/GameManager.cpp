@@ -139,7 +139,7 @@ void GameManager::startPhase(PhaseType phase) {
 
         switch (phase) {
         case PhaseType::PHASE_1:
-             std::cout << "변수의 숲" << std::endl;
+            std::cout << "\n변수의 숲\n";
             phase1Monsters = { 
                 { "VariableSlime", "값이 변하는 물렁물렁한 슬라임"}, 
                 {"ConstantGolem", "변하지 않는 단단한 바위 골렘"}, 
@@ -150,7 +150,7 @@ void GameManager::startPhase(PhaseType phase) {
             totalRoundsInPhase = 5;
             break;
         case PhaseType::PHASE_2:
-             std::cout << "클래스의 성" << std::endl;
+            std::cout << "\n클래스의 성\n";
             phase2Monsters = { 
                 {"ClassMimic", "무엇이든 찍어낼 수 있는 상자 괴물"}, 
                 {"ObjectOrc","클래스에서 실체화된 강력한 오크"}, 
@@ -162,7 +162,7 @@ void GameManager::startPhase(PhaseType phase) {
             totalRoundsInPhase = 6;
             break;
         case PhaseType::PHASE_3:
-             std::cout << "디자인 패턴의 탑" << std::endl;
+            std::cout << "\n디자인 패턴의 탑\n";
             phase3Monsters = { 
                 {"SingletonKing", "오직 하나만 존재하는 왕"}, 
                 {"DecoratorKnight", "장비를 덧붙여 강해지는 기사"}, 
@@ -191,9 +191,11 @@ void GameManager::runBattle() {
 
     // 실제 전투
     // battleService->battle();
+     std::cout << "⚔️ 전투 중 ⚔️\n";
 
     // 전투정보 받아와서 처리
     if (player->isAlive()) {
+        std::cout << "🏆 전투 승리! 🏆\n";
         // mob킬수저장
         mobKillCounts[monster->getName()]++;
         
@@ -216,6 +218,48 @@ void GameManager::runBattle() {
         }
     } else {
         delete monster;
+        handlePlayerDeath();
+    }
+}
+
+void GameManager::runBossBattle() {
+    Monster* bossMonster = generateBoss();
+
+    std::string bossName = bossMonster->getName();
+
+    std::cout << "보스 " << bossName << "가 나타났다." << std::endl;
+    // 전투 전 버프적용, 자동전투한다면 구현
+    //applyBuffItems();
+
+    // 실제 전투
+    // battleService->battle();
+    std::cout << "⚔️ " << bossName << "와 전투 중 ⚔️\n";
+
+    // 전투정보 받아와서 처리
+    if (player->isAlive()) {
+        std::cout << "🏆" << bossName << "와의 전투 승리!🏆\n";
+        //mob킬수저장
+        mobKillCounts[bossName]++;
+
+        // reward 받는거 처리
+
+        // 몬스터 삭제
+        delete bossMonster;
+
+        //다음라운드 실행
+        switch (currentPhase) {
+        case PhaseType::PHASE_1:
+            currentState = GameState::PHASE_2;
+            break;
+        case PhaseType::PHASE_2:
+            currentState = GameState::PHASE_3;
+            break;
+        case PhaseType::PHASE_3:
+            currentState = GameState::ENDING;
+            break;
+        }
+    } else {
+        delete bossMonster;
         handlePlayerDeath();
     }
 }
@@ -337,42 +381,7 @@ void GameManager::runShop() {
 }
 
 // 보스전, 클리어시 다음 페이즈로 넘겨주는 역할
-void GameManager::runBossBattle() {
-    Monster* bossMonster = generateBoss();
 
-    // 전투 전 버프적용, 자동전투한다면 구현
-    //applyBuffItems();
-
-    // 실제 전투
-    // battleService->battle();
-
-    // 전투정보 받아와서 처리
-    if (player->isAlive()) {
-        //mob킬수저장
-        mobKillCounts[bossMonster->getName()]++;
-
-        // reward 받는거 처리
-
-        // 몬스터 삭제
-        delete bossMonster;
-
-        //다음라운드 실행
-        switch (currentPhase) {
-        case PhaseType::PHASE_1:
-            currentState = GameState::PHASE_2;
-            break;
-        case PhaseType::PHASE_2:
-            currentState = GameState::PHASE_3;
-            break;
-        case PhaseType::PHASE_3:
-            currentState = GameState::ENDING;
-            break;
-        }
-    } else {
-        delete bossMonster;
-        handlePlayerDeath();
-    }
-}
 
 void GameManager::showPhaseClearScreen() {}
 
