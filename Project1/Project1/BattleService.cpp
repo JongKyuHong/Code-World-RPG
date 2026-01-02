@@ -133,3 +133,19 @@ void BattleService::playerTurn() {
         }
     }
 }
+
+void BattleService::monsterTurn() {
+    std::cout << "\n[" << monster->getName() << " 턴]\n";
+
+    int damage = monster->getAttack();
+    player->takeDamage(damage);
+
+    std::cout << "💥 " << monster->getName() << "의 공격!\n";
+    std::cout << "→ " << player->getName() << "이(가) " << damage << " 데미지를 받았다!\n";
+
+    if (!player->isAlive()) {
+        std::cout << "→ 체력이 모두 소진되었다...\n";
+    }
+
+    addLog(monster->getName() + "의 공격: " + std::to_string(damage) + " 데미지");
+}
