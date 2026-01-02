@@ -3,7 +3,8 @@
 #include <vector>
 #include <string>
 #include "Entity.h"
-#include "Item.h"
+
+class Item; // Item 클래스 전방 선언
 
 class Character : public Entity {
 private:
@@ -17,7 +18,6 @@ private:
     int gold;
 
     std::vector<Item*> equipment; // 현재 장비한 아이템
-    std::vector<Item*> inventory; // 소비, 장비, 기타
 
     Character(const std::string& n)
         : Entity(n, 200, 30)
@@ -32,10 +32,7 @@ private:
 
 public:
     ~Character() override {
-        for (auto item : equipment) {
-            delete item;
-        }
-        for (auto item : inventory) {
+        for (Item* item : equipment) {
             delete item;
         }
     }
@@ -74,22 +71,24 @@ public:
         gold += value;
     }
 
-    // 아이템 획득
-    void addItem(Item* item) {
-        inventory.push_back(item);
-    }
-
-    // 아이템 사용
-    void useItem(int index) {}
-
-    // 장비 아이템 착용
-    void equipItem(int index) {}
-
-    // 장비 아이템 해제
-    void UnequipItem(int index) {}
-
     // 버프 물약 사용시 공격력
     void setAttack(int newAttack) {
         attack = newAttack;
+    }
+
+    void heal(int healAmount) {
+        health += healAmount;
+        if (health > maxHealth) {
+            health = maxHealth;
+        }
+    }
+
+
+    void addAttack(int delta) {
+        attack += delta;
+    };
+
+    void addMaxHealth(int delta) {
+        maxHealth += delta;
     }
 };
