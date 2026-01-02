@@ -12,8 +12,7 @@ protected:
 
 public:
     Entity(const std::string& name, int health, int attack) :
-        name(name), health(health), maxHealth(health), attack(attack) {
-    }
+        name(name), health(health), maxHealth(health), attack(attack) {}
 
     virtual ~Entity() {}
 
