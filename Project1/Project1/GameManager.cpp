@@ -201,8 +201,6 @@ Monster* GameManager::generateMonster() {
     }
 
     // 현재 라운드에 맞는 몬스터
-    std::cout << "크기가? : " << monsterInfo->size() << std::endl;
-    std::cout << "페이즈 " << static_cast<int>(currentPhase) << std::endl;
     MonsterData Info = (*monsterInfo)[currentRound % monsterInfo->size()];
     
 
@@ -340,9 +338,13 @@ void GameManager::runBossBattle() {
 
 void GameManager::showPhaseClearScreen() {}
 
-void GameManager::showGameOverScreen() {}
+void GameManager::showGameOverScreen() {
+    std::cout << "게임오버 ㅠㅠ" << std::endl;
+}
 
-void GameManager::showEndingScreen() {}
+void GameManager::showEndingScreen() {
+    std::cout << "엔딩!!" << std::endl;
+}
 
 
 bool GameManager::askShopVisit() { 
@@ -357,5 +359,6 @@ bool GameManager::askShopVisit() {
         return false;
     }
 }
+
 
 void GameManager::checkLevelUp() {}
