@@ -138,7 +138,7 @@ void GameManager::startPhase(PhaseType phase) {
 void GameManager::runBattle() {
     Monster* monster = generateMonster();
 
-    // std::cout << 전투관련 내용들 << std::endl;
+     std::cout << monster->getName() << "가 나타났다." << std::endl;
 
     // 전투 전 버프적용, 자동전투한다면 구현
     //applyBuffItems();
@@ -201,6 +201,8 @@ Monster* GameManager::generateMonster() {
     }
 
     // 현재 라운드에 맞는 몬스터
+    std::cout << "크기가? : " << monsterInfo->size() << std::endl;
+    std::cout << "페이즈 " << static_cast<int>(currentPhase) << std::endl;
     MonsterData Info = (*monsterInfo)[currentRound % monsterInfo->size()];
     
 
@@ -299,7 +301,42 @@ void GameManager::runShop() {
 }
 
 // 보스전, 클리어시 다음 페이즈로 넘겨주는 역할
-void GameManager::runBossBattle() {}
+void GameManager::runBossBattle() {
+    Monster* bossMonster = generateBoss();
+
+    // 전투 전 버프적용, 자동전투한다면 구현
+    //applyBuffItems();
+
+    // 실제 전투
+    // battleService->battle();
+
+    // 전투정보 받아와서 처리
+    if (player->isAlive()) {
+        //mob킬수저장
+        mobKillCounts[bossMonster->getName()]++;
+
+        // reward 받는거 처리
+
+        // 몬스터 삭제
+        delete bossMonster;
+
+        //다음라운드 실행
+        switch (currentPhase) {
+        case PhaseType::PHASE_1:
+            currentState = GameState::PHASE_2;
+            break;
+        case PhaseType::PHASE_2:
+            currentState = GameState::PHASE_3;
+            break;
+        case PhaseType::PHASE_3:
+            currentState = GameState::ENDING;
+            break;
+        }
+    } else {
+        delete bossMonster;
+        handlePlayerDeath();
+    }
+}
 
 void GameManager::showPhaseClearScreen() {}
 

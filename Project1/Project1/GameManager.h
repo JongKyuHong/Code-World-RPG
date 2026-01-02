@@ -30,6 +30,7 @@ enum class GameState {
 };
 
 enum class PhaseType {
+    NONE,
     PHASE_1,
     PHASE_2,
     PHASE_3
@@ -41,7 +42,7 @@ private:
     Character* player;
 
     GameState currentState;
-    PhaseType currentPhase;
+    PhaseType currentPhase = PhaseType::NONE;
 
     bool isRunning;
     int currentRound;
