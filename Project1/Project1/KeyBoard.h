@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Item.h"
 #include <string>
@@ -27,4 +27,5 @@ public:
     // 해제
     void Unequip(Character* character) {}
 };
+
 

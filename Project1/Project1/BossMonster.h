@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Monster.h"
 #include <string>
@@ -16,3 +16,4 @@ public:
         // 보스 클리어 연출, 특수 보상 등
     }
 };
+

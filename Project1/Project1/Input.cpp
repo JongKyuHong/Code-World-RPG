@@ -1,4 +1,4 @@
-#include "Input.h"
+﻿#include "Input.h"
 #include <Windows.h>
 #include <cstring>
 #include <iostream>
@@ -77,3 +77,4 @@ bool Input::TryReadKey(int& outKey)
 
     return false;
 }
+

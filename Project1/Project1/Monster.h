@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include "Item.h"
@@ -25,3 +25,4 @@ public:
 
     virtual void onDeath() = 0;
 };
+

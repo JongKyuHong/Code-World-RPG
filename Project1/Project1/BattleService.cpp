@@ -215,3 +215,4 @@ void BattleService::displayLog() {
         std::cout << log << "\n";
     }
 }
+

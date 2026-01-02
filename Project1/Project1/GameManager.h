@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <map>
@@ -99,4 +99,5 @@ public:
     void diplayKillCount() {};
     void displayCharacterStatus() {};
 };
+
 

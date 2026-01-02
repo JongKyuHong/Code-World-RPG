@@ -1,5 +1,7 @@
-#pragma once
+﻿#pragma once
 #include "Renderer.h"
+
+
 class Engine {
 public:
     Engine(int w, int h);

@@ -1,4 +1,4 @@
-#include "Scene.h"
+﻿#include "Scene.h"
 #include "GameObject.h"
 
 void Scene::Update(float deltaTime)
@@ -20,3 +20,4 @@ void Scene::Render(Renderer& renderer)
         actor->Render(renderer);
     }
 }
+

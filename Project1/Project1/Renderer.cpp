@@ -1,4 +1,4 @@
-#include "Renderer.h"
+ç™¤#include "Renderer.h"
 #include <Windows.h>
 #include <algorithm>
 #include <string>
@@ -25,7 +25,7 @@ namespace
 }
 
 Renderer::Renderer(int w, int h)
-    : width(w), height(h), buffer(w* h, (WCHAR)ClearChar) // ClearChar(char) -> WCHAR·Î º¯È¯
+    : width(w), height(h), buffer(w* h, (WCHAR)ClearChar) // ClearChar(char) -> WCHARë¡œ ë³€í™˜
 {
     textLoader = new TextLoader();
     HWND consoleWindow = GetConsoleWindow();
@@ -42,7 +42,7 @@ Renderer::Renderer(int w, int h)
     ci.bVisible = FALSE;
     SetConsoleCursorInfo(hOut, &ci);
 
-    // Ã¢ Å©±â ¹Ù²Ü ¶§ ÈçÇÑ ¼ø¼­: window¸¦ tiny·Î ÁÙÀÌ°í -> ¹öÆÛ ¼³Á¤ -> window ´Ù½Ã ¼³Á¤
+    // ì°½ í¬ê¸° ë°”ê¿€ ë•Œ í”í•œ ìˆœì„œ: windowë¥¼ tinyë¡œ ì¤„ì´ê³  -> ë²„í¼ ì„¤ì • -> window ë‹¤ì‹œ ì„¤ì •
     SMALL_RECT tiny{};
     tiny.Left = 0; tiny.Top = 0; tiny.Right = 0; tiny.Bottom = 0;
     SetConsoleWindowInfo(hOut, TRUE, &tiny);
@@ -58,7 +58,7 @@ void Renderer::Present()
 {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    // Ä¿¼­¸¦ (0,0)À¸·Î º¸³»°í ¹öÆÛ ÀüÃ¼¸¦ ÇÑ ¹ø¿¡ Ãâ·Â (±ôºıÀÓ ÃÖ¼ÒÈ­)
+    // ì»¤ì„œë¥¼ (0,0)ìœ¼ë¡œ ë³´ë‚´ê³  ë²„í¼ ì „ì²´ë¥¼ í•œ ë²ˆì— ì¶œë ¥ (ê¹œë¹¡ì„ ìµœì†Œí™”)
     SetConsoleCursorPosition(hOut, { 0, 0 });
 
     std::wstring ws;
@@ -80,7 +80,7 @@ void Renderer::Put(int x, int y, WCHAR c)
     if (x < 0 || x >= width || y < 0 || y >= height)
         return;
 
-    // ASCII ±âÁØ char -> WCHAR
+    // ASCII ê¸°ì¤€ char -> WCHAR
     buffer[y * width + x] = c;
 }
 
@@ -96,11 +96,11 @@ static std::wstring ToWideFromUtf8OrAcp(const std::string& s)
         return ws;
         };
 
-    // 1) UTF-8·Î ¾ö°İÇÏ°Ô ½Ãµµ (Àß¸øµÈ UTF-8ÀÌ¸é ¹«Á¶°Ç ½ÇÆĞ)
+    // 1) UTF-8ë¡œ ì—„ê²©í•˜ê²Œ ì‹œë„ (ì˜ëª»ëœ UTF-8ì´ë©´ ë¬´ì¡°ê±´ ì‹¤íŒ¨)
     std::wstring ws = convert(CP_UTF8, MB_ERR_INVALID_CHARS);
     if (!ws.empty()) return ws;
 
-    // 2) ½ÇÆĞÇÏ¸é ·ÎÄÃ ÄÚµåÆäÀÌÁö(CP949 µî)·Î º¯È¯
+    // 2) ì‹¤íŒ¨í•˜ë©´ ë¡œì»¬ ì½”ë“œí˜ì´ì§€(CP949 ë“±)ë¡œ ë³€í™˜
     ws = convert(CP_ACP, 0);
     return ws;
 }
@@ -127,23 +127,23 @@ void Renderer::PutString(int x, int y, const std::string& str)
 void Renderer::PutBox(int x, int y, int w, int h)
 {
     if (w <= 0 || h <= 0) return;
-    // °¡·Î¼±
+    // ê°€ë¡œì„ 
     for (int i = 0; i < w; ++i)
     {
-        Put(x + i, y, L'¦¡');
-        Put(x + i, y + h - 1, L'¦¡');
+        Put(x + i, y, L'â”€');
+        Put(x + i, y + h - 1, L'â”€');
     }
-    // ¼¼·Î¼±
+    // ì„¸ë¡œì„ 
     for (int j = 0; j < h; ++j)
     {
-        Put(x, y + j, L'¦¢');
-        Put(x + w - 1, y + j, L'¦¢');
+        Put(x, y + j, L'â”‚');
+        Put(x + w - 1, y + j, L'â”‚');
     }
-    // ¸ğ¼­¸®
-    Put(x, y, L'¦£');
-    Put(x + w - 1, y, L'¦¤');
-    Put(x, y + h - 1, L'¦¦');
-    Put(x + w - 1, y + h - 1, L'¦¥');
+    // ëª¨ì„œë¦¬
+    Put(x, y, L'â”Œ');
+    Put(x + w - 1, y, L'â”');
+    Put(x, y + h - 1, L'â””');
+    Put(x + w - 1, y + h - 1, L'â”˜');
 }
 
 void Renderer::PutTextFile(int x, int y, const std::string& filename)
@@ -161,7 +161,7 @@ void Renderer::Clear()
 
 std::string Renderer::ToString() const
 {
-    // ÀÌ¸§ À¯Áö¿ë: WCHAR -> char·Î ´Ü¼ø º¯È¯(ASCII/1¹ÙÀÌÆ® ¹üÀ§¸¸ º¸Àå)
+    // ì´ë¦„ ìœ ì§€ìš©: WCHAR -> charë¡œ ë‹¨ìˆœ ë³€í™˜(ASCII/1ë°”ì´íŠ¸ ë²”ìœ„ë§Œ ë³´ì¥)
     std::string out;
     out.reserve((width + 1) * height);
 
@@ -177,3 +177,4 @@ std::string Renderer::ToString() const
     }
     return out;
 }
+

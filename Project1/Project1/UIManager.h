@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 class UIManager {
 public:
     enum class Type { 
@@ -18,3 +18,4 @@ public:
         Error // 자잘한 에러
     };
 };
+

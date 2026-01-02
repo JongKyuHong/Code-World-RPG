@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Scene.h"
 #include "Input.h"
 #include <iostream>
@@ -53,4 +53,5 @@ public:
         TeetActor* Teet = &Spawn<TeetActor>();
     }
 };
+
 

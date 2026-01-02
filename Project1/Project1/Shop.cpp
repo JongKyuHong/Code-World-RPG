@@ -1,3 +1,3 @@
-#include "Shop.h"
+﻿#include "Shop.h"
 
 Shop* Shop::instance = nullptr;

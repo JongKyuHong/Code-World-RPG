@@ -1,4 +1,4 @@
-#include "SceneManager.h"
+﻿#include "SceneManager.h"
 
 SceneManager* SceneManager::instance = nullptr;
 
@@ -29,3 +29,5 @@ void SceneManager::ApplyPendingIfAny()
     }
     pending.clear();
 }
+
+

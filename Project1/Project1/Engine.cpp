@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include <chrono>
 #include "SceneManager.h"
 #include "TestScene.h"
@@ -8,6 +8,7 @@
 
 bool Engine::exitRequested = false;
 bool Engine::isMainMenu = false;
+
 
 Engine::Engine(int w, int h):renderer(w, h)
 {
