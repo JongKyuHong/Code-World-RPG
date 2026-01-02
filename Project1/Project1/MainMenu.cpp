@@ -20,7 +20,7 @@ void MainMenu::Update(float deltaTime)
     {
         posIdx = min(posIdx + 1, 1);
     }
-    if (Input::GetKeyDown(KeyCode::Enter)) {
+    if (Input::GetKeyDown(KeyCode::F)) {
         if (posIdx == 0) {
             Engine::isMainMenu = true;
             Engine::exitRequested = true;
