@@ -164,3 +164,10 @@ void BattleService::displayBattleStatus() {
 void BattleService::addLog(const std::string& message) {
     battleLog.push_back(message);
 }
+
+void BattleService::displayLog() {
+    std::cout << "\n=== 전투 로그 ===\n";
+    for (const auto& log : battleLog) {
+        std::cout << log << "\n";
+    }
+}
