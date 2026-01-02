@@ -1,0 +1,79 @@
+﻿# ITEMS
+ITEM|작은 포션|50
+EFFECT|HealFlat|Health|30|0
+
+ITEM|공격력 버프(+5 / 3턴)|120
+EFFECT|AddStatFlat|Attack|5|3
+
+ITEM|철 검(+10)|300
+EFFECT|AddStatFlat|Attack|10|0
+
+ITEM|가죽 갑옷(+20)|250
+EFFECT|AddStatFlat|MaxHealth|20|0
+
+ITEM|큰 포션|120
+EFFECT|HealFlat|Health|80|0
+
+ITEM|최대 체력 버프(+50 / 3턴)|200
+EFFECT|AddStatFlat|MaxHealth|50|3
+
+# ASCII
+ASCII|작은 포션
+   ____
+  / __ \
+ / /  \ \
+ | |  | |
+ | |__| |
+ |  __  |
+ | |  | |
+ \_|  |_|
+END
+
+ASCII|공격력 버프(+5 / 3턴)
+  _______
+ /  ATK  \
+|   +5   |
+|  3TURN |
+ \_______/
+END
+
+ASCII|철 검(+10)
+     /\
+    /  \
+   / /\ \
+  / /  \ \
+  | |  | |
+  | |__| |
+   \____/
+     ||
+     ||
+END
+
+ASCII|가죽 갑옷(+20)
+   .----.
+  / .--. \
+ / /    \ \
+ | |____| |
+ |  ____  |
+ | |    | |
+ \________/
+END
+
+ASCII|큰 포션
+   ______
+  / ____ \
+ / / __ \ \
+ | |/  \| |
+ | |____| |
+ |  ____  |
+ | |    | |
+ \_|____|_/
+END
+
+ASCII|최대 체력 버프(+50 / 3턴)
+  _______
+ / MAXHP \
+|  +50   |
+|  3TURN |
+ \_______/
+END
