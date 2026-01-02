@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Scene.h"
 #include "Input.h"
 
@@ -52,4 +52,5 @@ public:
 
     }
 };
+
 

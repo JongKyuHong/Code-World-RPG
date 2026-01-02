@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 
@@ -18,3 +18,4 @@ struct BattleResult {
         totalDamageDealt(0), totalDamageTaken(0), turnCount(0) {
     }
 };
+

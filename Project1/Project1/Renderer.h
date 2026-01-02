@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #pragma once
 #include<vector>
@@ -8,9 +8,9 @@ class Renderer {
 public:
     Renderer(int w, int h);
 
-    void Present(); // Buffer¿¡ ÀÖ´Â °ÍÀ» È­¸é¿¡ Ãâ·Â
+    void Present(); // Bufferì— ìˆëŠ” ê²ƒì„ í™”ë©´ì— ì¶œë ¥
 
-    void Put(int x, int y, char c); // Æ¯Á¤ À§Ä¡¿¡ ¹®ÀÚ ±×¸®±â
+    void Put(int x, int y, char c); // íŠ¹ì • ìœ„ì¹˜ì— ë¬¸ì ê·¸ë¦¬ê¸°
     void Clear();
 
     int GetWidth() const { return width; }
@@ -25,3 +25,4 @@ private:
 
     const char ClearChar = ' ';
 };
+

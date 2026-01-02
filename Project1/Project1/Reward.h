@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 class Reward
 {
 public:
@@ -7,3 +7,4 @@ public:
     // 일반몹 일반아이템 랜덤, 골드 랜덤, 경험치 50
     void reward() {};
 };
+

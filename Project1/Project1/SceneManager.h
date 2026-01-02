@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <functional>
 #include<memory>
 #include "Scene.h"
@@ -29,3 +29,4 @@ private:
     std::unique_ptr<Scene> current;
     std::string pending;
 };
+

@@ -1,4 +1,4 @@
-#include "BattleService.h" // 내 설계도를 가져옵니다.
+﻿#include "BattleService.h" // 내 설계도를 가져옵니다.
 #include <iostream>
 #include <conio.h>
 #include <cstdlib> // rand() 함수를 위해 필요합니다.
@@ -214,3 +214,4 @@ void BattleService::displayLog() {
         std::cout << log << "\n";
     }
 }
+

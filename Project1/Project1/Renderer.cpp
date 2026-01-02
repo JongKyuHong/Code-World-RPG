@@ -1,4 +1,4 @@
-#include "Renderer.h"
+ï»¿#include "Renderer.h"
 #include <Windows.h>
 #include <iostream>
 #include <string>
@@ -26,8 +26,8 @@ namespace
         CONSOLE_FONT_INFOEX cfi{};
         cfi.cbSize = sizeof(cfi);
         cfi.nFont = 0;
-        cfi.dwFontSize.X = 0;     // 0ÀÌ¸é ½Ã½ºÅÛÀÌ ÀûÀıÈ÷
-        cfi.dwFontSize.Y = fontY; // Áß¿ä: ³ôÀÌ¸¦ ÁÙÀÏ¼ö·Ï ´õ Å« ÄÜ¼Ö °İÀÚ °¡´É
+        cfi.dwFontSize.X = 0;     // 0ì´ë©´ ì‹œìŠ¤í…œì´ ì ì ˆíˆ
+        cfi.dwFontSize.Y = fontY; // ì¤‘ìš”: ë†’ì´ë¥¼ ì¤„ì¼ìˆ˜ë¡ ë” í° ì½˜ì†” ê²©ì ê°€ëŠ¥
         cfi.FontFamily = FF_DONTCARE;
         cfi.FontWeight = FW_NORMAL;
         wcsncpy_s(cfi.FaceName, faceName, _TRUNCATE);
@@ -127,3 +127,4 @@ std::string Renderer::ToString() const
     }
     return out;
 }
+

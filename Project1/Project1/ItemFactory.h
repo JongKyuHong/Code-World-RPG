@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "HealthPotion.h"
 #include "BuffPotion.h"
@@ -7,4 +7,5 @@
 class ItemFactory
 {
 };
+
 
