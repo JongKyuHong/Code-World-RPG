@@ -9,6 +9,10 @@
 #include <vector>
 #include <iostream>
 #include <conio.h>
+#include "Engine.h"
+#include "SceneManager.h"
+#include "MainMenu.h"
+#include <chrono>
 
 void GameManager::play() {
 	isRunning = true;
@@ -67,38 +71,52 @@ void GameManager::play() {
 }
 
 void GameManager::showMainMenu() {
-	std::cout << "\n";
-	std::cout << "╔════════════════════════════════════════╗\n";
-	std::cout << "║          C++ RPG 게임에 오신 것을      ║\n";
-	std::cout << "║             환영합니다!               ║\n";
-	std::cout << "╚════════════════════════════════════════╝\n";
+    Engine engine(160, 50);
 
-	std::cout << "\n[메인 메뉴]\n";
-	std::cout << "1. 게임 시작\n";
-	std::cout << "2. 게임 종료\n";
-	std::cout << "\n선택: ";
+    SceneManager::GetInstance().Register("MainMenu", [&]() {
+        return std::make_unique<MainMenu>();
+        });
 
-	char choice = _getch();
-	std::cout << choice << "\n\n";
+    using clock = std::chrono::steady_clock;
+    auto prev = clock::now();
 
-	switch (choice) {
-	case '1':
-		std::cout << "게임을 시작합니다!\n";
-		currentState = GameState::CHARACTER_CREATION;
-		break;
+    SceneManager::GetInstance().LoadScene("MainMenu");
 
-	case '2':
-		std::cout << "게임을 종료합니다.\n";
-		currentState = GameState::ENDING;
-		break;
+    while (engine.IsRunning())
+    {
+        auto now = clock::now();
+        std::chrono::duration<float> delta = now - prev;
+        prev = now;
+        float dt = delta.count();
 
-	default:
-		std::cout << "입력이 잘못되었습니다. 다시 선택해주세요.\n";
-		std::cout << "\n아무 키나 눌러 계속...";
-		_getch();
-		// 다시 메뉴 표기
-		break;
-	}
+        engine.Update(dt);
+
+        if (Engine::exitRequested == true) {
+            break;
+        }
+    }
+
+    if (Engine::isMainMenu == true) {
+        currentState = GameState::CHARACTER_CREATION;
+    }
+    else {
+        currentState = GameState::ENDING;
+    }
+
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi{};
+    if (!GetConsoleScreenBufferInfo(hOut, &csbi)) return;
+
+    DWORD cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+    DWORD written = 0;
+    COORD home{ 0, 0 };
+
+    // 문자 지우기
+    FillConsoleOutputCharacterW(hOut, L' ', cellCount, home, &written);
+    // 속성 지우기(색 포함)
+    FillConsoleOutputAttribute(hOut, csbi.wAttributes, cellCount, home, &written);
+
+    SetConsoleCursorPosition(hOut, home);
 }
 
 void GameManager::createCharacter() {

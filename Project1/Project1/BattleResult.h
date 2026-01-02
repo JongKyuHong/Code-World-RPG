@@ -12,9 +12,8 @@ struct BattleResult {
     int totalDamageTaken;    // 플레이어가 받은 총 데미지
     int turnCount;           // 총 턴 수
 
-    BattleResult()
-        : playerWon(false), goldEarned(0), expEarned(0),
-        monsterName(""), isBossKill(false),
+    BattleResult(int gold, int exp)
+        : playerWon(false), goldEarned(gold), expEarned(exp), monsterName(""), isBossKill(false),
         totalDamageDealt(0), totalDamageTaken(0), turnCount(0) {
     }
 };

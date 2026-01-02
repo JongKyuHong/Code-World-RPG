@@ -12,6 +12,8 @@ public:
 
     bool IsRunning() const { return isRunning; };
 
+    static bool exitRequested;
+    static bool isMainMenu;
 private:
     bool isRunning = true;
     Renderer renderer;
