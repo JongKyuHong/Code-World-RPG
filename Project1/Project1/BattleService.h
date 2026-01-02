@@ -13,10 +13,11 @@ private:
     // 전투로그 남기기
     std::vector<std::string> battleLog;
 
-    void playerTurn(){}
+    void playerTurn() {}
     void monsterTurn() {}
     void displayBattleStatus() {}
     void addLog(const std::string& message) {}
+
 public:
 
     BattleService() : player(nullptr), monster(nullptr) {}

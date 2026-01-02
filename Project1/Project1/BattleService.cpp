@@ -121,7 +121,6 @@ void BattleService::playerTurn() {
             endTurn = true;
             break;
         }
-
         case '2': {
             // 아이템 사용
             endTurn = true;
@@ -160,4 +159,8 @@ void BattleService::displayBattleStatus() {
     std::cout << "│ HP: " << monster->getHealth() << " / " << monster->getMaxHealth()
         << " | 공격력: " << monster->getAttack() << "\n";
     std::cout << "└────────────────────────────────────────┘\n";
+}
+
+void BattleService::addLog(const std::string& message) {
+    battleLog.push_back(message);
 }
