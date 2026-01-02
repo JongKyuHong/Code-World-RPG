@@ -23,6 +23,7 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
     std::cout << "\n적: " << monster->getName() << " (" << monster->getMobInfo() << ")\n";
     std::cout << "HP: " << monster->getHealth() << " / 공격력: " << monster->getAttack() << "\n";
 
+    // 애니메이션 구현한다면 들어가는 자리
     std::cout << "\n계속하려면 아무 키나 누르세요...";
     _getch();
 
@@ -47,6 +48,7 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
             break;
         }
 
+        // 애니메이션 구현한다면 들어가는 자리
         std::cout << "\n계속하려면 아무 키나 누르세요...";
         _getch();
     }
@@ -86,6 +88,7 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
         std::cout << "\n당신은 쓰러졌습니다...\n";
     }
 
+    // 애니메이션 구현한다면 들어가는 자리
     std::cout << "\n계속하려면 아무 키나 누르세요...";
     _getch();
 
@@ -104,8 +107,13 @@ void BattleService::playerTurn() {
         char choice = _getch();
         std::cout << choice << std::endl;
 
+        // 애니메이션 구현한다면 들어가는 자리
+        std::cout << "\n계속하려면 아무 키나 누르세요...";
+        _getch();
+
         switch (choice) {
         case '1': {
+            displayBattleStatus();
             // 공격
             int damage = player->getAttack();
             monster->takeDamage(damage);
@@ -118,6 +126,7 @@ void BattleService::playerTurn() {
             }
 
             addLog(player->getName() + "의 공격: " + std::to_string(damage) + " 데미지");
+            
             endTurn = true;
             break;
         }
@@ -134,6 +143,7 @@ void BattleService::playerTurn() {
 }
 
 void BattleService::monsterTurn() {
+    displayBattleStatus();
     std::cout << "\n[" << monster->getName() << " 턴]\n";
 
     int damage = monster->getAttack();
@@ -142,6 +152,7 @@ void BattleService::monsterTurn() {
     std::cout << "💥 " << monster->getName() << "의 공격!\n";
     std::cout << "→ " << player->getName() << "이(가) " << damage << " 데미지를 받았다!\n";
 
+    
     if (!player->isAlive()) {
         std::cout << "→ 체력이 모두 소진되었다...\n";
     }

@@ -199,7 +199,6 @@ void GameManager::runBattle() {
 
     // 전투정보 받아와서 처리
     if (result.playerWon) {
-        std::cout << "🏆 전투 승리! 🏆\n";
         // mob킬수저장
         mobKillCounts[result.monsterName]++;
 
