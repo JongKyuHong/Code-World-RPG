@@ -63,14 +63,26 @@ void GameManager::play() {
 }
 
 void GameManager::showMainMenu() {
-    // std::cout << "메인메뉴" << std::endl;
+     std::cout << "메인메뉴 1시작 2종료" << std::endl;
+     std::string input;
+     std::getline(std::cin, input);
+     if (input == "1") {
+         currentState = GameState::CHARACTER_CREATION;
+     } else if (input == "") {
+         std::cout << "게임을 종료합니다.\n";
+         isRunning = false;
+         currentState = GameState::ENDING;
+     } else {
+         std::cout << "입력이 잘못되었다." << std::endl;
+     }
 }
 
 void GameManager::createCharacter() {
+    std::cout << "\n=== 캐릭터 생성 ===\n";
     std::string InpName;
-    std::cin >> InpName;
+    std::getline(std::cin, InpName);
     player = Character::getInstance(InpName);
-    // std::cout << "환영합니다 용사 ... 님" << std::endl;
+    std::cout << "환영합니다 용사 " << InpName <<  "님" << std::endl;
 }
 
 void GameManager::startPhase(PhaseType phase) {
@@ -80,7 +92,7 @@ void GameManager::startPhase(PhaseType phase) {
 
         switch (phase) {
         case PhaseType::PHASE_1:
-            // std::cout << "변수의 숲" << std::endl;
+             std::cout << "변수의 숲" << std::endl;
             phase1Monsters = { 
                 { "VariableSlime", "값이 변하는 물렁물렁한 슬라임"}, 
                 {"ConstantGolem", "변하지 않는 단단한 바위 골렘"}, 
@@ -91,7 +103,7 @@ void GameManager::startPhase(PhaseType phase) {
             totalRoundsInPhase = 5;
             break;
         case PhaseType::PHASE_2:
-            // std::cout << "클래스의 성" << std::endl;
+             std::cout << "클래스의 성" << std::endl;
             phase2Monsters = { 
                 {"ClassMimic", "무엇이든 찍어낼 수 있는 상자 괴물"}, 
                 {"ObjectOrc","클래스에서 실체화된 강력한 오크"}, 
@@ -103,7 +115,7 @@ void GameManager::startPhase(PhaseType phase) {
             totalRoundsInPhase = 6;
             break;
         case PhaseType::PHASE_3:
-            // std::cout << "디자인 패턴의 탑" << std::endl;
+             std::cout << "디자인 패턴의 탑" << std::endl;
             phase3Monsters = { 
                 {"SingletonKing", "오직 하나만 존재하는 왕"}, 
                 {"DecoratorKnight", "장비를 덧붙여 강해지는 기사"}, 
@@ -170,7 +182,7 @@ void GameManager::handlePlayerDeath() {
 }
 
 Monster* GameManager::generateMonster() {
-    std::vector<MonsterData>* monsterInfo;
+    std::vector<MonsterData>* monsterInfo = nullptr;
 
     switch (currentPhase) {
     case PhaseType::PHASE_1:
@@ -181,6 +193,9 @@ Monster* GameManager::generateMonster() {
         break;
     case PhaseType::PHASE_3:
         monsterInfo = &phase3Monsters;
+        break;
+    default:
+        monsterInfo = &phase1Monsters;
         break;
     }
 
