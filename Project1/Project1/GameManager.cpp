@@ -2,6 +2,7 @@
 #include "Monster.h"
 #include "NormalMonster.h"
 #include "BossMonster.h"
+#include "Shop.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -247,7 +248,54 @@ Monster* GameManager::generateBoss() {
     return new BossMonster(bossName, bossInfo, health, attack);
 }
 
-void GameManager::runShop() {}
+void GameManager::runShop() {
+    Shop* shop = Shop::getInstance();
+    bool shopping = true;
+
+    while (shopping) {
+        std::cout << "╔════════════════════════════════════════╗\n";
+        std::cout << "║              🏪 상점 🏪               ║\n";
+        std::cout << "╚════════════════════════════════════════╝\n";
+
+        std::cout << player->getGold() << "G\n";
+
+        // 상점 아이템 목록 표시
+        // shop->displayItems();
+
+        std::cout << "\n[메뉴]\n";
+        std::cout << "1. 아이템 구매\n";
+        std::cout << "2. 아이템 판매\n";
+        std::cout << "3. 상점 나가기\n";
+        std::cout << "선택 : ";
+
+        int choice;
+        std::cin >> choice;
+
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+
+            std::cout << "\n❌ 숫자를 입력하세요!\n";
+            waitForInput();
+            continue;  // 다시 메뉴 표시
+        }
+
+        switch (choice) {
+            case 1:
+                // shop->buyItem(index)
+            case 2:
+                // shop->sellItem(index)
+            case 3:
+                std::cout << "상점을 나갑니다\n";
+                shopping = false;
+                break;
+            default:
+                std::cout << "입력이 잘못됨\n";
+                break;
+        }
+    }
+    currentState = GameState::BATTLE;
+}
 
 // 보스전, 클리어시 다음 페이즈로 넘겨주는 역할
 void GameManager::runBossBattle() {}
