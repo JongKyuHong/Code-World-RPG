@@ -65,26 +65,71 @@ void GameManager::play() {
 }
 
 void GameManager::showMainMenu() {
-     std::cout << "메인메뉴 1시작 2종료" << std::endl;
-     std::string input;
-     std::getline(std::cin, input);
-     if (input == "1") {
-         currentState = GameState::CHARACTER_CREATION;
-     } else if (input == "") {
-         std::cout << "게임을 종료합니다.\n";
-         isRunning = false;
-         currentState = GameState::ENDING;
-     } else {
-         std::cout << "입력이 잘못되었다." << std::endl;
-     }
+    std::cout << "\n";
+    std::cout << "╔════════════════════════════════════════╗\n";
+    std::cout << "║          C++ RPG 게임에 오신 것을      ║\n";
+    std::cout << "║             환영합니다!               ║\n";
+    std::cout << "╚════════════════════════════════════════╝\n";
+
+    std::cout << "\n[메인 메뉴]\n";
+    std::cout << "1. 게임 시작\n";
+    std::cout << "2. 게임 종료\n";
+    std::cout << "\n선택: ";
+
+    char choice = _getch();
+    std::cout << choice << "\n\n";
+
+    switch (choice) {
+    case '1':
+        std::cout << "게임을 시작합니다!\n";
+        currentState = GameState::CHARACTER_CREATION;
+        break;
+
+    case '2':
+        std::cout << "게임을 종료합니다.\n";
+        currentState = GameState::ENDING;
+        break;
+
+    default:
+        std::cout << "입력이 잘못되었습니다. 다시 선택해주세요.\n";
+        std::cout << "\n아무 키나 눌러 계속...";
+        _getch();
+        // 다시 메뉴 표기
+        break;
+    }
 }
 
 void GameManager::createCharacter() {
-    std::cout << "\n=== 캐릭터 생성 ===\n";
-    std::string InpName;
-    std::getline(std::cin, InpName);
-    player = Character::getInstance(InpName);
-    std::cout << "환영합니다 용사 " << InpName <<  "님" << std::endl;
+    std::cout << "\n";
+    std::cout << "╔════════════════════════════════════════╗\n";
+    std::cout << "║          캐릭터 생성                  ║\n";
+    std::cout << "╚════════════════════════════════════════╝\n";
+
+    std::cout << "\n당신의 이름을 입력하세요: ";
+
+    std::string playerName;
+    if (std::cin.peek() == '\n') {
+        std::cin.ignore();
+    }
+    std::getline(std::cin, playerName);
+
+    // 빈 이름 방지
+    if (playerName.empty()) {
+        std::cout << "\n이름을 입력하지 않았습니다. 기본 이름 'Hero'로 설정합니다.\n";
+        playerName = "Hero";
+    }
+
+    player = Character::getInstance(playerName);
+
+    std::cout << "\n환영합니다, 용사 " << playerName << "님!\n";
+    std::cout << "\n초기 스탯:\n";
+    std::cout << "체력: " << player->getHealth() << " / " << player->getMaxHealth() << "\n";
+    std::cout << "공격력: " << player->getAttack() << "\n";
+    std::cout << "레벨: " << player->getLevel() << "\n";
+    std::cout << "골드: " << player->getGold() << " G\n";
+
+    std::cout << "\n아무 키나 눌러 모험을 시작하세요...";
+    _getch();
 }
 
 void GameManager::startPhase(PhaseType phase) {
