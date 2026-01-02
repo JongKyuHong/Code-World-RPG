@@ -3,6 +3,8 @@
 #include "NormalMonster.h"
 #include "BossMonster.h"
 #include "Shop.h"
+#include "BattleService.h"
+#include "BattleResult.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -190,19 +192,15 @@ void GameManager::runBattle() {
     //applyBuffItems();
 
     // 실제 전투
-    // battleService->battle();
-     std::cout << "⚔️ 전투 중 ⚔️\n";
+    BattleService battleService;
+    BattleResult result = battleService.battle(player, monster);
+
+    delete monster;
 
     // 전투정보 받아와서 처리
-    if (player->isAlive()) {
-        std::cout << "🏆 전투 승리! 🏆\n";
+    if (result.playerWon) {
         // mob킬수저장
-        mobKillCounts[monster->getName()]++;
-        
-        // reward 받는거 처리
-
-        // 몬스터 삭제
-        delete monster;
+        mobKillCounts[result.monsterName]++;
 
         // 다음라운드 실행
         currentRound++;
@@ -217,7 +215,6 @@ void GameManager::runBattle() {
             }
         }
     } else {
-        delete monster;
         handlePlayerDeath();
     }
 }
