@@ -102,6 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,6 +126,7 @@
   <ItemGroup>
     <ClInclude Include="BattleService.h" />
     <ClInclude Include="BuffPotion.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameManager.h" />
@@ -143,12 +145,14 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shop.h" />
     <ClInclude Include="TestScene.h" />
+    <ClInclude Include="TextLoader.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="VariableSlime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BattleService.cpp" />
     <ClCompile Include="BuffPotion.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameManager.cpp" />
@@ -167,6 +171,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shop.cpp" />
+    <ClCompile Include="TextLoader.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VariableSlime.cpp" />
   </ItemGroup>
