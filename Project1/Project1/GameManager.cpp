@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <conio.h>
 
 void GameManager::play() {
     isRunning = true;
@@ -148,7 +149,7 @@ void GameManager::runBattle() {
 
     // 전투정보 받아와서 처리
     if (player->isAlive()) {
-        //mob킬수저장
+        // mob킬수저장
         mobKillCounts[monster->getName()]++;
         
         // reward 받는거 처리
@@ -156,12 +157,12 @@ void GameManager::runBattle() {
         // 몬스터 삭제
         delete monster;
 
-        //다음라운드 실행
+        // 다음라운드 실행
         currentRound++;
         if (currentRound >= totalRoundsInPhase) {
             currentState = GameState::BOSS_BATTLE;
         } else {
-             //상점에 방문하는가?
+            // 상점에 방문하는가?
             if (askShopVisit()) {
                 currentState = GameState::SHOP;
             } else {
@@ -172,14 +173,6 @@ void GameManager::runBattle() {
         delete monster;
         handlePlayerDeath();
     }
-}
-
-void GameManager::handlePlayerDeath() {
-    std::cout << "캐릭터 사망" << std::endl;
-    
-    // 인풋받아서 처리
-    // 추후에 세이브를 통해서 싸우던 라운드 혹은 페이즈로 넘어가게
-    isRunning = false;
 }
 
 Monster* GameManager::generateMonster() {
@@ -360,5 +353,57 @@ bool GameManager::askShopVisit() {
     }
 }
 
+void GameManager::handlePlayerDeath() {
+    std::cout << "╔════════════════════════════════════════╗\n";
+    std::cout << "║            💀 사망 💀                 ║\n";
+    std::cout << "╚════════════════════════════════════════╝\n";
 
-void GameManager::checkLevelUp() {}
+    std::cout << "\n당신은 쓰러졌습니다...\n";
+    std::cout << "\n[선택지]\n";
+    std::cout << "1. 재도전\n";
+    std::cout << "2. 게임 종료\n";
+
+    char choice;
+    while (true) {
+        choice = _getch();
+        std::cout << choice << std::endl;
+
+        if (choice == '1' || choice == '2') {
+            break;
+        } else {
+            std::cout << "잘못된 입력입니다. 1 또는 2를 입력하세요: ";
+        }
+    }
+
+    switch (choice) {
+    case '1':
+        retryCurrentBattle();
+        break;
+    case '2':
+        std::cout << "게임을 종료합니다.\n";
+        isRunning = false;
+        currentState = GameState::ENDING;
+        break;
+    default:
+        std::cout << "입력이 잘못되었다." << std::endl;
+        break;
+    }
+}
+
+void GameManager::retryCurrentBattle() {
+    std::cout << "전투 재시작\n";
+
+    // 체력회복
+    // player->heal();
+
+    // 확인용
+    std::cout << "현재 라운드 : " << currentRound << "  현재 페이즈 : " << static_cast<int>(currentPhase) << std::endl;
+
+    if (currentRound >= totalRoundsInPhase) {
+        std::cout << "보스전 복귀\n";
+        currentState = GameState::BOSS_BATTLE;
+    } else {
+        std::cout << "일반전 복귀\n";
+        currentState = GameState::BATTLE;
+    }
+}

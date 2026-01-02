@@ -60,10 +60,10 @@ private:
     void runShop();
     void runBattle();
     void runBossBattle();
-    void checkLevelUp();
     void showPhaseClearScreen();
     void showGameOverScreen();
     void showEndingScreen();
+    void retryCurrentBattle();
 
     // 유틸리티 메서드들
     Monster* generateMonster();
