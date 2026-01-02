@@ -1,14 +1,11 @@
-#include "BattleService.h" // 내 설계도를 가져옵니다.
+#include "BattleService.h"
 #include <iostream>
 #include <conio.h>
-#include <cstdlib> // rand() 함수를 위해 필요합니다.
-
-// 1. 크리티컬 여부 결정 (정의)
-// BattleService:: 를 붙여서 "BattleService 소속 함수다"라고 알려줍니다.
+#include <cstdlib>
 
 bool BattleService::rollCritical()
 {
-    // 0~9 사이의 숫자 중 0, 1, 2가 나오면 크리티컬 (30%)
+    // 크리티컬 (30%)
     if (rand() % 10 < 3)
     {
         return true;
@@ -19,7 +16,6 @@ bool BattleService::rollCritical()
     }
 }
 
-// 2. 크리티컬 데미지 적용 (정의)
 int BattleService::applyCriticalMultiplier(int baseDamage, bool isCritical)
 {
     if (isCritical == true)
@@ -38,7 +34,12 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
     player = p;
     monster = m;
     
-    BattleResult result;
+    // 임시처리
+    int gold = 10;
+    int exp = 50;
+
+    BattleResult result(gold, exp);
+
     result.monsterName = monster->getName();
     result.isBossKill = monster->isBossMonster();
 
