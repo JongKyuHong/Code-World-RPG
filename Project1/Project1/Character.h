@@ -10,7 +10,7 @@ private:
     static Character* instance; // 싱글톤 인스턴스
 
     // 레벨
-    int level; 
+    int level;
     // 경험치
     int experience;
     // 골드
@@ -70,8 +70,8 @@ public:
     void levelUp() {}
 
     // 골드 획득
-    void addGold(int value) { 
-        gold += value; 
+    void addGold(int value) {
+        gold += value;
     }
 
     // 아이템 획득
@@ -89,7 +89,7 @@ public:
     void UnequipItem(int index) {}
 
     // 버프 물약 사용시 공격력
-    void setAttack(int newAttack) { 
+    void setAttack(int newAttack) {
         attack = newAttack;
     }
 };

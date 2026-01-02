@@ -14,6 +14,12 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
     <ClCompile Include="BattleService.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -21,6 +27,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
@@ -44,6 +53,9 @@
     <ClCompile Include="Monster.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="NormalMonster.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="Reward.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -54,15 +66,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="VariableSlime.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalMonster.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -85,6 +88,9 @@
     <ClInclude Include="Renderer.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Core</Filter>
+    </ClInclude>
     <ClInclude Include="BattleService.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -92,6 +98,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
@@ -115,6 +124,9 @@
     <ClInclude Include="Monster.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="NormalMonster.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="Reward.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -125,12 +137,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="VariableSlime.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalMonster.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
