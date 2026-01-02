@@ -276,15 +276,16 @@ void GameManager::runShop() {
             std::cin.ignore(10000, '\n');
 
             std::cout << "\n❌ 숫자를 입력하세요!\n";
-            waitForInput();
             continue;  // 다시 메뉴 표시
         }
 
         switch (choice) {
             case 1:
                 // shop->buyItem(index)
+                break;
             case 2:
                 // shop->sellItem(index)
+                break;
             case 3:
                 std::cout << "상점을 나갑니다\n";
                 shopping = false;
