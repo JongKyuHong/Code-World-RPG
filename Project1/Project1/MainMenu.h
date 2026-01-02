@@ -12,7 +12,8 @@ public:
 private:
     const char arrow = '>';
     int posIdx = 0;
-    int text = 1;
+    int runText = 0;
+    int idleText = 0;
 
     float initBlankAnimationTime = 0.0f;
 };

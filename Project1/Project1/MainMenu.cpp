@@ -35,7 +35,8 @@ void MainMenu::Update(float deltaTime)
     ttt += deltaTime;
     if (ttt > 0.1f) {
         ttt = 0.0f;
-        text = (text + 1) % 6;
+        runText = (runText + 1) % 6;
+        idleText = (idleText + 1) % 4;
     }
 
     static float initTime = 0.0f;
@@ -58,9 +59,16 @@ void MainMenu::Render(Renderer& renderer)
     renderer.PutString(renderer.GetWidth() / 2 - 5, renderer.GetHeight() / 2, "Game Start");
     renderer.PutString(renderer.GetWidth() / 2 - 5, renderer.GetHeight() / 2 + 5, "End");
     renderer.PutString(renderer.GetWidth() / 2 - 7, renderer.GetHeight() / 2 + 5 * posIdx, ">");
-    std::string s = std::to_string(text + 1) + ".txt";
-    renderer.PutTextFile(5, 5, s);
 
+    
+    if (posIdx == 0) {
+        std::string s = std::to_string(runText + 1) + ".txt";
+        renderer.PutTextFile(5, 9, s);
+    }
+    else if (posIdx == 1) {
+        std::string s = "Idle" + std::to_string(idleText + 1) + ".txt";
+        renderer.PutTextFile(5, 5, s);
+    }
 
     float t = (initBlankAnimationTime - 1.0f) / 0.5f;
     if (t < 0.0f) t = 0.0f;
@@ -75,6 +83,10 @@ void MainMenu::Render(Renderer& renderer)
         if (initBlankAnimationTime < 1.0f - 0.05f * i) {
             renderer.PutTextFile(49, 5 + i, "BlankText.txt");
         }
+    }
+
+    if (initBlankAnimationTime > 2.5f) {
+        renderer.PutString(77, 8, "C++ RPG!");
     }
 
     renderer.PutBox(renderer.GetWidth() / 2 - 6, renderer.GetHeight() / 2 + 5 * posIdx -1 , 15, 3);
