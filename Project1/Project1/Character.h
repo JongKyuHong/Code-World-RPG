@@ -59,6 +59,32 @@ public:
     int getExperience() const { return experience; }
     int getGold() const { return gold; }
 
+    // 골드 획득
+    void addGold(int amount)
+    {
+        if (amount <= 0) return;
+        gold += amount;
+    }
+
+    // 골드 사용
+    bool spendGold(int amount) 
+    {
+        // 골드 부족
+        if (amount <= 0) 
+            return false;
+
+        if (gold < amount)
+            return false;
+
+        gold -= amount;
+        return true;
+    }
+
+    // 골드 설정(디버그/세이브로드용)
+    void setGold(int amount)
+    {
+        gold = (amount < 0) ? 0 : amount;
+    }
     // 상태 출력
     void displayStatus() {}
 
