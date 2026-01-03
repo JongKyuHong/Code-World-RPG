@@ -13,6 +13,7 @@
 #include "SceneManager.h"
 #include "MainMenu.h"
 #include <chrono>
+#include <limits>
 
 void GameManager::play() {
 	isRunning = true;
@@ -120,6 +121,19 @@ void GameManager::showMainMenu() {
 }
 
 void GameManager::createCharacter() {
+	// 1. 콘솔 입력 버퍼 비우기 (_getch 계열)
+	while (_kbhit()) {
+		_getch();
+	}
+
+	// 2. 표준 입력 스트림 완전히 비우기 (cin 계열)
+	std::cin.clear();
+	std::cin.sync();  // 버퍼 동기화 및 비우기
+
+	// 3. 남아있을 수 있는 모든 입력 제거
+	while (std::cin.rdbuf()->in_avail() > 0) {
+		std::cin.ignore();
+	}
 	std::cout << "\n";
 	std::cout << "╔════════════════════════════════════════╗\n";
 	std::cout << "║          캐릭터 생성                  ║\n";
@@ -127,6 +141,7 @@ void GameManager::createCharacter() {
 
 	std::cout << "\n당신의 이름을 입력하세요: ";
 
+	
 	std::string playerName;
 	if (std::cin.peek() == '\n') {
 		std::cin.ignore();

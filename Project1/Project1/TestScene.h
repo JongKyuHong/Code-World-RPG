@@ -33,7 +33,7 @@ public:
             }
         }
         renderer.PutBox(x, y, 5, 3);
-        renderer.Put(x+1, y+1, L'¦¦');
+        renderer.Put(x+1, y+1, L'ï¿½ï¿½');
         renderer.Put(x, y + 1, 'T');
         renderer.Put(x + 1, y, 'T');
         renderer.PutString(x, y, "i am kang hyeonseo.");
