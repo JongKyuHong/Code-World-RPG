@@ -25,7 +25,6 @@ enum class GameState {
     BATTLE,
     BOSS_BATTLE,
     PHASE_CLEAR,
-    GAME_OVER,
     ENDING
 };
 
@@ -61,7 +60,6 @@ private:
     void runBattle();
     void runBossBattle();
     void showPhaseClearScreen();
-    void showGameOverScreen();
     void showEndingScreen();
     void retryCurrentBattle();
 
