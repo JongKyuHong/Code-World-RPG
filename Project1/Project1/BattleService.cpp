@@ -1,4 +1,5 @@
 #include "BattleService.h"
+#include "RewardManager.h"
 #include <iostream>
 #include <conio.h>
 #include <cstdlib>
@@ -34,14 +35,8 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
     player = p;
     monster = m;
     
-    // 임시처리
-    int gold = 10;
-    int exp = 50;
-
-    BattleResult result(gold, exp);
-
-    result.monsterName = monster->getName();
-    result.isBossKill = monster->isBossMonster();
+    RewardManager* rewardManager = RewardManager::getInstance();
+    BattleResult result = rewardManager->generateRewards(monster);
 
     std::cout << "\n";
     std::cout << "╔════════════════════════════════════════╗\n";
@@ -100,13 +95,8 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
             std::cout << "\n🏆 보스를 처치했습니다! 🏆\n";
         }
 
-        std::cout << "\n획득 보상:\n";
-        std::cout << "💰 골드: " << result.goldEarned << " G\n";
-        std::cout << "⭐ 경험치: " << result.expEarned << " EXP\n";
-
-        // 보상 지급
-        player->addGold(result.goldEarned);
-        player->addExperience(result.expEarned);
+        rewardManager->applyRewards(player, result);
+        rewardManager->displayRewards(result);
 
         // 몬스터 onDeath 콜백
         monster->onDeath();
