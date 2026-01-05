@@ -1,4 +1,4 @@
-#include "Input.h"
+﻿#include "Input.h"
 #include <Windows.h>
 #include <cstring>
 #include <iostream>
@@ -36,11 +36,17 @@ bool Input::GetKey(KeyCode key)
 
 bool Input::GetKeyDown(KeyCode key)
 {
-    return down[(int)key];
+    return !down[(int)key] && pressed[(int)key];
 }
 
 bool Input::TryReadKey(int& outKey)
 {
+    for (int i = 0; i < 256; i++) {
+        pressed[i] = (GetAsyncKeyState(i) & 0x8000) != 0;
+    }
+    return false;
+
+
     if (!_kbhit())
     {
         return false;
@@ -71,3 +77,4 @@ bool Input::TryReadKey(int& outKey)
 
     return false;
 }
+

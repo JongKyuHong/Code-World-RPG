@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 
@@ -32,5 +32,6 @@ public:
         return health > 0;
     }
 };
+
 
 

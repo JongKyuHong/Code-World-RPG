@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Monster.h"
 #include <string>
@@ -17,4 +17,5 @@ public:
         // 노말몹 죽었을때 (드랍, 경험치 지급 등)
     }
 };
+
 

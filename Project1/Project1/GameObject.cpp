@@ -1,4 +1,4 @@
-#include "GameObject.h"
+﻿#include "GameObject.h"
 
 void GameObject::Destroy()
 {
@@ -9,3 +9,4 @@ bool GameObject::IsDead() const
 {
     return isDead;
 }
+

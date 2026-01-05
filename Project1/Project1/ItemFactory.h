@@ -1,8 +1,10 @@
 ﻿#pragma once
+
 #include <string>
 #include <vector>
 #include "Types.h"   // Effect, EffectType, StatType, EquipSlot 등
 #include "Item.h"    // Item* 반환하려면 선언 필요(혹은 forward 선언 + include는 cpp에서)
+
 
 class ItemFactory {
 public:

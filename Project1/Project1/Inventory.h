@@ -1,4 +1,4 @@
-﻿// Inventory.h
+// Inventory.h
 #pragma once
 #include <vector>
 
@@ -43,3 +43,4 @@ public:
 
     int size() const;
 };
+

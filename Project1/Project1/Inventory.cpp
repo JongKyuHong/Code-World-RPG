@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include "Inventory.h"
 #include "Item.h"
 #include "Character.h"
