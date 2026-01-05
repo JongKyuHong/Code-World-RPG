@@ -61,7 +61,7 @@ public:
     // 상태 출력
     void displayStatus() {}
 
-    // 경험치, 몬스터 1마리당 1업이면 제외하기
+    // 경험치, 일반 몬스터 50, 보스몬스터 100
     void addExperience(int value) {
         experience += value;
     }
