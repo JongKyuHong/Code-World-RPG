@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include "Character.h"
@@ -20,4 +20,5 @@ public:
     std::string getName() override {}
     void use(Character* character) override {}
 };
+
 

@@ -1,45 +1,11 @@
-#include "Renderer.h"
+﻿#include "Renderer.h"
 #include <Windows.h>
-#include <iostream>
-#include <string>
-#include <vector>
 #include <algorithm>
+#include <string>
+#include "TextLoader.h"
 
 namespace
 {
-    void PrintWinApiError(const char* where)
-    {
-        DWORD err = GetLastError();
-        if (err == 0) return;
-
-        LPSTR msg = nullptr;
-        FormatMessageA(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-            nullptr, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPSTR)&msg, 0, nullptr);
-
-        if (msg) LocalFree(msg);
-    }
-
-    bool TrySetConsoleFontSmall(HANDLE hOut, const wchar_t* faceName, SHORT fontY)
-    {
-        CONSOLE_FONT_INFOEX cfi{};
-        cfi.cbSize = sizeof(cfi);
-        cfi.nFont = 0;
-        cfi.dwFontSize.X = 0;     // 0�̸� �ý����� ������
-        cfi.dwFontSize.Y = fontY; // �߿�: ���̸� ���ϼ��� �� ū �ܼ� ���� ����
-        cfi.FontFamily = FF_DONTCARE;
-        cfi.FontWeight = FW_NORMAL;
-        wcsncpy_s(cfi.FaceName, faceName, _TRUNCATE);
-
-        if (!SetCurrentConsoleFontEx(hOut, FALSE, &cfi))
-        {
-            PrintWinApiError("SetCurrentConsoleFontEx");
-            return false;
-        }
-        return true;
-    }
-
     SMALL_RECT MakeClampedRect(HANDLE hOut, SHORT w, SHORT h)
     {
         COORD largest = GetLargestConsoleWindowSize(hOut);
@@ -59,16 +25,14 @@ namespace
 }
 
 Renderer::Renderer(int w, int h)
-    : width(w), height(h), buffer(w* h, ClearChar)
+    : width(w), height(h), buffer(w* h, (WCHAR)ClearChar) // ClearChar(char) -> WCHAR로 변환
 {
+    textLoader = new TextLoader();
     HWND consoleWindow = GetConsoleWindow();
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
     if (hOut == INVALID_HANDLE_VALUE)
-    {
-        PrintWinApiError("GetStdHandle(STD_OUTPUT_HANDLE)");
         return;
-    }
 
     LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
     SetWindowLong(consoleWindow, GWL_STYLE, style & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX);
@@ -78,52 +42,139 @@ Renderer::Renderer(int w, int h)
     ci.bVisible = FALSE;
     SetConsoleCursorInfo(hOut, &ci);
 
+    // 창 크기 바꿀 때 흔한 순서: window를 tiny로 줄이고 -> 버퍼 설정 -> window 다시 설정
     SMALL_RECT tiny{};
     tiny.Left = 0; tiny.Top = 0; tiny.Right = 0; tiny.Bottom = 0;
-    if (!SetConsoleWindowInfo(hOut, TRUE, &tiny))
-        PrintWinApiError("SetConsoleWindowInfo(tiny)");
+    SetConsoleWindowInfo(hOut, TRUE, &tiny);
 
-    COORD bufferSize{ static_cast<SHORT>(w), static_cast<SHORT>(h) };
-    if (!SetConsoleScreenBufferSize(hOut, bufferSize))
-        PrintWinApiError("SetConsoleScreenBufferSize(target)");
+    COORD bufferSize{ (SHORT)w, (SHORT)h };
+    SetConsoleScreenBufferSize(hOut, bufferSize);
 
-    SMALL_RECT targetRect = MakeClampedRect(hOut, static_cast<SHORT>(w), static_cast<SHORT>(h));
-    if (!SetConsoleWindowInfo(hOut, TRUE, &targetRect))
-        PrintWinApiError("SetConsoleWindowInfo(target)");
+    SMALL_RECT targetRect = MakeClampedRect(hOut, (SHORT)w, (SHORT)h);
+    SetConsoleWindowInfo(hOut, TRUE, &targetRect);
 }
 
 void Renderer::Present()
 {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    std::string s = ToString();
-    WriteConsoleA(hOut, s.c_str(), static_cast<DWORD>(s.size()), nullptr, nullptr);
+
+    // 커서를 (0,0)으로 보내고 버퍼 전체를 한 번에 출력 (깜빡임 최소화)
+    SetConsoleCursorPosition(hOut, { 0, 0 });
+
+    std::wstring ws;
+    ws.reserve((width + 1) * height);
+
+    for (int y = 0; y < height; ++y)
+    {
+        ws.append(&buffer[y * width], width);
+        ws.push_back(L'\n');
+    }
+
+    DWORD written = 0;
+    WriteConsoleW(hOut, ws.c_str(), (DWORD)ws.size(), &written, nullptr);
 }
 
-void Renderer::Put(int x, int y, char c)
+
+void Renderer::Put(int x, int y, WCHAR c)
 {
     if (x < 0 || x >= width || y < 0 || y >= height)
         return;
 
+    // ASCII 기준 char -> WCHAR
     buffer[y * width + x] = c;
+}
+
+static std::wstring ToWideFromUtf8OrAcp(const std::string& s)
+{
+    if (s.empty()) return {};
+
+    auto convert = [&](UINT cp, DWORD flags) -> std::wstring {
+        int len = MultiByteToWideChar(cp, flags, s.c_str(), (int)s.size(), nullptr, 0);
+        if (len <= 0) return {};
+        std::wstring ws(len, L'\0');
+        MultiByteToWideChar(cp, flags, s.c_str(), (int)s.size(), &ws[0], len);
+        return ws;
+        };
+
+    // 1) UTF-8로 엄격하게 시도 (잘못된 UTF-8이면 무조건 실패)
+    std::wstring ws = convert(CP_UTF8, MB_ERR_INVALID_CHARS);
+    if (!ws.empty()) return ws;
+
+    // 2) 실패하면 로컬 코드페이지(CP949 등)로 변환
+    ws = convert(CP_ACP, 0);
+    return ws;
+}
+
+
+void Renderer::PutString(int x, int y, const std::string& str)
+{
+    if (y < 0 || y >= height) return;
+
+    std::wstring ws = ToWideFromUtf8OrAcp(str);
+
+    int start = (x < 0) ? 0 : x;
+    int end = x + (int)ws.size();
+    if (end > width) end = width;
+    if (start >= end) return;
+
+    int src = start - x;
+    for (int i = start; i < end; ++i)
+    {
+        buffer[y * width + i] = ws[src++];
+    }
+}
+
+void Renderer::PutBox(int x, int y, int w, int h)
+{
+    if (w <= 0 || h <= 0) return;
+    // 가로선
+    for (int i = 0; i < w; ++i)
+    {
+        Put(x + i, y, L'─');
+        Put(x + i, y + h - 1, L'─');
+    }
+    // 세로선
+    for (int j = 0; j < h; ++j)
+    {
+        Put(x, y + j, L'│');
+        Put(x + w - 1, y + j, L'│');
+    }
+    // 모서리
+    Put(x, y, L'┌');
+    Put(x + w - 1, y, L'┐');
+    Put(x, y + h - 1, L'└');
+    Put(x + w - 1, y + h - 1, L'┘');
+}
+
+void Renderer::PutTextFile(int x, int y, const std::string& filename)
+{
+    TextFile titleFile = textLoader->GetTexts(filename);
+    for (int i = 0; i < titleFile.textLines.size(); i++) {
+        PutString(x, y + i, std::string(titleFile.textLines[i].begin(), titleFile.textLines[i].end()));
+    }
 }
 
 void Renderer::Clear()
 {
-    std::fill(buffer.begin(), buffer.end(), ClearChar);
-
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleCursorPosition(hOut, { 0, 0 });
+    std::fill(buffer.begin(), buffer.end(), (WCHAR)ClearChar);
 }
 
 std::string Renderer::ToString() const
 {
+    // 이름 유지용: WCHAR -> char로 단순 변환(ASCII/1바이트 범위만 보장)
     std::string out;
     out.reserve((width + 1) * height);
 
     for (int y = 0; y < height; ++y)
     {
-        out.append(buffer.data() + y * width, width);
+        for (int x = 0; x < width; ++x)
+        {
+            WCHAR wc = buffer[y * width + x];
+            char c = (wc <= 0xFF) ? (char)wc : '?';
+            out.push_back(c);
+        }
         out.push_back('\n');
     }
     return out;
 }
+

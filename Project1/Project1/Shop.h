@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Item.h"
 
@@ -40,4 +40,5 @@ public:
     // 아이팀 구매하기, 돈 반환
     int sellItem(Item* item) {}
 };
+
 

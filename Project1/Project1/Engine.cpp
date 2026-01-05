@@ -1,9 +1,14 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include <chrono>
 #include "SceneManager.h"
 #include "TestScene.h"
 #include "Input.h"
 #include <Windows.h>
+#include "MainMenu.h"
+
+bool Engine::exitRequested = false;
+bool Engine::isMainMenu = false;
+
 
 Engine::Engine(int w, int h):renderer(w, h)
 {
@@ -35,27 +40,3 @@ Renderer& Engine::GetRenderer()
     return renderer;
 }
 
-//int main() {
-//    Engine engine(160, 50);
-//
-//    SceneManager::GetInstance().Register("TestScene", [&]() {
-//        return std::make_unique<TestScene>();
-//        });
-//
-//    using clock = std::chrono::steady_clock;
-//    auto prev = clock::now();
-//
-//    SceneManager::GetInstance().LoadScene("TestScene");
-//
-//    while (engine.IsRunning())
-//    {
-//        auto now = clock::now();
-//        std::chrono::duration<float> delta = now - prev;
-//        prev = now;
-//        float dt = delta.count();
-//
-//        engine.Update(dt);
-//    }
-//
-//    return 0;
-//}

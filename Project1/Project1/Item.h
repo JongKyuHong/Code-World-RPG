@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 
@@ -15,4 +15,5 @@ public:
 
     virtual ~Item() {}
 };
+
 

@@ -1,15 +1,16 @@
-#pragma once
+﻿#pragma once
 
-// 전투에 관련된 계산 (설계도)
 #include "Character.h"
 #include "Monster.h"
 #include "BattleResult.h"
+#include "UIManager.h"
 
 class BattleService
 {
 private:
     Character* player;
     Monster* monster;
+    UIManager uiManager;
 
     // 전투로그 남기기
     std::vector<std::string> battleLog;
@@ -33,4 +34,5 @@ public:
     // 크리티컬 데미지 적용
     int applyCriticalMultiplier(int baseDamage, bool isCritical);
 };
+
 

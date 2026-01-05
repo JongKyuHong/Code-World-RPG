@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 enum class KeyCode : int {
@@ -20,3 +20,4 @@ private:
     static bool pressed[256];
     static bool down[256];
 };
+
