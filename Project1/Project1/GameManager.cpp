@@ -14,6 +14,7 @@
 #include "MainMenu.h"
 #include <chrono>
 #include <limits>
+#include <cstdlib> 
 
 void GameManager::play() {
 	isRunning = true;
@@ -175,6 +176,8 @@ void GameManager::startPhase(PhaseType phase) {
 		currentPhase = phase;
 		currentRound = 0;
 
+		clearScreen();
+
 		switch (phase) {
 		case PhaseType::PHASE_1:
 			std::cout << "╔════════════════════════════════════════════════════════════╗\n";
@@ -276,6 +279,8 @@ void GameManager::startPhase(PhaseType phase) {
 }
 
 void GameManager::runBattle() {
+	clearScreen();
+
 	Monster* monster = generateMonster();
 
 	std::cout << monster->getName() << "가 나타났다." << std::endl;
@@ -315,6 +320,7 @@ void GameManager::runBattle() {
 }
 
 void GameManager::runBossBattle() {
+	clearScreen();
 	Monster* bossMonster = generateBoss();
 
 	std::string bossName = bossMonster->getName();
@@ -428,10 +434,12 @@ void GameManager::runShop() {
 	bool shopping = true;
 
 	while (shopping) {
+		clearScreen();
+
 		std::cout << "\n";
 		std::cout << "╔════════════════════════════════════════════════════════════╗\n";
 		std::cout << "║                                                            ║\n";
-		std::cout << "║                    🏪  상 점  🏪                          ║\n";
+		std::cout << "║                    🏪  상 점  🏪                           ║\n";
 		std::cout << "║                                                            ║\n";
 		std::cout << "║                    Item Shop                               ║\n";
 		std::cout << "║                                                            ║\n";
@@ -447,9 +455,9 @@ void GameManager::runShop() {
 		std::cout << "\n";
 		std::cout << "  [메뉴]\n";
 		std::cout << "  ┌────────────────────────────────────────────────────────┐\n";
-		std::cout << "  │  1. 🛒 아이템 구매                                    │\n";
-		std::cout << "  │  2. 💸 아이템 판매                                    │\n";
-		std::cout << "  │  3. 🚪 상점 나가기                                    │\n";
+		std::cout << "  │  1. 🛒 아이템 구매                                     │\n";
+		std::cout << "  │  2. 💸 아이템 판매                                     │\n";
+		std::cout << "  │  3. 🚪 상점 나가기                                     │\n";
 		std::cout << "  └────────────────────────────────────────────────────────┘\n";
 		std::cout << "\n  선택: ";
 
@@ -486,9 +494,18 @@ void GameManager::runShop() {
 // 보스전, 클리어시 다음 페이즈로 넘겨주는 역할
 
 
+void GameManager::clearScreen() {
+#ifdef _WIN32
+	system("cls");
+#else
+	system("clear");
+#endif
+}
+
 void GameManager::showPhaseClearScreen() {}
 
 void GameManager::showEndingScreen() {
+	clearScreen();
 	std::cout << "\n\n";
 	std::cout << "╔════════════════════════════════════════════════════════════╗\n";
 	std::cout << "║                                                            ║\n";
@@ -542,13 +559,12 @@ void GameManager::showEndingScreen() {
 	isRunning = false;  // 게임 종료
 }
 
-
-
 bool GameManager::askShopVisit() {
+	clearScreen();
 	std::cout << "\n";
 	std::cout << "╔════════════════════════════════════════════════════════════╗\n";
 	std::cout << "║                                                            ║\n";
-	std::cout << "║                  🛤️  갈 림 길  🛤️                        ║\n";
+	std::cout << "║                  🛤️  갈 림 길  🛤️                          ║\n";
 	std::cout << "║                                                            ║\n";
 	std::cout << "╚════════════════════════════════════════════════════════════╝\n";
 	std::cout << "\n";
@@ -574,6 +590,7 @@ bool GameManager::askShopVisit() {
 }
 
 void GameManager::handlePlayerDeath() {
+	clearScreen();
 	std::cout << "\n";
 	std::cout << "╔════════════════════════════════════════════════════════════╗\n";
 	std::cout << "║                                                            ║\n";
@@ -628,6 +645,7 @@ void GameManager::handlePlayerDeath() {
 }
 
 void GameManager::retryCurrentBattle() {
+	clearScreen();
 	std::cout << "\n";
 	std::cout << "╔════════════════════════════════════════════════════════════╗\n";
 	std::cout << "║                                                            ║\n";
