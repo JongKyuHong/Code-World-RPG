@@ -15,6 +15,7 @@
 #include <chrono>
 #include <limits>
 #include <cstdlib> 
+#include "MonsterEncounter.h"
 
 void GameManager::play() {
 	isRunning = true;
@@ -185,6 +186,36 @@ void GameManager::startPhase(PhaseType phase) {
 void GameManager::runBattle() {
 	Monster* monster = generateMonster();
 
+	// 몬스터 등장 애니메이션
+	Engine encounterEngine(160, 50);
+
+	SceneManager::GetInstance().Register("Encounter", [&]() {
+		return std::make_unique<MonsterEncounter>(monster, player);
+	});
+
+	using clock = std::chrono::steady_clock;
+	auto prev = clock::now();
+
+	SceneManager::GetInstance().LoadScene("Encounter");
+
+	// 등장 애니메이션 루프
+	while (encounterEngine.IsRunning()) {
+		auto now = clock::now();
+		std::chrono::duration<float> delta = now - prev;
+		prev = now;
+		float dt = delta.count();
+
+		encounterEngine.Update(dt);
+
+		MonsterEncounter* scene = dynamic_cast<MonsterEncounter*>(
+			SceneManager::GetInstance().GetCurrent()
+			);
+
+		if (scene && scene->IsFinished()) {
+			break;  // 전투 시작
+		}
+	}
+
 	uiManager.showMonsterEncounter(monster->getName());
 
 	// 전투 전 버프적용, 자동전투한다면 구현
@@ -293,8 +324,10 @@ Monster* GameManager::generateMonster() {
 	int baseHealth = (currentRound + 1) * 20;
 	int baseAttack = (currentRound + 1) * 5;
 
+	int phaseNum = static_cast<int>(currentPhase);
+
 	// 추후에 Monster 추상클래스를 상속하는 NormalMonster클래스 추가 
-	return new NormalMonster(Info.name, Info.info, baseHealth, baseAttack);
+	return new NormalMonster(Info.name, Info.info, baseHealth, baseAttack, phaseNum);
 }
 
 // 추후에 수정
@@ -330,7 +363,9 @@ Monster* GameManager::generateBoss() {
 	int health = static_cast<int>(baseHealth * multiplier);
 	int attack = static_cast<int>(baseAttack * multiplier);
 
-	return new BossMonster(bossName, bossInfo, health, attack);
+	int phaseNum = static_cast<int>(currentPhase);
+
+	return new BossMonster(bossName, bossInfo, health, attack, phaseNum);
 }
 
 void GameManager::runShop() {

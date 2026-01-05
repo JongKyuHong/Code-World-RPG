@@ -142,6 +142,7 @@
     <ClInclude Include="KeyBoard.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Monster.h" />
+    <ClInclude Include="MonsterEncounter.h" />
     <ClInclude Include="NormalMonster.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RewardManager.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="MonsterEncounter.cpp" />
     <ClCompile Include="NormalMonster.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RewardManager.cpp" />

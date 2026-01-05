@@ -9,8 +9,8 @@ public:
     NormalMonster(const std::string& n,
         const std::string& info,
         int hp,
-        int atk)
-        : Monster(n, info, hp, atk, false) {
+        int atk, int phaseNum = 1)
+        : Monster(n, info, hp, atk, phaseNum, false) {
     }
 
     void onDeath() {
