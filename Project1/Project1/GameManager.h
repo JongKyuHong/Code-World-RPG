@@ -5,6 +5,7 @@
 #include "Monster.h"
 #include "Item.h"
 #include "Character.h"
+#include "UIManager.h"
 
 struct MonsterData {
     std::string name;
@@ -25,7 +26,6 @@ enum class GameState {
     BATTLE,
     BOSS_BATTLE,
     PHASE_CLEAR,
-    GAME_OVER,
     ENDING
 };
 
@@ -39,6 +39,7 @@ enum class PhaseType {
 class GameManager
 {
 private:
+    UIManager uiManager;
     Character* player;
 
     GameState currentState;
@@ -61,7 +62,6 @@ private:
     void runBattle();
     void runBossBattle();
     void showPhaseClearScreen();
-    void showGameOverScreen();
     void showEndingScreen();
     void retryCurrentBattle();
 
@@ -70,7 +70,6 @@ private:
     Monster* generateBoss();
     void handlePlayerDeath();
     void applyBuffItems();
-    bool askShopVisit();
     void clearScreen();
     void waitForInput();
 

@@ -144,7 +144,7 @@
     <ClInclude Include="Monster.h" />
     <ClInclude Include="NormalMonster.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="Reward.h" />
+    <ClInclude Include="RewardManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shop.h" />
@@ -173,7 +173,7 @@
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="NormalMonster.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Reward.cpp" />
+    <ClCompile Include="RewardManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shop.cpp" />

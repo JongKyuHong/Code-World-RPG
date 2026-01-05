@@ -13,6 +13,8 @@
 #include "SceneManager.h"
 #include "MainMenu.h"
 #include <chrono>
+#include <limits>
+#include <cstdlib> 
 
 void GameManager::play() {
 	isRunning = true;
@@ -56,10 +58,6 @@ void GameManager::play() {
 
 		case GameState::PHASE_CLEAR:
 			showPhaseClearScreen();
-			break;
-
-		case GameState::GAME_OVER:
-			showGameOverScreen();
 			break;
 
 		case GameState::ENDING:
@@ -120,36 +118,18 @@ void GameManager::showMainMenu() {
 }
 
 void GameManager::createCharacter() {
-	std::cout << "\n";
-	std::cout << "╔════════════════════════════════════════╗\n";
-	std::cout << "║          캐릭터 생성                  ║\n";
-	std::cout << "╚════════════════════════════════════════╝\n";
+	uiManager.showCharacterCreationScreen();
+	std::string playerName = uiManager.getPlayerName();
+player = Character::getInstance(playerName);
 
-	std::cout << "\n당신의 이름을 입력하세요: ";
-
-	std::string playerName;
-	if (std::cin.peek() == '\n') {
-		std::cin.ignore();
-	}
-	std::getline(std::cin, playerName);
-
-	// 빈 이름 방지
-	if (playerName.empty()) {
-		std::cout << "\n이름을 입력하지 않았습니다. 기본 이름 'Hero'로 설정합니다.\n";
-		playerName = "Hero";
-	}
-
-	player = Character::getInstance(playerName);
-
-	std::cout << "\n환영합니다, 용사 " << playerName << "님!\n";
-	std::cout << "\n초기 스탯:\n";
-	std::cout << "체력: " << player->getHealth() << " / " << player->getMaxHealth() << "\n";
-	std::cout << "공격력: " << player->getAttack() << "\n";
-	std::cout << "레벨: " << player->getLevel() << "\n";
-	std::cout << "골드: " << player->getGold() << " G\n";
-
-	std::cout << "\n아무 키나 눌러 모험을 시작하세요...";
-	_getch();
+	uiManager.showPlayerStats(
+		player->getName(),
+		player->getHealth(),
+		player->getMaxHealth(),
+		player->getAttack(),
+		player->getLevel(),
+		player->getGold()
+	);
 }
 
 void GameManager::startPhase(PhaseType phase) {
@@ -159,7 +139,7 @@ void GameManager::startPhase(PhaseType phase) {
 
 		switch (phase) {
 		case PhaseType::PHASE_1:
-			std::cout << "\n변수의 숲\n";
+			uiManager.showPhase1Entry();
 			phase1Monsters = {{ "VariableSlime", "값이 변하는 물렁물렁한 슬라임"},
 				{"ConstantGolem", "변하지 않는 단단한 바위 골렘"},
 				{"TypeSpirit", "데이터의 형태를 결정하는 정령"},
@@ -169,7 +149,7 @@ void GameManager::startPhase(PhaseType phase) {
 			totalRoundsInPhase = 5;
 			break;
 		case PhaseType::PHASE_2:
-			std::cout << "\n클래스의 성\n";
+			uiManager.showPhase2Entry();
 			phase2Monsters = {
 				{"ClassMimic", "무엇이든 찍어낼 수 있는 상자 괴물"},
 				{"ObjectOrc","클래스에서 실체화된 강력한 오크"},
@@ -181,7 +161,7 @@ void GameManager::startPhase(PhaseType phase) {
 			totalRoundsInPhase = 6;
 			break;
 		case PhaseType::PHASE_3:
-			std::cout << "\n디자인 패턴의 탑\n";
+			uiManager.showPhase3Entry();
 			phase3Monsters = {
 				{"SingletonKing", "오직 하나만 존재하는 왕"},
 				{"DecoratorKnight", "장비를 덧붙여 강해지는 기사"},
@@ -192,19 +172,20 @@ void GameManager::startPhase(PhaseType phase) {
 			break;
 		}
 	}
+
 	// 상점 방문 여부
-	if (askShopVisit()) {
-		currentState = GameState::SHOP;
-	}
-	else {
+	int choice = uiManager.askShopVisit();
+	if (choice == 1) {
 		currentState = GameState::BATTLE;
+	} else {
+		currentState = GameState::SHOP;
 	}
 }
 
 void GameManager::runBattle() {
 	Monster* monster = generateMonster();
 
-	std::cout << monster->getName() << "가 나타났다." << std::endl;
+	uiManager.showMonsterEncounter(monster->getName());
 
 	// 전투 전 버프적용, 자동전투한다면 구현
 	//applyBuffItems();
@@ -227,11 +208,11 @@ void GameManager::runBattle() {
 		}
 		else {
 			// 상점에 방문하는가?
-			if (askShopVisit()) {
-				currentState = GameState::SHOP;
-			}
-			else {
+			int choice = uiManager.askShopVisit();
+			if (choice == 1) {
 				currentState = GameState::BATTLE;
+			} else {
+				currentState = GameState::SHOP;
 			}
 		}
 	}
@@ -241,6 +222,7 @@ void GameManager::runBattle() {
 }
 
 void GameManager::runBossBattle() {
+	clearScreen();
 	Monster* bossMonster = generateBoss();
 
 	std::string bossName = bossMonster->getName();
@@ -263,6 +245,8 @@ void GameManager::runBossBattle() {
 
 		// 몬스터 삭제
 		delete bossMonster;
+
+		uiManager.waitForKeyPress();
 
 		//다음라운드 실행
 		switch (currentPhase) {
@@ -354,20 +338,10 @@ void GameManager::runShop() {
 	bool shopping = true;
 
 	while (shopping) {
-		std::cout << "╔════════════════════════════════════════╗\n";
-		std::cout << "║              🏪 상점 🏪               ║\n";
-		std::cout << "╚════════════════════════════════════════╝\n";
-
-		std::cout << player->getGold() << "G\n";
+		uiManager.showShopMenu(player->getGold());
 
 		// 상점 아이템 목록 표시
 		// shop->displayItems();
-
-		std::cout << "\n[메뉴]\n";
-		std::cout << "1. 아이템 구매\n";
-		std::cout << "2. 아이템 판매\n";
-		std::cout << "3. 상점 나가기\n";
-		std::cout << "선택 : ";
 
 		int choice;
 		std::cin >> choice;
@@ -399,56 +373,34 @@ void GameManager::runShop() {
 	currentState = GameState::BATTLE;
 }
 
-// 보스전, 클리어시 다음 페이즈로 넘겨주는 역할
-
+void GameManager::clearScreen() {
+#ifdef _WIN32
+	system("cls");
+#else
+	system("clear");
+#endif
+}
 
 void GameManager::showPhaseClearScreen() {}
 
-void GameManager::showGameOverScreen() {
-	std::cout << "게임오버 ㅠㅠ" << std::endl;
-}
-
 void GameManager::showEndingScreen() {
-	std::cout << "엔딩!!" << std::endl;
-}
+	uiManager.showEndingScreen(
+		player->getName(),
+		player->getLevel(),
+		player->getGold(),
+		player->getHealth(),
+		player->getMaxHealth(),
+		player->getAttack(),
+		mobKillCounts
+	);
 
-
-bool GameManager::askShopVisit() {
-	std::cout << "상점 방문 1, 아니면 2 " << std::endl;
-	int choice;
-	std::cin >> choice;
-	if (choice == 1) {
-		std::cout << "상점 방문" << std::endl;
-		return true;
-	}
-	else {
-		std::cout << "즉시 전투" << std::endl;
-		return false;
-	}
+	isRunning = false;  // 게임 종료
 }
 
 void GameManager::handlePlayerDeath() {
-	std::cout << "╔════════════════════════════════════════╗\n";
-	std::cout << "║            💀 사망 💀                 ║\n";
-	std::cout << "╚════════════════════════════════════════╝\n";
+	uiManager.showDeathScreen();
 
-	std::cout << "\n당신은 쓰러졌습니다...\n";
-	std::cout << "\n[선택지]\n";
-	std::cout << "1. 재도전\n";
-	std::cout << "2. 게임 종료\n";
-
-	char choice;
-	while (true) {
-		choice = _getch();
-		std::cout << choice << std::endl;
-
-		if (choice == '1' || choice == '2') {
-			break;
-		}
-		else {
-			std::cout << "잘못된 입력입니다. 1 또는 2를 입력하세요: ";
-		}
-	}
+	char choice = uiManager.askRetryOrQuit();
 
 	switch (choice) {
 	case '1':
@@ -459,27 +411,37 @@ void GameManager::handlePlayerDeath() {
 		isRunning = false;
 		currentState = GameState::ENDING;
 		break;
-	default:
-		std::cout << "입력이 잘못되었다." << std::endl;
-		break;
 	}
 }
 
 void GameManager::retryCurrentBattle() {
-	std::cout << "전투 재시작\n";
-
-	// 체력회복
+	// 체력 회복
 	// player->heal();
 
-	// 확인용
-	std::cout << "현재 라운드 : " << currentRound << "  현재 페이즈 : " << static_cast<int>(currentPhase) << std::endl;
+	std::string phaseName;
+
+	switch (currentPhase) {
+	case PhaseType::PHASE_1:
+		phaseName = "변 수 의  숲";
+		break;
+	case PhaseType::PHASE_2:
+		phaseName = "클 래 스 의  성";
+		break;
+	case PhaseType::PHASE_3:
+		phaseName = "디 자 인  패 턴 의  탑";
+		break;
+	default:
+		phaseName = "None";
+		break;
+	}
+
+	uiManager.showRetryScreen(phaseName, currentRound, totalRoundsInPhase);
 
 	if (currentRound >= totalRoundsInPhase) {
-		std::cout << "보스전 복귀\n";
 		currentState = GameState::BOSS_BATTLE;
-	}
-	else {
-		std::cout << "일반전 복귀\n";
+	} else {
 		currentState = GameState::BATTLE;
 	}
+
+	uiManager.waitForKeyPress();
 }
