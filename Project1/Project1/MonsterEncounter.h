@@ -17,6 +17,6 @@ private:
     Character* player;
     int monsterFrame = 0;  // 애니메이션 프레임 (0~3)
     float animTime = 0.0f;  // 타이머
-    float appearTime = 0.0f;  // 등장 시간
+    float appearTime = 0.0f;
     bool finished = false;
 };

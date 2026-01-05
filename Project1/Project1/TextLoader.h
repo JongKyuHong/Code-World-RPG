@@ -29,5 +29,6 @@ public:
     }
 private:
     void ReadFiles();
+    void ReadFilesRecursive(const std::wstring& directory);
     std::unordered_map<std::string, TextFile> textFiles;
 };

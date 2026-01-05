@@ -1,95 +1,118 @@
 ﻿#include "MonsterEncounter.h"
 #include "Input.h"
+#include "TextLoader.h"
 #include <string>
+#include <iostream>
+#include <algorithm> 
+#include <fstream>
+
+#define NOMINMAX
 
 MonsterEncounter::MonsterEncounter(Monster* m, Character* p)
     : monster(m), player(p) {
 }
 
+static int GetAsciiFileMaxLineWidth(const std::string& path) {
+    std::ifstream in(path);
+    if (!in.is_open()) return 0;
+
+    std::string line;
+    int mx = 0;
+    while (std::getline(in, line)) {
+        int len = (int)line.size();
+        if (len > mx) mx = len;
+    }
+    return mx;
+}
+
+static int Clamp(int v, int lo, int hi) {
+    if (v < lo) return lo;
+    if (v > hi) return hi;
+    return v;
+}
+
+static std::string HLine(int w, char ch = '=') {
+    return std::string((w > 0) ? w : 0, ch);
+}
+
 void MonsterEncounter::OnEnter() {
     // 초기화
-    monsterFrame = 0;
+    monsterFrame = 0; 
     animTime = 0.0f;
-    appearTime = 0.0f;
     finished = false;
 }
 
 void MonsterEncounter::Update(float deltaTime) {
+    Input::Update();
     Scene::Update(deltaTime);
 
-    // 애니메이션 타이머
+    // 슬라임
     animTime += deltaTime;
-    if (animTime > 0.15f) {  // 0.15초마다 프레임 전환
+    if (animTime >= 0.2f) {
+        monsterFrame = (monsterFrame + 1) % 4;
         animTime = 0.0f;
-        monsterFrame = (monsterFrame + 1) % 4;  // 4프레임 순환
     }
 
-    // 등장 연출 시간
-    appearTime += deltaTime;
+    // 타이핑 (3배속)
+    appearTime += deltaTime * 3.0f;
+    if (appearTime > 1.0f) appearTime = 1.0f;
 
-    // Enter 키로 전투 시작
-    if (appearTime > 1.0f && Input::GetKeyDown(KeyCode::Enter)) {
+    if (Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::F)) {
         finished = true;
     }
 }
 
 void MonsterEncounter::Render(Renderer& renderer) {
-    Scene::Render(renderer);
-    renderer.PutBox(0, 0, renderer.GetWidth(), renderer.GetHeight());
+    renderer.Clear();
 
+    int w = renderer.GetWidth();
+    int h = renderer.GetHeight();
+    int centerX = w / 2;
+
+    // 1. 몬스터 아스키 (진짜 중앙)
+    std::string artPath = "Phase1/VariableSlime/" + std::to_string(monsterFrame + 1) + ".txt";
+    int artW = GetAsciiFileMaxLineWidth(artPath);
+    int artX = centerX - artW / 2;
+    artX = Clamp(artX, 0, w - artW);
+    renderer.PutTextFile(artX, 4, artPath);
+
+    int y = 16;
+
+    // 2. 구분선
+    renderer.PutString(0, y++, HLine(w, '='));
+
+    // 3. 몬스터 이름
     std::string monsterName = monster->getName();
-    std::string monsterInfo = monster->getMobInfo();
-    int phase = monster->GetPhase();
+    int nameX = centerX - (int)monsterName.size() / 2;
+    nameX = Clamp(nameX, 0, w - (int)monsterName.size());
+    renderer.PutString(nameX, y++, monsterName);
 
-    // 1단계: 몬스터 이름 타이핑 (0.5초부터)
-    if (appearTime > 0.5f) {
-        int visibleChars = static_cast<int>((appearTime - 0.5f) * 12);
-        if (visibleChars > monsterName.size()) visibleChars = monsterName.size();
+    renderer.PutString(0, y++, HLine(w, '='));
+    y++;
 
-        int centerX = renderer.GetWidth() / 2 - monsterName.size() / 2;
-        renderer.PutString(centerX, 5, monsterName.substr(0, visibleChars));
-    }
+    // 4. 몬스터 정보 (타이핑)
+    int infoLineY = y;
+    std::string fullInfo = monster->getMobInfo();
+    int visibleLen = (int)(fullInfo.size() * appearTime);
+    std::string visibleInfo = fullInfo.substr(0, visibleLen);
+    int infoX = centerX - (int)visibleInfo.size() / 2;
+    infoX = Clamp(infoX, 0, w - (int)visibleInfo.size());
+    renderer.PutString(infoX, infoLineY, visibleInfo);
 
-    // 2단계: 몬스터 애니메이션 등장 (1초부터)
-    if (appearTime > 1.0f) {
-        std::string frameFile = "Phase" + std::to_string(phase) + "/" +
-            monsterName + "/" +
-            std::to_string(monsterFrame + 1) + ".txt";
-        renderer.PutTextFile(65, 12, frameFile);
-    }
+    y = infoLineY + 2;
+    renderer.PutString(0, y++, HLine(w, '='));
+    y++;
 
-    // 3단계: 몬스터 설명 페이드인 (1.3초부터)
-    if (appearTime > 1.3f) {
-        renderer.PutString(55, 25, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    // 5. 플레이어 정보
+    int px = 2;
+    renderer.PutString(px, y++, "플레이어 정보");
+    renderer.PutString(px, y++, "이름: " + player->getName());
+    renderer.PutString(px, y++, "체력: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->getMaxHealth()));
+    renderer.PutString(px, y++, "공격: " + std::to_string(player->getAttack()));
 
-        // 설명 타이핑 효과
-        int descChars = static_cast<int>((appearTime - 1.3f) * 20);
-        if (descChars > monsterInfo.size()) descChars = monsterInfo.size();
-        renderer.PutString(58, 26, monsterInfo.substr(0, descChars));
-
-        renderer.PutString(55, 27, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    }
-
-    // 4단계: 등장 선언 메시지 (2초부터)
-    if (appearTime > 2.0f) {
-        renderer.PutString(58, 30, "╔═══════════════════════════════╗");
-        renderer.PutString(58, 31, "║ " + monsterName + " 이(가) 나타났다! ║");
-        renderer.PutString(58, 32, "╚═══════════════════════════════╝");
-    }
-
-    // 5단계: Enter 안내 (2.5초부터)
-    if (appearTime > 2.5f) {
-        // 깜빡이는 효과
-        if (static_cast<int>(appearTime * 2) % 2 == 0) {
-            renderer.PutString(60, 36, "▶ Enter 키를 눌러 전투 시작 ◀");
-        }
-    }
-
-    // 플레이어 정보 (항상 표시)
-    renderer.PutBox(3, 38, 40, 6);
-    renderer.PutString(5, 39, "━━━━━━━ 플레이어 정보 ━━━━━━━");
-    renderer.PutString(5, 40, "👤 이름: " + player->getName());
-    renderer.PutString(5, 41, "❤️  체력: " + std::to_string(player->getHealth()) +
-        " / " + std::to_string(player->getMaxHealth()));
-    renderer.PutString(5, 42, "⚔️  공격: " + std::to_string(player->getAttack()));
+    // 6. 안내
+    std::string guide = "Enter 또는 F 키를 눌러 전투 시작";
+    int guideX = centerX - (int)guide.size() / 2;
+    guideX = Clamp(guideX, 0, w - (int)guide.size());
+    renderer.PutString(guideX, h - 3, guide);
 }

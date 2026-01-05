@@ -185,37 +185,46 @@ void GameManager::startPhase(PhaseType phase) {
 
 void GameManager::runBattle() {
 	Monster* monster = generateMonster();
+	uiManager.clearScreen();
 
-	// 몬스터 등장 애니메이션
-	Engine encounterEngine(160, 50);
+	std::cin.clear();
+	std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
-	SceneManager::GetInstance().Register("Encounter", [&]() {
-		return std::make_unique<MonsterEncounter>(monster, player);
-	});
+	// ✅ 4. 잠깐 대기 (화면 전환 안정화)
+	Sleep(100);
+	{
+		// 몬스터 등장 애니메이션
+		Engine encounterEngine(160, 50);
 
-	using clock = std::chrono::steady_clock;
-	auto prev = clock::now();
+		SceneManager::GetInstance().Register("Encounter", [&]() {
+			return std::make_unique<MonsterEncounter>(monster, player);
+		});
 
-	SceneManager::GetInstance().LoadScene("Encounter");
+		using clock = std::chrono::steady_clock;
+		auto prev = clock::now();
 
-	// 등장 애니메이션 루프
-	while (encounterEngine.IsRunning()) {
-		auto now = clock::now();
-		std::chrono::duration<float> delta = now - prev;
-		prev = now;
-		float dt = delta.count();
+		SceneManager::GetInstance().LoadScene("Encounter");
 
-		encounterEngine.Update(dt);
+		// 등장 애니메이션 루프
+		while (encounterEngine.IsRunning()) {
+			auto now = clock::now();
+			std::chrono::duration<float> delta = now - prev;
+			prev = now;
+			float dt = delta.count();
 
-		MonsterEncounter* scene = dynamic_cast<MonsterEncounter*>(
-			SceneManager::GetInstance().GetCurrent()
-			);
+			encounterEngine.Update(dt);
 
-		if (scene && scene->IsFinished()) {
-			break;  // 전투 시작
+			MonsterEncounter* scene = dynamic_cast<MonsterEncounter*>(
+				SceneManager::GetInstance().GetCurrent()
+				);
+
+			if (scene && scene->IsFinished()) {
+				break;  // 전투 시작
+			}
 		}
 	}
 
+	uiManager.clearScreen();
 	uiManager.showMonsterEncounter(monster->getName());
 
 	// 전투 전 버프적용, 자동전투한다면 구현
@@ -253,7 +262,7 @@ void GameManager::runBattle() {
 }
 
 void GameManager::runBossBattle() {
-	clearScreen();
+	uiManager.clearScreen();
 	Monster* bossMonster = generateBoss();
 
 	std::string bossName = bossMonster->getName();
@@ -406,14 +415,6 @@ void GameManager::runShop() {
 		}
 	}
 	currentState = GameState::BATTLE;
-}
-
-void GameManager::clearScreen() {
-#ifdef _WIN32
-	system("cls");
-#else
-	system("clear");
-#endif
 }
 
 void GameManager::showPhaseClearScreen() {}
