@@ -1,4 +1,5 @@
-﻿#include "BattleService.h"
+#include "BattleService.h"
+#include "RewardManager.h"
 #include <iostream>
 #include <conio.h>
 #include <cstdlib>
@@ -34,14 +35,8 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
     player = p;
     monster = m;
     
-    // 임시처리
-    int gold = 10;
-    int exp = 50;
-
-    BattleResult result(gold, exp);
-
-    result.monsterName = monster->getName();
-    result.isBossKill = monster->isBossMonster();
+    RewardManager* rewardManager = RewardManager::getInstance();
+    BattleResult result = rewardManager->generateRewards(monster);
 
     uiManager.showBattleStart(monster->isBossMonster());
 
