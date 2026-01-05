@@ -1,4 +1,4 @@
-#include "RewardManager.h"
+﻿#include "RewardManager.h"
 #include "BattleResult.h"
 #include "Monster.h"
 #include "Character.h"
