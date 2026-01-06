@@ -106,8 +106,7 @@ static std::wstring ToWideFromUtf8OrAcp(const std::string& s)
 }
 
 
-void Renderer::PutString(int x, int y, const std::string& str)
-{
+void Renderer::PutString(int x, int y, const std::string& str) {
     if (y < 0 || y >= height) return;
 
     std::wstring ws = ToWideFromUtf8OrAcp(str);
@@ -115,14 +114,12 @@ void Renderer::PutString(int x, int y, const std::string& str)
     int start = (x < 0) ? 0 : x;
     int end = x + (int)ws.size();
     if (end > width) end = width;
-    if (start >= end) return;
 
-    int src = start - x;
-    for (int i = start; i < end; ++i)
-    {
-        buffer[y * width + i] = ws[src++];
+    for (int i = start; i < end && i < width; ++i) {
+        buffer[y * width + i] = ws[i - x];
     }
 }
+
 
 void Renderer::PutBox(int x, int y, int w, int h)
 {
@@ -178,3 +175,28 @@ std::string Renderer::ToString() const
     return out;
 }
 
+
+TextFile Renderer::GetTextFile(const std::string& filename) {
+    return textLoader->GetTexts(filename);
+}
+
+void Renderer::PutStringClipped(int x, int y, const std::string& str, int maxLen) {
+    if (y < 0 || y >= height || maxLen <= 0) return;
+
+    std::wstring ws = ToWideFromUtf8OrAcp(str);
+
+    int start = (x < 0) ? 0 : x;
+    int strEnd = x + (int)ws.size();
+    int boxEnd = x + maxLen;  // 박스에서 허용하는 끝
+
+    int end = strEnd;
+    if (end > boxEnd) end = boxEnd;  // ✅ 박스 경계 강제!
+    if (end > width) end = width;
+
+    for (int i = start; i < end && i < width; ++i) {
+        int srcIdx = i - x;
+        if (srcIdx >= 0 && srcIdx < (int)ws.size()) {
+            buffer[y * width + i] = ws[srcIdx];
+        }
+    }
+}

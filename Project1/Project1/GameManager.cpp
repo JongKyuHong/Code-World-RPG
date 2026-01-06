@@ -15,6 +15,7 @@
 #include <chrono>
 #include <limits>
 #include <cstdlib> 
+#include "MonsterEncounter.h"
 
 void GameManager::play() {
 	isRunning = true;
@@ -184,7 +185,46 @@ void GameManager::startPhase(PhaseType phase) {
 
 void GameManager::runBattle() {
 	Monster* monster = generateMonster();
+	uiManager.clearScreen();
 
+	std::cin.clear();
+	std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+
+	// 아스키아트
+	//Sleep(100);
+	//{
+	//	// 몬스터 등장 애니메이션
+	//	Engine encounterEngine(160, 50);
+
+	//	SceneManager::GetInstance().Register("Encounter", [&]() {
+	//		return std::make_unique<MonsterEncounter>(monster, player);
+	//	});
+
+	//	using clock = std::chrono::steady_clock;
+	//	auto prev = clock::now();
+
+	//	SceneManager::GetInstance().LoadScene("Encounter");
+
+	//	// 등장 애니메이션 루프
+	//	while (encounterEngine.IsRunning()) {
+	//		auto now = clock::now();
+	//		std::chrono::duration<float> delta = now - prev;
+	//		prev = now;
+	//		float dt = delta.count();
+
+	//		encounterEngine.Update(dt);
+
+	//		MonsterEncounter* scene = dynamic_cast<MonsterEncounter*>(
+	//			SceneManager::GetInstance().GetCurrent()
+	//			);
+
+	//		if (scene && scene->IsFinished()) {
+	//			break;  // 전투 시작
+	//		}
+	//	}
+	//}
+
+	uiManager.clearScreen();
 	uiManager.showMonsterEncounter(monster->getName());
 
 	// 전투 전 버프적용, 자동전투한다면 구현
@@ -222,22 +262,20 @@ void GameManager::runBattle() {
 }
 
 void GameManager::runBossBattle() {
-	clearScreen();
+	uiManager.clearScreen();
 	Monster* bossMonster = generateBoss();
 
 	std::string bossName = bossMonster->getName();
 
-	std::cout << "보스 " << bossName << "가 나타났다." << std::endl;
 	// 전투 전 버프적용, 자동전투한다면 구현
 	//applyBuffItems();
 
 	// 실제 전투
-	// battleService->battle();
-	std::cout << "⚔️ " << bossName << "와 전투 중 ⚔️\n";
+	BattleService battleService;
+	BattleResult result = battleService.battle(player, bossMonster);
 
 	// 전투정보 받아와서 처리
 	if (player->isAlive()) {
-		std::cout << "🏆" << bossName << "와의 전투 승리!🏆\n";
 		//mob킬수저장
 		mobKillCounts[bossName]++;
 
@@ -288,13 +326,14 @@ Monster* GameManager::generateMonster() {
 	// 현재 라운드에 맞는 몬스터
 	MonsterData Info = (*monsterInfo)[currentRound % monsterInfo->size()];
 
-
 	// 스텟은 추후에 변경
 	int baseHealth = (currentRound + 1) * 20;
 	int baseAttack = (currentRound + 1) * 5;
 
+	int phaseNum = static_cast<int>(currentPhase);
+
 	// 추후에 Monster 추상클래스를 상속하는 NormalMonster클래스 추가 
-	return new NormalMonster(Info.name, Info.info, baseHealth, baseAttack);
+	return new NormalMonster(Info.name, Info.info, baseHealth, baseAttack, phaseNum);
 }
 
 // 추후에 수정
@@ -324,13 +363,15 @@ Monster* GameManager::generateBoss() {
 	}
 
 	// 스텟은 우선 요구사항 따라서
-	int baseHealth = (currentRound + 1) * 20;
-	int baseAttack = (currentRound + 1) * 5;
+	int baseHealth = (currentRound + 1) * 1000;
+	int baseAttack = (currentRound + 1) * 100;
 
 	int health = static_cast<int>(baseHealth * multiplier);
 	int attack = static_cast<int>(baseAttack * multiplier);
 
-	return new BossMonster(bossName, bossInfo, health, attack);
+	int phaseNum = static_cast<int>(currentPhase);
+
+	return new BossMonster(bossName, bossInfo, health, attack, phaseNum);
 }
 
 void GameManager::runShop() {
@@ -371,14 +412,6 @@ void GameManager::runShop() {
 		}
 	}
 	currentState = GameState::BATTLE;
-}
-
-void GameManager::clearScreen() {
-#ifdef _WIN32
-	system("cls");
-#else
-	system("clear");
-#endif
 }
 
 void GameManager::showPhaseClearScreen() {}

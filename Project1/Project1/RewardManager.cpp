@@ -17,6 +17,9 @@ BattleResult RewardManager::generateRewards(const Monster* monster) {
         result.goldEarned = monster->getAttack();
         // *임시* 보스는 잡으면 1업하게끔
         result.expEarned = 100;
+        if (monster->getName() == "PolyDragon") {
+            // 아이템
+        }
     } else {
         // *임시* 몬스터의 공격력만큼 돈 벌기
         result.goldEarned = monster->getAttack();
