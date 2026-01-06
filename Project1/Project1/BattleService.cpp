@@ -7,6 +7,51 @@
 #include <random> 
 #include <algorithm>
 
+#include "Inventory.h"   // inv_->useItem 호출 때문에 필요
+#include <chrono>     // 자동 모드에서 딜레이 주고 싶으면 사용
+#include <thread>
+#include <string>
+
+namespace { //자동 전투 시 아이템 사용 효과 적용 메세지 처리를 위해서(스탯 비교)
+    struct StatSnapshot {
+        int hp;
+        int maxHp;
+        int atk;
+    };
+
+    StatSnapshot snap(Character* c) {
+        return {
+            c->getHealth(),
+            c->getMaxHealth(),
+            c->getAttack()
+        };
+    }
+
+    std::string diffToText(const StatSnapshot& before, const StatSnapshot& after) {
+        std::string out;
+
+        auto append = [&](const std::string& name, int b, int a) {
+            int d = a - b;
+            if (d == 0) return;
+            if (!out.empty()) out += " | ";
+            out += name + (d > 0 ? " +" : " ") + std::to_string(d);
+            };
+
+        append("ATK", before.atk, after.atk);
+        append("MAXHP", before.maxHp, after.maxHp);
+        append("HP", before.hp, after.hp);
+
+        if (out.empty()) out = "변화 없음";
+        return out;
+    }
+}
+
+void BattleService::tickEndOfTurn()
+{
+    if (!player) return;
+    effectSystem.updateActiveEffects(*player, effectManager);
+}
+
 bool BattleService::rollCritical()
 {
     // 크리티컬 (30%)
@@ -37,9 +82,25 @@ int BattleService::applyCriticalMultiplier(int baseDamage, bool isCritical)
 BattleResult BattleService::battle(Character* p, Monster* m) {
     player = p;
     monster = m;
+
+    // 자동전투 컨트롤러 초기화 (자동 모드에서만 의미 있게 사용됨)
+    autoCtrl.onBattleStart(monster->isBossMonster());
     
     RewardManager* rewardManager = RewardManager::getInstance();
     BattleResult result = rewardManager->generateRewards(monster);
+
+    // ✅ 모드에 따라 wait 동작 통합
+    auto waitIfManual = [&]() {
+        if (mode_ == BattleMode::Manual) {
+            uiManager.waitForKeyPress();
+        }
+        // 자동 모드에서 너무 빨리 넘어가면 아래 주석 해제해서 딜레이 줄 수 있음
+        
+        else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+        }
+        
+    };
 
     uiManager.showBattleStart(monster->isBossMonster());
 
@@ -53,7 +114,7 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
     );
 
     // 애니메이션 구현한다면 들어가는 자리
-    uiManager.waitForKeyPress();
+    waitIfManual();
 
     if (monster->isBossMonster()) {
         return bossBattle();
@@ -63,7 +124,15 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
 
     return result;
 }
-
+void BattleService::waitNextBeat() {
+    if (mode_ == BattleMode::Manual) {
+        uiManager.waitForKeyPress();
+    }
+    else {
+        // 자동 모드 딜레이 정책은 여기 한 곳에서만 관리
+        std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+    }
+}
 BattleResult BattleService::normalBattle() {
     int turnCount = 0;
 
@@ -71,43 +140,64 @@ BattleResult BattleService::normalBattle() {
     while (player->isAlive() && monster->isAlive()) {
         turnCount++;
 
+        // ✅ 자동 컨트롤러 턴 훅 (수동이어도 호출해도 무방)
+        autoCtrl.onTurnStart(turnCount);
+
         uiManager.showTurnNumber(turnCount);
 
         playerTurn();
 
-        if (!monster->isAlive()) break;
+        if (!monster->isAlive()) {
+            tickEndOfTurn();
+            break;
+        }
 
         monsterTurn();
 
+        tickEndOfTurn();
+
         if (!player->isAlive()) break;
 
-        uiManager.waitForKeyPress();
+        waitNextBeat();
         uiManager.clearScreen();
     }
+   // 전투 종료 시 지속 효과 정리
+    effectSystem.clearAll(*player, effectManager);
 
     BattleResult result = RewardManager::getInstance()->generateRewards(monster);
     result.turnCount = turnCount;
     result.playerWon = player->isAlive();
     result.monsterName = monster->getName();
+    rewardService.applyDrops(monster, result);
 
     if (result.playerWon) {
-        uiManager.showVictoryScreen(false, result.goldEarned, result.expEarned);
-        player->addGold(result.goldEarned);
-        player->addExperience(result.expEarned);
+        uiManager.showVictoryScreen(
+            monster->isBossMonster(),
+            result.goldEarned,
+            result.expEarned,
+            result.droppedItemNames
+        );
+        RewardManager::getInstance()->applyRewards(player, result);
         monster->onDeath();
     } else {
         uiManager.showDefeatScreen();
     }
 
-    uiManager.waitForKeyPress();
+    waitNextBeat();
     return result;
 }
 
 
+void BattleService::playerTurn()
+{
+    if (mode_ == BattleMode::Auto) playerTurnAuto();
+    else playerTurnManual();
+}
 
-void BattleService::playerTurn() {
+void BattleService::playerTurnManual()
+{
     bool endTurn = false;
-    
+
     while (!endTurn) {
         displayBattleStatus();
 
@@ -116,25 +206,50 @@ void BattleService::playerTurn() {
         switch (choice) {
         case '1': {
             displayBattleStatus();
-            // 공격
+
             int damage = player->getAttack();
-            monster->takeDamage(damage);
+            // 1. 크리티컬 여부 결정 (30% 확률)
+            bool isCritical = rollCritical();
+            if (isCritical) {
+                // 3. 크리티컬 배수 적용 (성공 시 2배)
+                int finalDamage = applyCriticalMultiplier(damage, isCritical);
 
-            uiManager.showPlayerAttackResult(
-                player->getName(),
-                monster->getName(),
-                damage,
-                !monster->isAlive()
-            );
+                // 4. 몬스터에게 최종 데미지 적용
+                monster->takeDamage(finalDamage);
+                // 5. 콘솔 UI에 결과 출력 (마지막 인자로 isCritical 전달)
+                uiManager.showPlayerAttackResult(
+                    player->getName(),
+                    monster->getName(),
+                    finalDamage,
+                    !monster->isAlive(),
+                    isCritical // UIManager에서 크리티컬 문구를 띄우기 위해 추가
+                );
+                std::string logMsg = player->getName() + "의 공격: " + std::to_string(finalDamage) + " 데미지";
+                if (isCritical) {
+                    logMsg += " (★크리티컬 히트!★)";
+                }
+                addLog(logMsg);
+            }
+            else {
+                monster->takeDamage(damage);
+                uiManager.showPlayerAttackResult(
+                    player->getName(),
+                    monster->getName(),
+                    damage,
+                    !monster->isAlive(),
+                    isCritical // UIManager에서 크리티컬 문구를 띄우기 위해 추가
+                );
+                addLog(player->getName() + "의 공격: " + std::to_string(damage) + " 데미지");
+            }
 
-            addLog(player->getName() + "의 공격: " + std::to_string(damage) + " 데미지");
-            
             endTurn = true;
             break;
         }
         case '2': {
-            // 아이템 사용
-            uiManager.showItemUseScreen();
+            // 인벤토리 사용(수동 모드용 콜백)
+            if (openInventoryCb) openInventoryCb();
+            else uiManager.showInvalidInput();
+
             endTurn = true;
             break;
         }
@@ -142,6 +257,86 @@ void BattleService::playerTurn() {
             uiManager.showInvalidInput();
             break;
         }
+    }
+}
+
+void BattleService::playerTurnAuto()
+{
+    displayBattleStatus();
+    if (!inv_) {
+        uiManager.showInvalidInput();
+        return;
+    }
+    PlayerAction act = autoCtrl.decide(*player, *monster, *inv_, monster->isBossMonster());
+
+    if (act.type == PlayerActionType::UseItem) {
+        // 1) 스탯 스냅샷
+        StatSnapshot before = snap(player);
+
+        std::string usedName;
+        bool ok = inv_->useItem(
+            player,
+            act.inventoryIndex,
+            effectSystem,
+            effectManager,
+            &usedName
+        );
+
+        StatSnapshot after = snap(player);
+
+        if (ok) {
+            autoCtrl.onItemUsed();
+
+            std::string effectText = diffToText(before, after);
+
+            // ✅ 여기서 UI 출력
+            uiManager.showItemActionScreen(
+                "🧍 " + player->getName() + "의 아이템 사용",
+                usedName,
+                effectText
+            );
+
+            addLog("[AUTO] 아이템 사용: " + usedName + " (" + effectText + ")");
+        }
+        else {
+            addLog("[AUTO] 아이템 사용 실패");
+        }
+        return;
+    }
+
+    int damage = player->getAttack();
+    // 1. 크리티컬 여부 결정 (30% 확률)
+    bool isCritical = rollCritical();
+    if (isCritical) {
+        // 3. 크리티컬 배수 적용 (성공 시 2배)
+        int finalDamage = applyCriticalMultiplier(damage, isCritical);
+
+        // 4. 몬스터에게 최종 데미지 적용
+        monster->takeDamage(finalDamage);
+        // 5. 콘솔 UI에 결과 출력 (마지막 인자로 isCritical 전달)
+        uiManager.showPlayerAttackResult(
+            player->getName(),
+            monster->getName(),
+            finalDamage,
+            !monster->isAlive(),
+            isCritical // UIManager에서 크리티컬 문구를 띄우기 위해 추가
+        );
+        std::string logMsg = player->getName() + "의 공격: " + std::to_string(finalDamage) + " 데미지";
+        if (isCritical) {
+            logMsg += " (★크리티컬 히트!★)";
+        }
+        addLog("[AUTO] " + logMsg);
+    }
+    else {
+        monster->takeDamage(damage);
+        uiManager.showPlayerAttackResult(
+            player->getName(),
+            monster->getName(),
+            damage,
+            !monster->isAlive(),
+            isCritical // UIManager에서 크리티컬 문구를 띄우기 위해 추가
+        );
+        addLog("[AUTO] " + player->getName() + "의 공격: " + std::to_string(damage) + " 데미지");
     }
 }
 
@@ -243,11 +438,19 @@ BattleResult BattleService::bossBattle() {
             return failResult;
         }
     }
-
-    BattleResult result = RewardManager::getInstance()->generateRewards(monster);
+    RewardManager* rewardManager = RewardManager::getInstance();
+    BattleResult result = rewardManager->generateRewards(monster);
     result.playerWon = true;
     result.turnCount = maxRounds;
-    uiManager.showVictoryScreen(monster, result.goldEarned, result.expEarned);
+    rewardService.applyDrops(monster, result);
+    uiManager.showVictoryScreen(
+            monster->isBossMonster(),
+            result.goldEarned,
+            result.expEarned,
+            result.droppedItemNames
+    );
+    RewardManager::getInstance()->applyRewards(player, result);
+    monster->onDeath();
     return result;
 }
 

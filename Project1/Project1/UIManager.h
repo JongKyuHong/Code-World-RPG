@@ -2,12 +2,19 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "UIGrid.h"
+#include "Types.h"
 
+class MapAsciiArtRepository;
+class Shop;
+class Inventory;
+class Item;
 class Character;
 class Monster;
 
 class UIManager {
 public:
+    UIManager(MapAsciiArtRepository& artRepo);
     // GameManager
     // 화면 제어
     void clearScreen();
@@ -63,8 +70,12 @@ public:
     // 플레이어 턴
     char showPlayerTurnMenuAndGetChoice();
     void showPlayerAttackResult(const std::string& playerName, const std::string& monsterName,
-        int damage, bool isMonsterDead);
-    void showItemUseScreen();
+        int damage, bool isMonsterDead, bool isCritical);
+    void showItemActionScreen(
+        const std::string& title,
+        const std::string& itemName,
+        const std::string& effectText
+    );
     void showInvalidInput();
 
     // 몬스터 턴
@@ -73,12 +84,17 @@ public:
         int damage, bool isPlayerDead, int remainingHp, int maxHp);
 
     // 전투 결과
-    void showVictoryScreen(bool isBoss, int gold, int exp);
+    void showVictoryScreen(bool isBoss,
+        int gold,
+        int exp,
+        const std::vector<std::string>& droppedItems);
     void showDefeatScreen();
 
     // 전투 로그
     void showBattleLog(const std::vector<std::string>& battleLog);
 
+    void runShop(Shop& shop, Character& player, Inventory& inv);
+    InventoryAction askInventoryAction(Inventory& inv);
 
     void showQuizRound(int current, int total);
     std::string askQuizAnswer(const std::string& question);
@@ -88,4 +104,11 @@ public:
 private:
     void drawBoxedTitle(const std::string& title, const std::string& subtitle);
     void drawSeparator();
+       // ✅ 상점의 실제 “행동 처리”는 UIManager에 남겨두는게 깔끔함(통솔)
+    void doBuy(Shop& shop, Character& player, Inventory& inv);
+    void doSell(Shop& shop, Character& player, Inventory& inv);
+    MapAsciiArtRepository& artRepo;
+
+    // ✅ 추가: 그리드 UI/입력 유틸 담당 객체
+    UIGrid grid;
 };

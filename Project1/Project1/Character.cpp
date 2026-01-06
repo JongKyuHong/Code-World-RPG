@@ -1,4 +1,5 @@
-﻿#include "Character.h"
+#include "Character.h"
+
 
 Character* Character::instance = nullptr;
 

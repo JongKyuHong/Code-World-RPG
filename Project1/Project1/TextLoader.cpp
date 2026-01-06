@@ -3,51 +3,39 @@
 #include <fstream>
 #include <codecvt>
 #include <locale>
-#include <algorithm>
 
 void TextLoader::ReadFiles()
 {
     textFiles.clear();
 
-    ReadFilesRecursive(L"./Texts");
-}
-
-void TextLoader::ReadFilesRecursive(const std::wstring& directory)
-{
-    std::wstring searchPath = directory + L"\\*";
+    std::wstring directory = L"./Texts\\*";
 
     WIN32_FIND_DATAW findData;
-    HANDLE hFind = FindFirstFileW(searchPath.c_str(), &findData);
+    HANDLE hFind = FindFirstFileW(directory.c_str(), &findData);
 
     if (hFind == INVALID_HANDLE_VALUE)
         return;
 
     do
     {
-        std::wstring fileNameW = findData.cFileName;
-
-        if (fileNameW == L"." || fileNameW == L"..")
-            continue;
-
-        std::wstring fullPath = directory + L"/" + fileNameW;
-
         if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
-            ReadFilesRecursive(fullPath);
             continue;
-        }
+
+        std::wstring fileNameW = findData.cFileName;
 
         if (fileNameW.size() < 4 ||
             fileNameW.substr(fileNameW.size() - 4) != L".txt")
             continue;
+
+        std::wstring fullPath = L"./Texts/" + fileNameW;
 
         std::wifstream file(fullPath);
         if (!file.is_open())
             continue;
 
         file.imbue(std::locale(
-            std::locale(),
-            new std::codecvt_utf8<wchar_t>
+            std::locale(), // ✅ empty() 대신 기본 locale
+            new std::codecvt_utf8_utf16<wchar_t> // ✅ Windows wchar_t(UTF-16) 대응
         ));
 
         TextFile textFile;
@@ -58,10 +46,7 @@ void TextLoader::ReadFilesRecursive(const std::wstring& directory)
             textFile.textLines.push_back(line);
         }
 
-        std::wstring relativePath = fullPath.substr(8);
-
-        std::string key(relativePath.begin(), relativePath.end());
-        std::replace(key.begin(), key.end(), '\\', '/');
+        std::string key(fileNameW.begin(), fileNameW.end());
         textFiles.emplace(key, std::move(textFile));
 
     } while (FindNextFileW(hFind, &findData));

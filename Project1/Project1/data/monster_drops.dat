@@ -1,0 +1,298 @@
+﻿# ============================================================
+# monster_drops.dat
+# - 한 파일에서 아이템 정의(ITEM/EFFECT) + ASCII + 몬스터 드랍 룰(REWARD)을 함께 관리
+# - REWARD|<MonsterInternalName> 는 반드시 monster->getName() 과 동일해야 매칭됨
+# ============================================================
+
+
+# ============================================================
+# ITEM DEFINITIONS (price + effects)
+# ============================================================
+
+# ----------------------------
+# Consumables
+# ----------------------------
+ITEM|작은 포션|0
+EFFECT|HealFlat|Health|30|0
+
+ITEM|중간 포션|0
+EFFECT|HealFlat|Health|60|0
+
+ITEM|큰 포션|0
+EFFECT|HealFlat|Health|120|0
+
+
+# ----------------------------
+# Equip
+# ----------------------------
+ITEM|초보자의 검(+5)|0
+EFFECT|AddStatFlat|Attack|5|0
+
+ITEM|초보자의 갑옷(+10)|0
+EFFECT|AddStatFlat|MaxHealth|10|0
+
+ITEM|강화된 철 검(+15)|0
+EFFECT|AddStatFlat|Attack|15|0
+
+ITEM|강화된 갑옷(+30)|0
+EFFECT|AddStatFlat|MaxHealth|30|0
+
+
+# ----------------------------
+# Buff
+# ----------------------------
+ITEM|전설의 공격 버프(+10 / 5턴)|0
+EFFECT|AddStatFlat|Attack|10|5
+
+
+# ----------------------------
+# Special (Revive token)
+# - 실제 부활 처리는 전투 사망 판정/로직에서 "인벤 보유 여부"로 처리 권장
+# ----------------------------
+ITEM|강창민 튜터님의 가호|0
+EFFECT|AddStatFlat|Health|0|0
+
+
+# ============================================================
+# ASCII ART (1:1 by item name)
+# ============================================================
+
+ASCII|작은 포션
+   ______
+  / ____ \
+ | |    | |
+ | |____| |
+  \______/
+     ||
+END
+
+ASCII|중간 포션
+   _________
+  /  ___   \
+ |  |   |   |
+ |  |___|   |
+  \_______ /
+     ||
+END
+
+ASCII|큰 포션
+    _________
+   /  ____  \
+  |  |    |  |
+  |  |____|  |
+  |   ____   |
+  |  |____|  |
+   \________/
+      ||
+END
+
+ASCII|초보자의 검(+5)
+     /\
+    /  \
+    ||||
+     ||
+     ||
+     ||
+    /__\
+END
+
+ASCII|초보자의 갑옷(+10)
+    .----.
+   / .--.\
+  / /    \\
+ | |  __  |
+ | | |  | |
+ | | |__| |
+  \ \____/
+   '----'
+END
+
+ASCII|강화된 철 검(+15)
+      /\
+     /**\
+     ||||
+     ||||
+     ||||
+      ||
+      ||
+     /__\
+END
+
+ASCII|강화된 갑옷(+30)
+    .------.
+   / .----.\
+  / / ____ \\
+ | | |++++| |
+ | | |++++| |
+ | | |____| |
+  \ \______/
+   '------'
+END
+
+ASCII|전설의 공격 버프(+10 / 5턴)
+   .------.
+  / .----. \
+ | | ATK | |
+ | | +10 | |
+ | |  5T | |
+  \ '----' /
+   '------'
+END
+
+ASCII|강창민 튜터님의 가호
+   .-.
+  (   )
+   `-'
+  /| |\
+   | |
+END
+
+
+# ============================================================
+# MONSTER DROPS (Reward Rules)
+# - 기본: 추가 아이템은 30% 확률로만 드랍
+# - 구현: PICK|확률에 따라서 떨어질 아이템 정해짐
+# - GUARANTEE: 오직 "강창민 튜터님의 가호" 만 허용
+# ============================================================
+
+# ----------------------------
+# PHASE 1 : 변수의 숲 (5라운드)
+# ----------------------------
+
+REWARD|VariableSlime
+PICK|작은 포션|22
+PICK|초보자의 검(+5)|5
+PICK|초보자의 갑옷(+10)|3
+ENDREWARD
+
+REWARD|ConstantGolem
+PICK|중간 포션|15
+PICK|초보자의 갑옷(+10)|10
+PICK|초보자의 검(+5)|5
+ENDREWARD
+
+REWARD|TypeSpirit
+PICK|작은 포션|18
+PICK|중간 포션|7
+PICK|초보자의 검(+5)|5
+ENDREWARD
+
+REWARD|InitWisp
+PICK|작은 포션|20
+PICK|중간 포션|7
+PICK|전설의 공격 버프(+10 / 5턴)|3
+ENDREWARD
+
+REWARD|DeclareShadow
+PICK|작은 포션|18
+PICK|초보자의 검(+5)|6
+PICK|초보자의 갑옷(+10)|6
+ENDREWARD
+
+
+# ----------------------------
+# PHASE 1 BOSS : PointerLich
+# - 보장 아이템 없음 (가호만 보장 가능 규칙 때문)
+# ----------------------------
+REWARD|PointerLich
+PICK|중간 포션|10
+PICK|강화된 철 검(+15)|8
+PICK|강화된 갑옷(+30)|8
+PICK|전설의 공격 버프(+10 / 5턴)|4
+ENDREWARD
+
+
+# ----------------------------
+# PHASE 2 : 클래스의 성 (6라운드)
+# ----------------------------
+
+REWARD|ClassMimic
+PICK|중간 포션|18
+PICK|초보자의 검(+5)|6
+PICK|초보자의 갑옷(+10)|6
+ENDREWARD
+
+REWARD|ObjectOrc
+PICK|중간 포션|10
+PICK|강화된 철 검(+15)|10
+PICK|강화된 갑옷(+30)|10
+ENDREWARD
+
+REWARD|MemberSpider
+PICK|중간 포션|15
+PICK|초보자의 갑옷(+10)|8
+PICK|강화된 갑옷(+30)|7
+ENDREWARD
+
+REWARD|FunctionMage
+PICK|중간 포션|12
+PICK|전설의 공격 버프(+10 / 5턴)|10
+PICK|강화된 철 검(+15)|8
+ENDREWARD
+
+REWARD|ConstructGargoyle
+PICK|중간 포션|10
+PICK|강화된 갑옷(+30)|12
+PICK|강화된 철 검(+15)|8
+ENDREWARD
+
+REWARD|DestructReaper
+PICK|큰 포션|12
+PICK|전설의 공격 버프(+10 / 5턴)|10
+PICK|강화된 철 검(+15)|4
+PICK|강화된 갑옷(+30)|4
+ENDREWARD
+
+
+# ----------------------------
+# PHASE 2 BOSS : PolyDragon
+# - 보장 아이템 없음 (가호만 보장 가능 규칙 때문)
+# ----------------------------
+REWARD|PolyDragon
+PICK|큰 포션|10
+PICK|강화된 철 검(+15)|8
+PICK|강화된 갑옷(+30)|8
+PICK|전설의 공격 버프(+10 / 5턴)|4
+ENDREWARD
+
+
+# ----------------------------
+# PHASE 3 : 디자인 패턴의 탑 (4라운드)
+# ----------------------------
+
+REWARD|SingletonKing
+GUARANTEE|강창민 튜터님의 가호
+PICK|큰 포션|12
+PICK|강화된 철 검(+15)|9
+PICK|강화된 갑옷(+30)|9
+ENDREWARD
+
+REWARD|DecoratorKnight
+PICK|큰 포션|12
+PICK|강화된 철 검(+15)|12
+PICK|전설의 공격 버프(+10 / 5턴)|6
+ENDREWARD
+
+REWARD|ObserverBeholder
+PICK|큰 포션|12
+PICK|전설의 공격 버프(+10 / 5턴)|12
+PICK|강화된 갑옷(+30)|6
+ENDREWARD
+
+REWARD|StrategyGeneral
+PICK|강화된 철 검(+15)|15
+PICK|전설의 공격 버프(+10 / 5턴)|15
+ENDREWARD
+
+
+# ----------------------------
+# PHASE 3 FINAL BOSS : TeamProjectDevil
+# - 보장: 가호 1개
+# - 추가 드랍: 30% 확률로 1개
+# ----------------------------
+REWARD|TeamProjectDevil
+PICK|큰 포션|10
+PICK|강화된 철 검(+15)|8
+PICK|강화된 갑옷(+30)|8
+PICK|전설의 공격 버프(+10 / 5턴)|4
+ENDREWARD

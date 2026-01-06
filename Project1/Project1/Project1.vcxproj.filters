@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <!-- Core -->
     <ClCompile Include="Engine.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -20,10 +21,14 @@
     <ClCompile Include="Input.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="BattleService.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="TextLoader.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="BuffPotion.cpp">
+    <ClCompile Include="Button.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <!-- Source -->
+    <ClCompile Include="BattleService.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
@@ -35,19 +40,13 @@
     <ClCompile Include="GameManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="HealthPotion.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Inventory.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ItemFactory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="KeyBoard.cpp">
+    <ClCompile Include="Inventory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Monster.cpp">
@@ -56,38 +55,62 @@
     <ClCompile Include="NormalMonster.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="BossMonster.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="Shop.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BossMonster.cpp">
+    <!-- Existing in old -->
+    <ClCompile Include="MainMenu.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="RewardManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="MainMenu.cpp">
+    <!-- Added from new -->
+    <ClCompile Include="BuffItem.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TextLoader.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="EquipItem.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="HealItem.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectSystem.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleDataLoader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemBootstrap.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UIGrid.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleRewardService.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="RewardRepository.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoBattleController.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MonsterEncounter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <!-- Core -->
     <ClInclude Include="Engine.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -109,10 +132,14 @@
     <ClInclude Include="Input.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="BattleService.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="TextLoader.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="BuffPotion.h">
+    <ClInclude Include="Button.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <!-- Headers -->
+    <ClInclude Include="BattleService.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
@@ -124,19 +151,13 @@
     <ClInclude Include="GameManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="HealthPotion.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Inventory.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ItemFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="KeyBoard.h">
+    <ClInclude Include="Inventory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Monster.h">
@@ -145,29 +166,73 @@
     <ClInclude Include="NormalMonster.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="BossMonster.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="Shop.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="BossMonster.h">
+    <ClInclude Include="BattleResult.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="BattleResult.h">
+    <!-- Existing in old -->
+    <ClInclude Include="MainMenu.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="RewardManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="TextLoader.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="MainMenu.h">
+    <ClInclude Include="MapAsciiArtRepository.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Core</Filter>
+    <!-- Added from new -->
+    <ClInclude Include="BuffItem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="EquipItem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="HealItem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectSystem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="AsciiArtRepository.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemContext.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DropTable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemBootstrap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleDataLoader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UIGrid.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RewardRepository.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleRewardService.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoBattleController.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MonsterEncounter.h">
       <Filter>헤더 파일</Filter>
@@ -183,5 +248,20 @@
     <Filter Include="헤더 파일">
       <UniqueIdentifier>{0ef38f0b-e3b7-4d3b-9d2b-a6e512e00624}</UniqueIdentifier>
     </Filter>
+    <!-- New -->
+    <Filter Include="Data">
+      <UniqueIdentifier>{d1d27b3b-2d25-4a67-9a6c-8c3c5a7c4b10}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\monster_drops.dat">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="data\inventory_items.dat">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="data\shop_items.dat">
+      <Filter>Data</Filter>
+    </None>
   </ItemGroup>
 </Project>

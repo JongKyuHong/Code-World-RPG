@@ -1,7 +1,24 @@
-﻿#include "UIManager.h"
+﻿#define NOMINMAX
+#include <Windows.h>
+#include "UIManager.h"
+#include "UIGrid.h"
+#include "Shop.h"
+#include "Character.h"
+#include "Inventory.h"
+#include "Item.h"
+#include "MapAsciiArtRepository.h"
 #include <iostream>
 #include <conio.h>
-#include <Windows.h>
+#include <string>
+#include <vector>
+#include <map>
+#include <limits>
+
+UIManager::UIManager(MapAsciiArtRepository& artRepo)
+    : artRepo(artRepo)
+    , grid(artRepo)   // ✅ 핵심
+{
+}
 
 void UIManager::clearScreen() {
 #ifdef _WIN32
@@ -191,7 +208,8 @@ int UIManager::askShopVisit() {
     std::cout << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
     std::cout << "  [선택지]\n";
     std::cout << "  1. ⚔️  즉시 전투\n";
-    std::cout << "  2. 🏪 상점 방문 (아이템 구매/판매)\n";    
+    std::cout << "  2. 🏪 상점 방문 (아이템 구매/판매)\n";   
+    std::cout << "  3. 🎒  인 벤 토 리\n";
     std::cout << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
     std::cout << "\n  선택: ";
 
@@ -392,7 +410,7 @@ char UIManager::showPlayerTurnMenuAndGetChoice() {
 }
 
 void UIManager::showPlayerAttackResult(const std::string& playerName, const std::string& monsterName,
-    int damage, bool isMonsterDead) {
+    int damage, bool isMonsterDead , bool isCritical) {
     std::string turnTitle = playerName + "의 턴";
 
     const int BOX_WIDTH = 60;
@@ -426,6 +444,12 @@ void UIManager::showPlayerAttackResult(const std::string& playerName, const std:
     std::cout << "║" << std::string(leftPadding, ' ') << turnTitle << std::string(rightPadding, ' ') << "║\n";
     std::cout << "╚════════════════════════════════════════════════════════════╝\n";
 
+    // 2. 크리티컬 여부에 따른 출력 추가
+    if (isCritical) {
+        std::cout << "\n\t💥 [ CRITICAL HIT! ] 💥\n";
+    }
+
+
     std::cout << "\n⚔️  " << playerName << "의 공격!\n";
     std::cout << "→ " << monsterName << "에게 " << damage << " 데미지!\n";
 
@@ -434,11 +458,41 @@ void UIManager::showPlayerAttackResult(const std::string& playerName, const std:
     }
 }
 
-void UIManager::showItemUseScreen() {
+void UIManager::showItemActionScreen(
+    const std::string& title,
+    const std::string& itemName,
+    const std::string& effectText
+) {
+    const int BOX_WIDTH = 60;
+
+    // ── 타이틀 표시 너비 계산 (한글 대응)
+    int displayWidth = 0;
+    for (size_t i = 0; i < title.length();) {
+        unsigned char c = title[i];
+        if ((c & 0x80) == 0) {
+            displayWidth += 1;
+            i += 1;
+        }
+        else {
+            displayWidth += 2;
+            i += 3;
+        }
+    }
+
+    int totalPadding = BOX_WIDTH - displayWidth;
+    int leftPadding = totalPadding / 2;
+    int rightPadding = totalPadding - leftPadding;
+
     std::cout << "\n╔════════════════════════════════════════════════════════════╗\n";
-    std::cout << "║                    💊  아이템 사용  💊                     ║\n";
+    std::cout << "║" << std::string(leftPadding, ' ')
+        << title
+        << std::string(rightPadding, ' ') << "║\n";
     std::cout << "╚════════════════════════════════════════════════════════════╝\n";
+
+    std::cout << "\n→ 대상 아이템: " << itemName << "\n";
+    std::cout << "→ 효과: " << effectText << "\n";
 }
+
 
 void UIManager::showInvalidInput() {
     std::cout << "❌ 잘못된 입력입니다.다시 선택해주세요.\n";
@@ -474,7 +528,11 @@ void UIManager::showMonsterAttackResult(const std::string& monsterName, const st
     }
 }
 
-void UIManager::showVictoryScreen(bool isBoss, int gold, int exp) {
+void UIManager::showVictoryScreen(bool isBoss,
+    int gold,
+    int exp,
+    const std::vector<std::string>& droppedItems)
+{
     std::cout << "\n";
     std::cout << "╔════════════════════════════════════════════════════════════╗\n";
     std::cout << "║                                                            ║\n";
@@ -489,6 +547,19 @@ void UIManager::showVictoryScreen(bool isBoss, int gold, int exp) {
     std::cout << "\n획득 보상:\n";
     std::cout << "💰 골드: " << gold << " G\n";
     std::cout << "⭐ 경험치: " << exp << " EXP\n";
+
+    // ✅ 아이템 출력
+    if (!droppedItems.empty()) {
+        std::cout << "\n🎁 획득 아이템:\n";
+        for (const auto& name : droppedItems) {
+            std::cout << "  - " << name << "\n";
+        }
+    }
+    else {
+        std::cout << "\n🎁 획득 아이템: 없음\n";
+    }
+
+    std::cout << "\n";
 }
 
 void UIManager::showDefeatScreen() {
@@ -569,4 +640,182 @@ void UIManager::showMessage(const std::string& message) {
     std::cout << "║                                                            ║\n";
     std::cout << "╚════════════════════════════════════════════════════════════╝\n";
     std::cout << "\n";  // 다음 출력 여백
+}
+
+// ===========================
+// ✅ Shop 통솔(흐름)
+// ===========================
+void UIManager::runShop(Shop& shop, Character& player, Inventory& inv) {
+    const int cols = 3;
+    const int cellW = 0;  // 0이면 자동 폭
+    const int artH = 8;
+
+    bool shopping = true;
+    while (shopping) {
+        clearScreen();
+
+        // ✅ 그리드 폭 계산 (헤더 줄 길이 맞추기)
+        int gridW = grid.calcShopGridWidth(shop, player, cols, cellW);
+
+        // ✅ 상단 헤더: 너비를 그리드폭으로 통일
+        if (gridW < 10) gridW = 10;
+        std::cout << std::string(gridW, '=') << "\n";
+        std::cout << "  🏪 상점\n";
+        std::cout << std::string(gridW, '=') << "\n";
+
+        // ✅ 골드 표시: 매 루프마다 다시 출력되니 자동 갱신됨
+        std::cout << "보유 골드: " << player.getGold() << "G\n\n";
+
+        // ✅ 여기서 그리드는 타이틀을 출력하지 않게(=중복 헤더 방지)
+        grid.printShopGrid(shop, player, cols, cellW, artH);
+        std::cout << "\n";
+
+        std::cout << "[메뉴]\n";
+        std::cout << "  ┌────────────────────────────────────────────────────────┐\n";
+        std::cout << "  │  1. 🛒 아이템 구매                                     │\n";
+        std::cout << "  │  2. 💸 아이템 판매                                     │\n";
+        std::cout << "  │  0. 🚪 상점 나가기                                     │\n";
+        std::cout << "  └────────────────────────────────────────────────────────┘\n";
+
+        int choice = grid.askInt("선택: ", 0, 2);
+        switch (choice) {
+        case 1: doBuy(shop, player, inv); break;
+        case 2: doSell(shop, player, inv); break;
+        case 0: shopping = false; break;
+        }
+    }
+}
+// ===========================
+// ✅ Inventory 통솔(흐름)
+// ===========================
+InventoryAction UIManager::askInventoryAction(Inventory& inv) {
+    while (true) {
+        clearScreen();
+        grid.printInventoryGrid(inv, 3, 0, 8);
+
+        std::cout << "\n";
+        std::cout << "╔════════════════════════════════════════════════════════════╗\n";
+        std::cout << "║                    🎒  인 벤 토 리  🎒                     ║\n";
+        std::cout << "╚════════════════════════════════════════════════════════════╝\n";
+        std::cout << "\n";
+
+        std::cout << "  ┌────────────────────────────────────────────────────────┐\n";
+        std::cout << "  │  1. 💊 아이템 사용                                     │\n";
+        std::cout << "  │  2. ⚔️  장비 장착                                     │\n";
+        std::cout << "  │  3. 🛡️  장비 해제                                     │\n";
+        std::cout << "  │  0. 🚪 나가기                                         │\n";
+        std::cout << "  └────────────────────────────────────────────────────────┘\n";
+
+        int c = grid.askInt("선택: ", 0, 4);
+
+        InventoryAction act{}; // ✅ 안전 초기화
+
+        if (c == 0) {
+            act.type = InventoryAction::Exit;
+            return act;
+        }
+
+        if (c == 3) {
+            std::cout << "\n";
+            std::cout << "╔════════════════════════════════════════════════════════════╗\n";
+            std::cout << "║                    🛡️  장 비  해 제  🛡️                  ║\n";
+            std::cout << "╚════════════════════════════════════════════════════════════╝\n";
+            std::cout << "\n";
+
+            std::cout << "  ┌────────────────────────────────────────────────────────┐\n";
+            std::cout << "  │  1. ⚔️  무기 해제                                     │\n";
+            std::cout << "  │  2. 🛡️  방어구 해제                                   │\n";
+            std::cout << "  │  0. ↩️  취소                                         │\n";
+            std::cout << "  └────────────────────────────────────────────────────────┘\n";
+
+            int s = grid.askInt("선택: ", 0, 2);
+            if (s == 0) continue;
+
+            act.type = InventoryAction::Unequip;
+            act.slot = (s == 1) ? EquipSlot::Weapon : EquipSlot::Armor;
+            return act;
+        }
+
+        int idx = grid.askInventoryIndexOrCancel(inv, "\n아이템을 선택하세요");
+        if (idx == -1) continue;
+
+        act.index = idx;
+        if (c == 1) act.type = InventoryAction::Use;
+        else if (c == 2) act.type = InventoryAction::Equip;
+
+        return act;
+    }
+}
+
+// ===========================
+// ✅ 상점 행동 처리(구매/판매)
+// ===========================
+void UIManager::doBuy(Shop& shop, Character& player, Inventory& inv) {
+    int max = shop.size() - 1;
+    if (max < 0) { grid.waitAnyKey("상점에 아이템이 없습니다. "); return; }
+
+    int idx = grid.askInt("구매할 아이템 번호: ", 0, max);
+
+    Item* peek = shop.peek(idx);
+    if (peek && player.getGold() < peek->getPrice()) {
+        grid.waitAnyKey("골드가 부족합니다. ");
+        return;
+    }
+
+    Item* bought = shop.buyItem(&player, idx);
+    if (!bought) { grid.waitAnyKey("구매 실패. "); return; }
+
+    inv.add(bought);
+    std::cout << "인벤토리에 추가됨: " << bought->getName() << "\n";
+    grid.showItemArt(bought->getName());
+    grid.waitAnyKey();
+}
+
+void UIManager::doSell(Shop& shop, Character& player, Inventory& inv) {
+    // 판매 전용 라벨(판매가 표기)
+    auto labelInvSell = [](int idx, Item* it) {
+        if (!it) return "[" + std::to_string(idx) + "] (EMPTY)";
+
+        int basePrice = it->getPrice();
+        int sellPrice = (basePrice * 60) / 100;
+
+        std::string label = "[" + std::to_string(idx) + "] " + it->getName();
+        if (basePrice <= 0 || sellPrice <= 0) label += " (판매불가)";
+        else label += " (판매가 " + std::to_string(sellPrice) + "G)";
+        return label;
+        };
+
+    clearScreen();
+    grid.printItemGrid(inv.getItems(), "💰 판매할 아이템 선택", labelInvSell, 3, 0, 8);
+    std::cout << "----------------------------------------\n";
+    std::cout << "장착 상태:\n";
+    inv.listEquipped();
+
+    int idx = grid.askInventoryIndexOrCancel(inv, "\n판매할 아이템을 선택하세요");
+    if (idx == -1) return;
+
+    const auto& items = inv.getItems();
+    Item* peek = (idx >= 0 && idx < (int)items.size()) ? items[idx] : nullptr;
+
+    if (!peek) { grid.waitAnyKey("판매 실패. "); return; }
+
+    int basePrice = peek->getPrice();
+    int sellPrice = (basePrice * 60) / 100;
+
+    if (basePrice <= 0 || sellPrice <= 0) {
+        grid.waitAnyKey("이 아이템은 판매할 수 없습니다. ");
+        return;
+    }
+
+    std::cout << "선택한 아이템: " << peek->getName() << "\n";
+    std::cout << "판매가: " << sellPrice << "G\n";
+
+    Item* sold = inv.extractAt(idx);
+    if (!sold) { grid.waitAnyKey("판매 실패. "); return; }
+
+    shop.sellItem(&player, sold);
+    delete sold;
+
+    std::cout << "판매 완료! +" << sellPrice << "G\n";
+    grid.waitAnyKey();
 }
