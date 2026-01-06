@@ -73,7 +73,6 @@ void GameManager::play() {
 		case GameState::MAIN_MENU:
 			showMainMenu();
 			break;
-
 		case GameState::CHARACTER_CREATION:
 			createCharacter();
 			currentState = GameState::PHASE_1;
@@ -142,9 +141,11 @@ void GameManager::showMainMenu() {
 
         engine.Update(dt);
 
-        if (Engine::exitRequested == true) {
-            break;
-        }
+		if (Engine::exitRequested == true) {
+			isRunning = false;
+			currentState = GameState::ENDING;
+			break;
+		}
     }
 
     if (Engine::isMainMenu == true) {
