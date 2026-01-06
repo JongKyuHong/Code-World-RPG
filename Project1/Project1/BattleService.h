@@ -12,13 +12,19 @@ private:
     Monster* monster;
     UIManager uiManager;
 
-    // 전투로그 남기기
+      // 전투로그 남기기
     std::vector<std::string> battleLog;
 
     void playerTurn();
     void monsterTurn();
     void displayBattleStatus();
     void addLog(const std::string& message);
+
+      // 보스 퀴즈 전용
+    BattleResult bossBattle();
+    std::vector<std::pair<std::string, std::string>> getBossQuizzes(const std::string& bossName);
+
+    BattleResult normalBattle();
 
 public:
     // 1. 크리티컬 여부 결정 (선언)

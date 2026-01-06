@@ -3,6 +3,7 @@
 #include <Windows.h>   // WCHAR 정의
 #include <vector>
 #include <string>
+struct TextFile;
 class TextLoader;
 class Renderer {
 public:
@@ -22,6 +23,9 @@ public:
 
     std::string ToString() const;
 
+    TextLoader* GetTextLoader() const { return textLoader; }
+    TextFile GetTextFile(const std::string& filename);
+    void PutStringClipped(int x, int y, const std::string& str, int maxLen);
 private:
     int width = 0;
     int height = 0;
