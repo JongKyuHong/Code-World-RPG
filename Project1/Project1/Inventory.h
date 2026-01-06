@@ -1,13 +1,14 @@
-// Inventory.h
-#pragma once
+﻿#pragma once
 #include <vector>
+#include <string>
 
-#include<string>
 #include "Types.h"
-#include "Item.h"
+
+// 전방 선언(헤더 의존성 최소화)
+class Item;
+class Character;
 class EffectSystem;
 class EffectManager;
-class Character;
 
 class Inventory {
 private:
@@ -18,11 +19,9 @@ public:
     Inventory();
     ~Inventory();
 
-    // 복사 금지(포인터 소유하므로 깊은 복사/이중 delete 방지)
     Inventory(const Inventory&) = delete;
     Inventory& operator=(const Inventory&) = delete;
 
-    // 이동은 필요하면 나중에 구현
     Inventory(Inventory&&) = delete;
     Inventory& operator=(Inventory&&) = delete;
 
@@ -32,15 +31,21 @@ public:
     void listEquipped() const;
     const std::vector<Item*>& getItems() const { return items; }
 
-    void useItem(Character* c, int index, EffectSystem& es, EffectManager& mgr);                 // 소비/버프 사용
-    void equipItem(Character* c, int index, EquipSlot slot); // 장비 착용
-    void unequipItem(Character* c, EquipSlot slot);        // 장비 해제
+    // 소비/버프 사용 (구현은 cpp에서 Effect/Character 포함)
+    bool useItem(Character* c, int index, EffectSystem& es, EffectManager& manager, std::string* outUsedName = nullptr);
+    // 장비
+    void equipItem(Character* c, int index, EquipSlot slot);
+    void unequipItem(Character* c, EquipSlot slot);
+
+    // 조회/유틸
     int findIndexByName(const std::string& name) const;
-    // 장착 표시용(가능하면)
     Item* getEquipped(EquipSlot slot) const;          // 없으면 nullptr
 
+    // 장착 판정
     bool isEquippedName(const std::string& itemName) const;
+    bool isEquippedPtr(Item* p) const;
 
+    // 소유권 이동/크기
+    Item* extractAt(int index);
     int size() const;
 };
-

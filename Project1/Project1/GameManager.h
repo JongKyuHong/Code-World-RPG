@@ -6,6 +6,17 @@
 #include "Item.h"
 #include "Character.h"
 #include "UIManager.h"
+#include "Types.h"        // ✅ PhaseType, EquipSlot 등은 여기서 가져온다고 가정
+#include "UIManager.h"    // ✅ InventoryAction, UIManager
+#include "ItemContext.h"  // ✅ ctx
+#include "BattleRewardService.h" 
+
+// forward declarations (헤더에서는 가볍게)
+class Character;
+class Monster;
+
+class EffectSystem;
+class EffectManager;
 
 struct MonsterData {
     std::string name;
@@ -23,6 +34,7 @@ enum class GameState {
     PHASE_2,
     PHASE_3,
     SHOP,
+    INVENTORY,
     BATTLE,
     BOSS_BATTLE,
     PHASE_CLEAR,
@@ -39,6 +51,7 @@ enum class PhaseType {
 class GameManager
 {
 private:
+    ItemContext& ctx;
     UIManager uiManager;
     Character* player;
 
@@ -48,17 +61,22 @@ private:
     bool isRunning;
     int currentRound;
     int totalRoundsInPhase;
-
+    BattleRewardService& rewardService; // 오류 해결: BattleRewardService 선언 필요
     std::vector<MonsterData> phase1Monsters;
     std::vector<MonsterData> phase2Monsters;
     std::vector<MonsterData> phase3Monsters;
     std::map<std::string, int> mobKillCounts;
+
+    // ✅ Effect는 incomplete type 문제 때문에 포인터로 보유
+    EffectSystem* effectSystem = nullptr;
+    EffectManager* effectManager = nullptr;
 
     // 상태별 메서드들
     void showMainMenu();
     void createCharacter();
     void startPhase(PhaseType phase);
     void runShop();
+    void runInventory();
     void runBattle();
     void runBossBattle();
     void showPhaseClearScreen();
@@ -69,11 +87,12 @@ private:
     Monster* generateMonster();
     Monster* generateBoss();
     void handlePlayerDeath();
-    void applyBuffItems();
     void clearScreen();
-    void waitForInput();
 
 public:
+    GameManager(ItemContext& ctx, BattleRewardService& rewardService);
+    ~GameManager() = default;  // ✅ 이 한 줄로 해결 가능
+
     // call Main Menu에서 게임시작을했을때
     // 여기로 불러와서 게임진행
     // 처음오면 캐릭터생성

@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include "Entity.h"
-
+#include "iostream"
 class Item; // Item 클래스 전방 선언
 
 class Character : public Entity {
@@ -31,11 +31,7 @@ private:
     Character& operator=(const Character&) = delete;
 
 public:
-    ~Character() override {
-        for (Item* item : equipment) {
-            delete item;
-        }
-    }
+    ~Character() = default;
 
     static Character* getInstance(const std::string& name = "") {
         if (instance == nullptr) {

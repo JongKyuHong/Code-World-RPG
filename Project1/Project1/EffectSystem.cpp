@@ -1,5 +1,5 @@
 ﻿#include "EffectSystem.h"
-static bool isRevertible(const Effect& e) {
+static bool isRevertible(const Effect & e) {
 	return e.type == EffectType::AddStatFlat /* || 추후 지속형 버프 타입들 */;
 }
 //아이템 duration(효과 지속 턴 수)에 따라서 활성화 필요한 경우

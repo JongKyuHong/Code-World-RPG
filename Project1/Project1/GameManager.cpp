@@ -17,6 +17,54 @@
 #include <cstdlib> 
 #include "MonsterEncounter.h"
 
+#include "BattleRewardService.h"   // ✅ 추가
+// ✅ Effect
+#include "EffectSystem.h"
+#include "EffectManager.h"
+
+// ✅ Item/Inventory
+#include "Inventory.h"
+#include "Item.h"
+#include "Character.h"
+
+struct StatSnapshot {
+    int hp;
+    int maxHp;
+    int atk;
+};
+
+static StatSnapshot snap(Character* c) {
+    return { c->getHealth(), c->getMaxHealth(), c->getAttack() };
+}
+
+static std::string diffToText(const StatSnapshot& before, const StatSnapshot& after) {
+    std::string out;
+
+    auto append = [&](const std::string& name, int b, int a) {
+        int d = a - b;
+        if (d == 0) return;
+        if (!out.empty()) out += " | ";
+        out += name + (d > 0 ? " +" : " ") + std::to_string(d);
+        };
+
+    append("공격력", before.atk, after.atk);
+    append("최대 체력", before.maxHp, after.maxHp);
+    append("체력", before.hp, after.hp);
+
+    if (out.empty()) out = "변화 없음";
+    return out;
+}
+
+// ✅ 생성자 시그니처 변경: rewardService 주입
+GameManager::GameManager(ItemContext& ctx, BattleRewardService& rewardService)
+    : ctx(ctx)
+    , uiManager(ctx.artRepo)          // ✅ 기존 그대로
+    , rewardService(rewardService)    // ✅ 추가
+{
+    effectSystem = new EffectSystem();
+    effectManager = new EffectManager();
+}
+
 void GameManager::play() {
 	isRunning = true;
 	currentState = GameState::MAIN_MENU;
@@ -48,6 +96,11 @@ void GameManager::play() {
 			runShop();
 			currentState = GameState::BATTLE;
 			break;
+		
+		case GameState::INVENTORY:
+            runInventory();
+            currentState = GameState::BATTLE;
+            break;
 
 		case GameState::BATTLE:
 			runBattle();
@@ -175,12 +228,16 @@ void GameManager::startPhase(PhaseType phase) {
 	}
 
 	// 상점 방문 여부
-	int choice = uiManager.askShopVisit();
-	if (choice == 1) {
-		currentState = GameState::BATTLE;
-	} else {
-		currentState = GameState::SHOP;
-	}
+    int choice = uiManager.askShopVisit();
+    if (choice == 1) {
+        currentState = GameState::BATTLE;
+    }
+    else if (choice == 2) {
+        currentState = GameState::SHOP;
+    }
+    else {
+        currentState = GameState::INVENTORY;
+    }
 }
 
 void GameManager::runBattle() {
@@ -231,7 +288,13 @@ void GameManager::runBattle() {
 	//applyBuffItems();
 
 	// 실제 전투
-	BattleService battleService;
+    // ✅ BattleService 생성자 변경: UIManager + rewardService 주입
+    BattleService battleService(uiManager, rewardService);
+    battleService.setInventory(&ctx.inventory);
+
+    battleService.setOpenInventoryCallback([this]() {
+        this->runInventory();
+        });
 	BattleResult result = battleService.battle(player, monster);
 
 	delete monster;
@@ -248,12 +311,16 @@ void GameManager::runBattle() {
 		}
 		else {
 			// 상점에 방문하는가?
-			int choice = uiManager.askShopVisit();
-			if (choice == 1) {
-				currentState = GameState::BATTLE;
-			} else {
-				currentState = GameState::SHOP;
-			}
+           int choice = uiManager.askShopVisit();
+            if (choice == 1) {
+                currentState = GameState::BATTLE;
+            }
+            else if (choice == 2) {
+                currentState = GameState::SHOP;
+            }
+            else {
+                currentState = GameState::INVENTORY;
+            }
 		}
 	}
 	else {
@@ -271,7 +338,12 @@ void GameManager::runBossBattle() {
 	//applyBuffItems();
 
 	// 실제 전투
-	BattleService battleService;
+	BattleService battleService(uiManager, rewardService);
+	battleService.setInventory(&ctx.inventory);
+    battleService.setOpenInventoryCallback([this]() {
+        this->runInventory();
+        });
+
 	BattleResult result = battleService.battle(player, bossMonster);
 
 	// 전투정보 받아와서 처리
@@ -375,43 +447,100 @@ Monster* GameManager::generateBoss() {
 }
 
 void GameManager::runShop() {
-	Shop* shop = Shop::getInstance();
-	bool shopping = true;
+    Shop* shop = ctx.shop;
+    uiManager.runShop(*shop, *player, ctx.inventory);
+    currentState = GameState::BATTLE;
+}
 
-	while (shopping) {
-		uiManager.showShopMenu(player->getGold());
+void GameManager::runInventory() {
+    while (true) {
+        InventoryAction act = uiManager.askInventoryAction(ctx.inventory);
 
-		// 상점 아이템 목록 표시
-		// shop->displayItems();
+        switch (act.type) {
+        case InventoryAction::Exit:
+            return;
 
-		int choice;
-		std::cin >> choice;
+        case InventoryAction::Equip: {
+            Item* it = ctx.inventory.getItems()[act.index];
+            if (!it) {
+                std::cout << "잘못된 선택입니다.\n";
+                uiManager.waitForKeyPress();
+                break;
+            }
 
-		if (std::cin.fail()) {
-			std::cin.clear();
-			std::cin.ignore(10000, '\n');
+            if (!it->isEquipItem()) {
+                std::cout << "장비 아이템이 아닙니다.\n";
+                uiManager.waitForKeyPress();
+                break;
+            }
 
-			std::cout << "\n❌ 숫자를 입력하세요!\n";
-			continue;  // 다시 메뉴 표시
-		}
+            // ✅ 적용 전/후 스탯 비교
+            StatSnapshot before = snap(player);
 
-		switch (choice) {
-		case 1:
-			// shop->buyItem(index)
-			break;
-		case 2:
-			// shop->sellItem(index)
-			break;
-		case 3:
-			std::cout << "상점을 나갑니다\n";
-			shopping = false;
-			break;
-		default:
-			std::cout << "입력이 잘못됨\n";
-			break;
-		}
-	}
-	currentState = GameState::BATTLE;
+            ctx.inventory.equipItem(player, act.index, it->getEquipSlotHint());
+
+            StatSnapshot after = snap(player);
+
+            uiManager.showItemActionScreen(
+                "💼 아이템 장착",
+                it->getName(),
+                diffToText(before, after)
+            );
+
+            uiManager.waitForKeyPress();
+            break;
+        }
+
+        case InventoryAction::Unequip: {
+            // ✅ 해제는 아이템명을 알기 어려우니(현재 API 상)
+            // 변화량만 보여주는 방식으로 처리
+            StatSnapshot before = snap(player);
+
+            ctx.inventory.unequipItem(player, act.slot);
+
+            StatSnapshot after = snap(player);
+
+            uiManager.showItemActionScreen(
+                "🧤 장비 해제",
+                (act.slot == EquipSlot::Weapon ? "Weapon Slot" : "Armor Slot"),
+                diffToText(before, after)
+            );
+
+            uiManager.waitForKeyPress();
+            break;
+        }
+
+        case InventoryAction::Use: {
+            Item* it = ctx.inventory.getItems()[act.index];
+            if (!it) {
+                std::cout << "잘못된 선택입니다.\n";
+                uiManager.waitForKeyPress();
+                break;
+            }
+
+            // ✅ useItem은 내부에서 delete/erase 되므로 이름을 먼저 저장
+            std::string itemName = it->getName();
+
+            StatSnapshot before = snap(player);
+
+            ctx.inventory.useItem(player, act.index, *effectSystem, *effectManager);
+
+            StatSnapshot after = snap(player);
+
+            uiManager.showItemActionScreen(
+                "💊 아이템 사용",
+                itemName,
+                diffToText(before, after)
+            );
+
+            uiManager.waitForKeyPress();
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
 }
 
 void GameManager::showPhaseClearScreen() {}
