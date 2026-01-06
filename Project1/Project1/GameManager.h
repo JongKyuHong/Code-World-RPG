@@ -11,7 +11,6 @@
 #include "ItemContext.h"  // ✅ ctx
 #include "BattleRewardService.h" 
 #include "BattleService.h" // BattleMode
-#include "BattlePhaseScene.h" 
 
 // forward declarations (헤더에서는 가볍게)
 class Character;
@@ -19,6 +18,7 @@ class Monster;
 
 class EffectSystem;
 class EffectManager;
+class BattlePhaseScene;
 
 struct MonsterData {
     std::string name;

@@ -194,6 +194,9 @@ void UIManager::showShopMenu(int playerGold) {
 
 int UIManager::askShopVisit() {
     clearScreen();
+    while (_kbhit()) {
+        _getch();
+    }
     std::cout << "\n";
     std::cout << "╔════════════════════════════════════════════════════════════╗\n";
     std::cout << "║                                                            ║\n";

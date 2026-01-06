@@ -261,7 +261,6 @@ ENDREWARD
 # ----------------------------
 
 REWARD|SingletonKing
-GUARANTEE|강창민 튜터님의 가호
 PICK|큰 포션|12
 PICK|강화된 철 검(+15)|9
 PICK|강화된 갑옷(+30)|9
@@ -280,6 +279,7 @@ PICK|강화된 갑옷(+30)|6
 ENDREWARD
 
 REWARD|StrategyGeneral
+GUARANTEE|강창민 튜터님의 가호
 PICK|강화된 철 검(+15)|15
 PICK|전설의 공격 버프(+10 / 5턴)|15
 ENDREWARD

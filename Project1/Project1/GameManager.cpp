@@ -19,12 +19,11 @@
 #include "BattleScene.h"
 #include "BattlePhaseScene.h"
 
-#include "BattleRewardService.h"   // ✅ 추가
-// ✅ Effect
+#include "BattleRewardService.h"
+
 #include "EffectSystem.h"
 #include "EffectManager.h"
 
-// ✅ Item/Inventory
 #include "Inventory.h"
 #include "Item.h"
 #include "Character.h"
@@ -250,40 +249,6 @@ void GameManager::runBattle() {
 	std::cin.clear();
 	std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
-	// 아스키아트
-	//Sleep(100);
-	//{
-	//	// 몬스터 등장 애니메이션
-	//	Engine encounterEngine(160, 50);
-
-	//	SceneManager::GetInstance().Register("Encounter", [&]() {
-	//		return std::make_unique<MonsterEncounter>(monster, player);
-	//	});
-
-	//	using clock = std::chrono::steady_clock;
-	//	auto prev = clock::now();
-
-	//	SceneManager::GetInstance().LoadScene("Encounter");
-
-	//	// 등장 애니메이션 루프
-	//	while (encounterEngine.IsRunning()) {
-	//		auto now = clock::now();
-	//		std::chrono::duration<float> delta = now - prev;
-	//		prev = now;
-	//		float dt = delta.count();
-
-	//		encounterEngine.Update(dt);
-
-	//		MonsterEncounter* scene = dynamic_cast<MonsterEncounter*>(
-	//			SceneManager::GetInstance().GetCurrent()
-	//			);
-
-	//		if (scene && scene->IsFinished()) {
-	//			break;  // 전투 시작
-	//		}
-	//	}
-	//}
-
 	uiManager.clearScreen();
 	uiManager.showMonsterEncounter(monster->getName());
 
@@ -291,7 +256,7 @@ void GameManager::runBattle() {
 	//applyBuffItems();
 
 	// 실제 전투
-    // ✅ BattleService 생성자 변경: UIManager + rewardService 주입
+    // BattleService 생성자 변경: UIManager + rewardService 주입
     BattleService battleService(uiManager, rewardService);
     battleService.setInventory(&ctx.inventory);
 	battleService.setBattleMode(battleMode_);
@@ -367,16 +332,31 @@ void GameManager::runBossBattle() {
 			SceneManager::GetInstance().GetCurrent()
 			);
 
-		if (scene && scene->IsFinished()) {  // ← IsPhaseFinished → IsFinished
+		if (scene && scene->IsFinished()) {
 			break;
 		}
 	}
 
 	delete battleService;
 
+	BattlePhaseScene* finalScene = dynamic_cast<BattlePhaseScene*>(
+		SceneManager::GetInstance().GetCurrent()
+		);
+
+	BattleResult result(0, 0);  // 기본값
+	if (finalScene) {
+		result = finalScene->GetBattleResult();
+	}
+
 	// 전투 결과 처리
 	if (player->isAlive()) {
 		mobKillCounts[bossName]++;
+		uiManager.showVictoryScreen(
+			result.isBossKill,
+			result.goldEarned,
+			result.expEarned,
+			result.droppedItemNames
+		);
 		delete bossMonster;
 		uiManager.waitForKeyPress();
 

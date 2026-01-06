@@ -89,7 +89,7 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
     RewardManager* rewardManager = RewardManager::getInstance();
     BattleResult result = rewardManager->generateRewards(monster);
 
-    // ✅ 모드에 따라 wait 동작 통합
+    // 모드에 따라 wait 동작 통합
     auto waitIfManual = [&]() {
         if (mode_ == BattleMode::Manual) {
             uiManager.waitForKeyPress();
@@ -140,7 +140,7 @@ BattleResult BattleService::normalBattle() {
     while (player->isAlive() && monster->isAlive()) {
         turnCount++;
 
-        // ✅ 자동 컨트롤러 턴 훅 (수동이어도 호출해도 무방)
+        // 자동 컨트롤러 턴 훅 (수동이어도 호출해도 무방)
         autoCtrl.onTurnStart(turnCount);
 
         uiManager.showTurnNumber(turnCount);
@@ -296,7 +296,7 @@ void BattleService::playerTurnAuto()
 
             std::string effectText = diffToText(before, after);
 
-            // ✅ 여기서 UI 출력
+            // 여기서 UI 출력
             uiManager.showItemActionScreen(
                 "🧍 " + player->getName() + "의 아이템 사용",
                 usedName,
@@ -474,24 +474,24 @@ std::vector<std::pair<std::string, std::string>> BattleService::getBossQuizzes(c
 
     if (bossName.find("PointerLich") != std::string::npos) {
         quizzes = {
-            {"int* ptr;의 * 기호 의미는?\n   1) 곱셈연산자\n   2) 포인터선언\n   3) 참조연산자", "2"},
-            {"int x=5; int* p=&x; *p=10; 실행 후 x값은?\n   1) 5\n   2) 10\n   3) 15", "2"},
-            {"int x=10; int* p=&x; cout << *p; 출력값은?\n   1) 10\n   2) 0\n   3) 주소값", "1"}
+            {"int* ptr;의 * 기호 의미는?\n1) 곱셈연산자\n2) 포인터선언\n3) 참조연산자", "2"},
+            {"int x=5; int* p=&x; *p=10; 실행 후 x값은?\n1) 5\n2) 10\n3) 15", "2"},
+            {"int x=10; int* p=&x; cout << *p; 출력값은?\n1) 10\n2) 0\n3) 주소값", "1"}
         };
     } else if (bossName.find("PolyDragon") != std::string::npos) {
         quizzes = {
-            {"class A { virtual void f(); }; 'virtual' 키워드 역할은?\n   1) 상속\n   2) 템플릿\n   3) 가상함수", "3"},
-            {"class Parent { void show(); }; class Child : public Parent { void show(); }; 관계는?\n   1) 오버로드\n   2) 오버라이드\n   3) 다중상속", "2"},
-            {"Base* obj = new Derived(); 이때 obj의 실제 타입은?\n   1) Base\n   2) Derived\n   3) void*", "2"},
-            {"class Animal { virtual ~Animal() {} }; 소멸자에 virtual을 쓰는 이유는?\n   1) 메모리누수방지\n   2) 성능향상 \n   3) 컴파일오류방지", "1"}
+            {"class A { virtual void f(); }; 'virtual' 키워드 역할은?\n1) 상속\n2) 템플릿\n3) 가상함수", "3"},
+            {"class Parent { void show(); }; class Child : public Parent { void show(); }; 관계는?\n1) 오버로드\n2) 오버라이드\n3) 다중상속", "2"},
+            {"Base* obj = new Derived(); 이때 obj의 실제 타입은?\n1) Base\n2) Derived\n3) void*", "2"},
+            {"class Animal { virtual ~Animal() {} }; 소멸자에 virtual을 쓰는 이유는?\n1) 메모리누수방지\n2) 성능향상 \n3) 컴파일오류방지", "1"}
         };
     } else if (bossName.find("TeamProjectDevil") != std::string::npos) {
         quizzes = {
-            {"GitHub에서 코드 병합을 요청하는 기능은?\n   1) Commit\n   2) PR\n   3) Issue", "2"},
-            {"class Singleton { static Singleton* instance; }; instance는 몇 개?\n   1) 0\n   2) 1개\n   3) 무한대", "2"},
-            {"Observer 패턴에서 상태 변경 시 누가 통보?\n   1) Observer\n   2) Context\n   3) Subject", "3"},
-            {"Git에서 브랜치를 합치는 명령어는?\n   1) merge\n   2) push\n   3) commit", "1"},
-            {"데코레이터 패턴의 핵심 비유로 가장 적절한 것은?\n   1) 붕어빵 틀에서 붕어빵 찍어내기\n   2) 마트료시카 인형처럼 객체 안에 객체를 계속 감싸기\n   3) 로봇 조립처럼 부품을 조합하기", "2"}
+            {"GitHub에서 코드 병합을 요청하는 기능은?\n1) Commit\n2) PR\n3) Issue", "2"},
+            {"class Singleton { static Singleton* instance; }; instance는 몇 개?\n1) 0\n2) 1개\n3) 무한대", "2"},
+            {"Observer 패턴에서 상태 변경 시 누가 통보?\n1) Observer\n2) Context\n3) Subject", "3"},
+            {"Git에서 브랜치를 합치는 명령어는?\n1) merge\n2) push\n3) commit", "1"},
+            {"데코레이터 패턴의 핵심 비유로 가장 적절한 것은?\n1) 붕어빵 틀에서 붕어빵 찍어내기\n2) 마트료시카 인형처럼 객체 안에 객체를 계속 감싸기\n3) 로봇 조립처럼 부품을 조합하기", "2"}
         };
     }
 

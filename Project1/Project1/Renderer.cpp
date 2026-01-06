@@ -51,42 +51,35 @@ Renderer::Renderer(int w, int h)
     SMALL_RECT targetRect = MakeClampedRect(hOut, (SHORT)w, (SHORT)h);
     SetConsoleWindowInfo(hOut, TRUE, &targetRect);
 
-    // ✅ 기본 색상 설정 (검정 배경, 흰색 전경)
     SetConsoleTextAttribute(hOut, (BLACK << 4) | WHITE);
 }
 
 
-// ════════════════════════════════════════════════════════════
-// Present() - 색상 정보와 함께 한 번에 출력 (깜빡임 최소화)
-// ════════════════════════════════════════════════════════════
+
+// 색상 정보와 함께 한 번에 출력 (깜빡임 최소화)
 void Renderer::Present()
 {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleCursorPosition(hOut, { 0, 0 });
 
-    // 문자와 색상을 함께 출력
-    for (int y = 0; y < height; ++y)
-    {
-        for (int x = 0; x < width; ++x)
-        {
+    // ✅ WriteConsoleOutput() 사용
+    std::vector<CHAR_INFO> screenBuffer(width * height);
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
             int idx = y * width + x;
-
-            // 색상 변경 (배경: 검정, 전경: colorBuffer)
-            SetConsoleTextAttribute(hOut, (BLACK << 4) | colorBuffer[idx]);  // ✅ BLACK으로 변경
-
-            // 문자 출력
-            WCHAR wc = buffer[idx];
-            WriteConsoleW(hOut, &wc, 1, nullptr, nullptr);
+            screenBuffer[idx].Char.UnicodeChar = buffer[idx];
+            screenBuffer[idx].Attributes = (BLACK << 4) | colorBuffer[idx];
         }
-
-        // 줄바꿈 (배경: 검정, 전경: 회색)
-        SetConsoleTextAttribute(hOut, (BLACK << 4) | WHITE);  // ✅ BLACK 배경 + WHITE 전경
-        WriteConsoleW(hOut, L"\n", 1, nullptr, nullptr);
     }
 
-    // 색상 초기화 (배경: 검정, 전경: 흰색)
-    SetConsoleTextAttribute(hOut, (BLACK << 4) | WHITE);  // ✅ 기본값도 검정 배경
+    COORD bufferSize = { (SHORT)width, (SHORT)height };
+    COORD origin = { 0, 0 };
+    SMALL_RECT writeRegion = { 0, 0, (SHORT)(width - 1), (SHORT)(height - 1) };
+
+    WriteConsoleOutput(hOut, screenBuffer.data(), bufferSize, origin, &writeRegion);
 }
+
 
 void Renderer::Put(int x, int y, WCHAR c)
 {
@@ -94,7 +87,7 @@ void Renderer::Put(int x, int y, WCHAR c)
         return;
 
     buffer[y * width + x] = c;
-    colorBuffer[y * width + x] = currentColor;  // ✅ 현재 색상 저장
+    colorBuffer[y * width + x] = currentColor;
 }
 
 static std::wstring ToWideFromUtf8OrAcp(const std::string& s)
@@ -128,13 +121,9 @@ void Renderer::PutString(int x, int y, const std::string& str) {
     for (int i = start; i < end && i < width; ++i) {
         int idx = y * width + i;
         buffer[idx] = ws[i - x];
-        colorBuffer[idx] = currentColor;  // ✅ 현재 색상 저장
+        colorBuffer[idx] = currentColor;
     }
 }
-
-// ════════════════════════════════════════════════════════════
-// 색상 기능 (개선: 버퍼에만 저장)
-// ════════════════════════════════════════════════════════════
 
 void Renderer::SetColor(Color foreground, Color background) {
     currentColor = foreground;
@@ -148,7 +137,7 @@ void Renderer::PutString(int x, int y, const std::string& str, Color color) {
     if (y < 0 || y >= height) return;
 
     Color oldColor = currentColor;
-    currentColor = color;  // ✅ 색상 임시 변경
+    currentColor = color;
 
     std::wstring ws = ToWideFromUtf8OrAcp(str);
 
@@ -159,10 +148,10 @@ void Renderer::PutString(int x, int y, const std::string& str, Color color) {
     for (int i = start; i < end && i < width; ++i) {
         int idx = y * width + i;
         buffer[idx] = ws[i - x];
-        colorBuffer[idx] = color;  // ✅ 지정된 색상 저장
+        colorBuffer[idx] = color;
     }
 
-    currentColor = oldColor;  // ✅ 색상 복원
+    currentColor = oldColor;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -197,8 +186,10 @@ void Renderer::PutTextFile(int x, int y, const std::string& filename)
 void Renderer::Clear()
 {
     std::fill(buffer.begin(), buffer.end(), (WCHAR)ClearChar);
-    std::fill(colorBuffer.begin(), colorBuffer.end(), LIGHT_GRAY);  // ✅ 색상도 초기화
+    std::fill(colorBuffer.begin(), colorBuffer.end(), LIGHT_GRAY);
 }
+
+
 
 std::string Renderer::ToString() const
 {
@@ -239,7 +230,7 @@ void Renderer::PutStringClipped(int x, int y, const std::string& str, int maxLen
         int srcIdx = i - x;
         if (srcIdx >= 0 && srcIdx < (int)ws.size()) {
             buffer[y * width + i] = ws[srcIdx];
-            colorBuffer[y * width + i] = currentColor;  // ✅ 색상 저장
+            colorBuffer[y * width + i] = currentColor;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <Windows.h>   // WCHAR 정의
+#include <Windows.h>
 #include <vector>
 #include <string>
 
@@ -53,15 +53,18 @@ public:
     TextLoader* GetTextLoader() const { return textLoader; }
     TextFile GetTextFile(const std::string& filename);
     void PutStringClipped(int x, int y, const std::string& str, int maxLen);
-
+    int GetWidth() { return width; }
+    int GetHeight() { return height; }
 private:
     int width = 0;
     int height = 0;
     TextLoader* textLoader = nullptr;
 
     std::vector<WCHAR> buffer;
-    std::vector<Color> colorBuffer;  // ✅ 색상 버퍼 추가
-    Color currentColor = LIGHT_GRAY; // ✅ 현재 색상 저장
+    std::vector<Color> colorBuffer;
+    Color currentColor = LIGHT_GRAY;
 
     static constexpr WCHAR ClearChar = L' ';
+
+    mutable CONSOLE_SCREEN_BUFFER_INFO csbi;
 };

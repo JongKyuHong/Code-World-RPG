@@ -16,6 +16,12 @@ struct BattleResult {
     // ✅ 추가: 드랍된 아이템 이름 목록
     std::vector<std::string> droppedItemNames;
 
+    BattleResult()
+        : playerWon(false), goldEarned(0), expEarned(0), levelUps(0),
+        monsterName(""), isBossKill(false), totalDamageDealt(0),
+        totalDamageTaken(0), turnCount(0) {
+    }
+
     BattleResult(int gold, int exp)
         : playerWon(false), goldEarned(gold), expEarned(exp), levelUps(0), monsterName(""), isBossKill(false),
         totalDamageDealt(0), totalDamageTaken(0), turnCount(0) {
