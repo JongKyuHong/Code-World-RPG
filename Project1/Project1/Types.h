@@ -34,3 +34,8 @@ struct InventoryAction {
     int index = -1;              // Use/Equip/ShowArt 할 때 인벤 인덱스
     EquipSlot slot = EquipSlot::Weapon;  // Unequip 할 때 슬롯
 };
+
+enum class BattleMode {
+    Manual,
+    Auto
+};

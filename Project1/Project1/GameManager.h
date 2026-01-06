@@ -10,6 +10,7 @@
 #include "UIManager.h"    // ✅ InventoryAction, UIManager
 #include "ItemContext.h"  // ✅ ctx
 #include "BattleRewardService.h" 
+#include "BattleService.h" // BattleMode
 
 // forward declarations (헤더에서는 가볍게)
 class Character;
@@ -54,7 +55,7 @@ private:
     ItemContext& ctx;
     UIManager uiManager;
     Character* player;
-
+    BattleMode battleMode_ = BattleMode::Manual; // ✅ 기본값
     GameState currentState;
     PhaseType currentPhase = PhaseType::NONE;
 

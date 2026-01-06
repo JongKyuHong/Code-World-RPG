@@ -178,6 +178,13 @@ BattleResult BattleService::normalBattle() {
             result.droppedItemNames
         );
         RewardManager::getInstance()->applyRewards(player, result);
+        if (result.levelUps > 0) {
+            uiManager.showLevelUp(
+                player->getLevel(),
+                result.levelUps
+            );
+        };
+        waitNextBeat();
         monster->onDeath();
     } else {
         uiManager.showDefeatScreen();
@@ -450,6 +457,13 @@ BattleResult BattleService::bossBattle() {
             result.droppedItemNames
     );
     RewardManager::getInstance()->applyRewards(player, result);
+    if (result.levelUps > 0) {
+        uiManager.showLevelUp(
+            player->getLevel(),
+            result.levelUps
+        );
+    };
+    waitNextBeat();
     monster->onDeath();
     return result;
 }

@@ -30,9 +30,14 @@ BattleResult RewardManager::generateRewards(const Monster* monster) {
     return result;
 }
 
-void RewardManager::applyRewards(Character* player, const BattleResult& result) {
+void RewardManager::applyRewards(Character* player, BattleResult& result) {
     player->addGold(result.goldEarned);
+
+    // A안: exp만 더하고
     player->addExperience(result.expEarned);
+
+    // 레벨업은 별도 처리 + 횟수 기록
+    result.levelUps = player->levelUp();
 }
 
 void RewardManager::displayRewards(const BattleResult& result) {

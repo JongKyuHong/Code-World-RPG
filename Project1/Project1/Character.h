@@ -56,11 +56,36 @@ public:
 
     // 경험치, 일반 몬스터 50, 보스몬스터 100
     void addExperience(int value) {
+        if (value <= 0) return;
         experience += value;
     }
 
     // 레벨업
-    void levelUp() {}
+    int levelUp() {
+        static constexpr int MAX_LEVEL = 10;
+        static constexpr int EXP_PER_LEVEL = 100;
+
+        int levelUps = 0; //레벨업 수치
+
+
+        while (experience >= EXP_PER_LEVEL && level < MAX_LEVEL) {
+            experience -= EXP_PER_LEVEL;
+            level += 1;
+            levelUps += 1;
+
+            // 네 규칙: Lv * 20 / Lv * 5 (레벨업 "후" 레벨 기준)
+            maxHealth += level * 20;
+            attack += level * 5;
+            health = maxHealth;
+        }
+
+        // 레벨 캡이면 경험치 정책 (원하는 대로)
+        if (level >= MAX_LEVEL) {
+            level = MAX_LEVEL;
+             experience = 0;
+        }
+        return levelUps;
+    }
     bool spendGold(int amount)
     {
         if (amount <= 0) {
