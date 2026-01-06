@@ -16,6 +16,8 @@
 #include <limits>
 #include <cstdlib> 
 #include "MonsterEncounter.h"
+#include "BattleScene.h"
+#include "BattlePhaseScene.h"
 
 #include "BattleRewardService.h"   // ✅ 추가
 // ✅ Effect
@@ -102,7 +104,7 @@ void GameManager::play() {
             break;
 
 		case GameState::BATTLE:
-			runBattle();
+			runBossBattle();
 			break;
 
 		case GameState::BOSS_BATTLE:
@@ -332,35 +334,52 @@ void GameManager::runBattle() {
 void GameManager::runBossBattle() {
 	uiManager.clearScreen();
 	Monster* bossMonster = generateBoss();
-
 	std::string bossName = bossMonster->getName();
 
-	// 전투 전 버프적용, 자동전투한다면 구현
-	//applyBuffItems();
+	Sleep(100);
 
-	// 실제 전투
-	BattleService battleService(uiManager, rewardService);
-	battleService.setInventory(&ctx.inventory);
-	battleService.setBattleMode(battleMode_);
-    battleService.setOpenInventoryCallback([this]() {
-        this->runInventory();
-        });
+	// 하나의 Engine 사용
+	Engine battleEngine(160, 50);
 
-	BattleResult result = battleService.battle(player, bossMonster);
+	// BattleService 생성
+	BattleService* battleService = new BattleService(uiManager, rewardService);
 
-	// 전투정보 받아와서 처리
+	// BattlePhaseScene 등록 (등장 + 전투를 모두 처리)
+	SceneManager::GetInstance().Register("BattlePhase", [&]() {
+		return std::make_unique<BattlePhaseScene>(player, bossMonster, battleService);
+	});
+
+	using clock = std::chrono::steady_clock;
+	auto prev = clock::now();
+
+	SceneManager::GetInstance().LoadScene("BattlePhase");
+
+	// 단일 루프
+	while (battleEngine.IsRunning()) {
+		auto now = clock::now();
+		std::chrono::duration<float> delta = now - prev;
+		prev = now;
+		float dt = delta.count();
+
+		battleEngine.Update(dt);
+
+		BattlePhaseScene* scene = dynamic_cast<BattlePhaseScene*>(
+			SceneManager::GetInstance().GetCurrent()
+			);
+
+		if (scene && scene->IsPhaseFinished()) {
+			break;
+		}
+	}
+
+	delete battleService;
+
+	// 전투 결과 처리
 	if (player->isAlive()) {
-		//mob킬수저장
 		mobKillCounts[bossName]++;
-
-		// reward 받는거 처리
-
-		// 몬스터 삭제
 		delete bossMonster;
-
 		uiManager.waitForKeyPress();
 
-		//다음라운드 실행
 		switch (currentPhase) {
 		case PhaseType::PHASE_1:
 			currentState = GameState::PHASE_2;
@@ -372,8 +391,7 @@ void GameManager::runBossBattle() {
 			currentState = GameState::ENDING;
 			break;
 		}
-	}
-	else {
+	} else {
 		delete bossMonster;
 		handlePlayerDeath();
 	}

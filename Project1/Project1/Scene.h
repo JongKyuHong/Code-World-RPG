@@ -6,12 +6,14 @@
 class Renderer;
 
 class Scene {
+protected:
+    bool isRunning = true;
 public:
     virtual ~Scene() {}
     virtual void OnEnter() {}
     virtual void Update(float deltaTime);
     virtual void Render(Renderer& renderer);
-
+    
     template<typename T, typename... Args>
     T& Spawn(Args&&... args) {
         static_assert(std::is_base_of<GameObject, T>::value, "Not GameObject");

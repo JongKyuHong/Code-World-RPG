@@ -108,6 +108,9 @@
     <ClCompile Include="MonsterEncounter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="BattlePhaseScene.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <!-- Core -->
@@ -235,6 +238,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MonsterEncounter.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleScene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -69,14 +69,32 @@ void MonsterEncounter::Render(Renderer& renderer) {
     int h = renderer.GetHeight();
     int centerX = w / 2;
 
-    // 1. 몬스터 아스키 (진짜 중앙)
-    std::string artPath = "Phase1/VariableSlime/" + std::to_string(monsterFrame + 1) + ".txt";
-    int artW = GetAsciiFileMaxLineWidth(artPath);
-    int artX = centerX - artW / 2;
-    artX = Clamp(artX, 0, w - artW);
-    renderer.PutTextFile(artX, 4, artPath);
+    int phase = monster->GetPhase();
 
-    int y = 16;
+    std::string artPath = "Texts/" + monster->getName() + std::to_string(monsterFrame + 1) + ".txt";
+
+    // === 직접 파일 읽기 (PutTextFile 대체) ===
+    std::ifstream file(artPath);
+    if (!file.is_open()) {
+        std::cerr << "[ERROR] Cannot open: " << artPath << std::endl;
+        renderer.PutString(10, 5, "ERROR: File not found!");
+    } else {
+        std::string line;
+        int lineY = 2;
+
+        while (std::getline(file, line) && lineY < h - 20) {
+            // 한 줄의 너비 기반으로 중앙 정렬
+            int lineW = (int)line.length();
+            int lineX = centerX - lineW / 2;
+            lineX = Clamp(lineX, 0, w - lineW);
+
+            renderer.PutString(lineX, lineY, line);
+            lineY++;
+        }
+        file.close();
+    }
+
+    int y = 20;
 
     // 2. 구분선
     renderer.PutString(0, y++, HLine(w, '='));
@@ -90,7 +108,7 @@ void MonsterEncounter::Render(Renderer& renderer) {
     renderer.PutString(0, y++, HLine(w, '='));
     y++;
 
-    // 4. 몬스터 정보 (타이핑)
+    // 4. 몬스터 정보
     int infoLineY = y;
     std::string fullInfo = monster->getMobInfo();
     int visibleLen = (int)(fullInfo.size() * appearTime);

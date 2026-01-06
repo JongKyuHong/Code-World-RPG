@@ -135,6 +135,7 @@
   <ItemGroup>
     <!-- original -->
     <ClInclude Include="BattleResult.h" />
+    <ClInclude Include="BattleScene.h" />
     <ClInclude Include="BattleService.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="Button.h" />
@@ -180,6 +181,7 @@
   <!-- Sources -->
   <ItemGroup>
     <!-- original -->
+    <ClCompile Include="BattlePhaseScene.h" />
     <ClCompile Include="BattleService.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="Button.cpp" />

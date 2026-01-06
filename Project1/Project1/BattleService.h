@@ -60,7 +60,7 @@ private:
     void tickEndOfTurn();
       // 보스 퀴즈 전용
     BattleResult bossBattle();
-    std::vector<std::pair<std::string, std::string>> getBossQuizzes(const std::string& bossName);
+    
 
     BattleResult normalBattle();
 
@@ -95,6 +95,8 @@ public:
     BattleMode getBattleMode() const { return mode_; }
 
     void waitNextBeat();   // 또는 waitAfterUi() 같은 이름
+
+    std::vector<std::pair<std::string, std::string>> getBossQuizzes(const std::string& bossName);
 };
 
 
