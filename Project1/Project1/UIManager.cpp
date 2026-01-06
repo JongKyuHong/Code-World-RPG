@@ -65,14 +65,24 @@ std::string UIManager::getPlayerName() {
     if (std::cin.peek() == '\n') {
         std::cin.ignore();
     }
-    std::getline(std::cin, playerName);
+    while (true) {
+        std::getline(std::cin, playerName);
 
-    if (playerName.empty()) {
-        std::cout << "\n이름을 입력하지 않았습니다. 기본 이름 'Hero'로 설정합니다.\n";
-        return "Hero";
+        // ✅ 공백만 입력한 경우(스페이스/탭/개행 등)
+        if (playerName.find_first_not_of(" \t\r\n\v\f") == std::string::npos) {
+            std::cout << "\n이름은 공백만 입력할 수 없습니다. 다시 입력해주세요.\n";
+            std::cout << "  📝 캐릭터 이름: ";
+            continue;
+        }
+
+        // ✅ (기존 동작 유지) 그냥 엔터만 쳐서 빈 입력이면 기본 이름
+        if (playerName.empty()) {
+            std::cout << "\n이름을 입력하지 않았습니다. 기본 이름 'Hero'로 설정합니다.\n";
+            return "Hero";
+        }
+
+        return playerName;
     }
-
-    return playerName;
 }
 
 void UIManager::showPlayerStats(std::string name, int health, int maxHealth, int attack, int level, int gold) {
