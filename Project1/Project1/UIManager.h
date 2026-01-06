@@ -83,7 +83,6 @@ public:
     void showQuizRound(int current, int total);
     std::string askQuizAnswer(const std::string& question);
     void showQuizResult(bool correct, const std::string& message, int playerScore, int bossScore);
-    void showQuizFinalResult(bool playerWon, int playerScore, int bossScore);
 
     void showMessage(const std::string& message);
 private:

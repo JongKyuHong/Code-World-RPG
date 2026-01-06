@@ -50,7 +50,7 @@ void GameManager::play() {
 			break;
 
 		case GameState::BATTLE:
-			runBossBattle();
+			runBattle();
 			break;
 
 		case GameState::BOSS_BATTLE:
@@ -363,8 +363,8 @@ Monster* GameManager::generateBoss() {
 	}
 
 	// 스텟은 우선 요구사항 따라서
-	int baseHealth = (currentRound + 1) * 20;
-	int baseAttack = (currentRound + 1) * 5;
+	int baseHealth = (currentRound + 1) * 1000;
+	int baseAttack = (currentRound + 1) * 100;
 
 	int health = static_cast<int>(baseHealth * multiplier);
 	int attack = static_cast<int>(baseAttack * multiplier);

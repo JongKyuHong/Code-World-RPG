@@ -82,6 +82,7 @@ BattleResult BattleService::normalBattle() {
         if (!player->isAlive()) break;
 
         uiManager.waitForKeyPress();
+        uiManager.clearScreen();
     }
 
     BattleResult result = RewardManager::getInstance()->generateRewards(monster);
@@ -246,8 +247,7 @@ BattleResult BattleService::bossBattle() {
     BattleResult result = RewardManager::getInstance()->generateRewards(monster);
     result.playerWon = true;
     result.turnCount = maxRounds;
-    uiManager.showQuizFinalResult(result.playerWon, playerCorrect, maxRounds);
-    uiManager.showMessage("🎉 보스 완전 격파! 🏆");
+    uiManager.showVictoryScreen(monster, result.goldEarned, result.expEarned);
     return result;
 }
 
