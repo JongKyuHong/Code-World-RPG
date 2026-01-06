@@ -32,10 +32,10 @@ public:
     void displayItems() {}
 
     // 구매하기
-    Item* buyItem(int index) {}
+    Item* buyItem(Character* character, int index) {}
 
     // 아이템 추가하기
-    void addItem(Item* item) {}
+    void addItem(Character* character, Item* item) {}
 
     // 아이팀 구매하기, 돈 반환
     int sellItem(Item* item) {}

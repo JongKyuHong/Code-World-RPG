@@ -65,7 +65,22 @@ public:
 
     // 레벨업
     void levelUp() {}
+    bool spendGold(int amount)
+    {
+        if (amount <= 0) {
+            std::cout << "[오류] 잘못된 결제 금액\n";
+            return false;
+        }
 
+        if (gold < amount) {
+            std::cout << "골드가 부족합니다. (보유: "
+                << gold << "G)\n";
+            return false;
+        }
+
+        gold -= amount;
+        return true;
+    }
     // 골드 획득
     void addGold(int value) {
         gold += value;
