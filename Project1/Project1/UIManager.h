@@ -79,6 +79,13 @@ public:
     // 전투 로그
     void showBattleLog(const std::vector<std::string>& battleLog);
 
+
+    void showQuizRound(int current, int total);
+    std::string askQuizAnswer(const std::string& question);
+    void showQuizResult(bool correct, const std::string& message, int playerScore, int bossScore);
+    void showQuizFinalResult(bool playerWon, int playerScore, int bossScore);
+
+    void showMessage(const std::string& message);
 private:
     void drawBoxedTitle(const std::string& title, const std::string& subtitle);
     void drawSeparator();

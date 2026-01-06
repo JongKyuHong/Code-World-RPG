@@ -50,7 +50,7 @@ void GameManager::play() {
 			break;
 
 		case GameState::BATTLE:
-			runBattle();
+			runBossBattle();
 			break;
 
 		case GameState::BOSS_BATTLE:
@@ -190,39 +190,39 @@ void GameManager::runBattle() {
 	std::cin.clear();
 	std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
-	// ✅ 4. 잠깐 대기 (화면 전환 안정화)
-	Sleep(100);
-	{
-		// 몬스터 등장 애니메이션
-		Engine encounterEngine(160, 50);
+	// 아스키아트
+	//Sleep(100);
+	//{
+	//	// 몬스터 등장 애니메이션
+	//	Engine encounterEngine(160, 50);
 
-		SceneManager::GetInstance().Register("Encounter", [&]() {
-			return std::make_unique<MonsterEncounter>(monster, player);
-		});
+	//	SceneManager::GetInstance().Register("Encounter", [&]() {
+	//		return std::make_unique<MonsterEncounter>(monster, player);
+	//	});
 
-		using clock = std::chrono::steady_clock;
-		auto prev = clock::now();
+	//	using clock = std::chrono::steady_clock;
+	//	auto prev = clock::now();
 
-		SceneManager::GetInstance().LoadScene("Encounter");
+	//	SceneManager::GetInstance().LoadScene("Encounter");
 
-		// 등장 애니메이션 루프
-		while (encounterEngine.IsRunning()) {
-			auto now = clock::now();
-			std::chrono::duration<float> delta = now - prev;
-			prev = now;
-			float dt = delta.count();
+	//	// 등장 애니메이션 루프
+	//	while (encounterEngine.IsRunning()) {
+	//		auto now = clock::now();
+	//		std::chrono::duration<float> delta = now - prev;
+	//		prev = now;
+	//		float dt = delta.count();
 
-			encounterEngine.Update(dt);
+	//		encounterEngine.Update(dt);
 
-			MonsterEncounter* scene = dynamic_cast<MonsterEncounter*>(
-				SceneManager::GetInstance().GetCurrent()
-				);
+	//		MonsterEncounter* scene = dynamic_cast<MonsterEncounter*>(
+	//			SceneManager::GetInstance().GetCurrent()
+	//			);
 
-			if (scene && scene->IsFinished()) {
-				break;  // 전투 시작
-			}
-		}
-	}
+	//		if (scene && scene->IsFinished()) {
+	//			break;  // 전투 시작
+	//		}
+	//	}
+	//}
 
 	uiManager.clearScreen();
 	uiManager.showMonsterEncounter(monster->getName());
@@ -267,17 +267,15 @@ void GameManager::runBossBattle() {
 
 	std::string bossName = bossMonster->getName();
 
-	std::cout << "보스 " << bossName << "가 나타났다." << std::endl;
 	// 전투 전 버프적용, 자동전투한다면 구현
 	//applyBuffItems();
 
 	// 실제 전투
-	// battleService->battle();
-	std::cout << "⚔️ " << bossName << "와 전투 중 ⚔️\n";
+	BattleService battleService;
+	BattleResult result = battleService.battle(player, bossMonster);
 
 	// 전투정보 받아와서 처리
 	if (player->isAlive()) {
-		std::cout << "🏆" << bossName << "와의 전투 승리!🏆\n";
 		//mob킬수저장
 		mobKillCounts[bossName]++;
 
@@ -327,7 +325,6 @@ Monster* GameManager::generateMonster() {
 
 	// 현재 라운드에 맞는 몬스터
 	MonsterData Info = (*monsterInfo)[currentRound % monsterInfo->size()];
-
 
 	// 스텟은 추후에 변경
 	int baseHealth = (currentRound + 1) * 20;
