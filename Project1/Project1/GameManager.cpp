@@ -121,54 +121,61 @@ void GameManager::play() {
 }
 
 void GameManager::showMainMenu() {
-    Engine engine(160, 50);
+	// ✅ (1) static 플래그 초기화: 이전 실행 값이 남아있는 문제 방지
+	Engine::exitRequested = false;
+	Engine::isMainMenu = false;
 
-    SceneManager::GetInstance().Register("MainMenu", [&]() {
-        return std::make_unique<MainMenu>();
-        });
+	Engine engine(160, 50);
 
-    using clock = std::chrono::steady_clock;
-    auto prev = clock::now();
+	SceneManager::GetInstance().Register("MainMenu", [&]() {
+		return std::make_unique<MainMenu>();
+		});
 
-    SceneManager::GetInstance().LoadScene("MainMenu");
+	using clock = std::chrono::steady_clock;
+	auto prev = clock::now();
 
-    while (engine.IsRunning())
-    {
-        auto now = clock::now();
-        std::chrono::duration<float> delta = now - prev;
-        prev = now;
-        float dt = delta.count();
+	SceneManager::GetInstance().LoadScene("MainMenu");
 
-        engine.Update(dt);
+	while (engine.IsRunning())
+	{
+		auto now = clock::now();
+		std::chrono::duration<float> delta = now - prev;
+		prev = now;
+		float dt = delta.count();
 
-		if (Engine::exitRequested == true) {
-			isRunning = false;
-			currentState = GameState::ENDING;
+		engine.Update(dt);
+
+		// ✅ (2) exitRequested는 "메뉴 씬 루프 종료" 신호로만 사용
+		if (Engine::exitRequested) {
 			break;
 		}
-    }
+	}
 
-    if (Engine::isMainMenu == true) {
-        currentState = GameState::CHARACTER_CREATION;
-    }
-    else {
-        currentState = GameState::ENDING;
-    }
+	// ✅ (3) 분기는 isMainMenu로 하고,
+	// '종료' 선택이면 게임 전체 루프까지 끊어버림(콘솔 종료의 필수 조건)
+	if (Engine::isMainMenu) {
+		currentState = GameState::CHARACTER_CREATION;
+	}
+	else {
+		// ENDING 화면 보여주고 싶으면 currentState = ENDING 유지해도 됨
+		currentState = GameState::ENDING;
 
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO csbi{};
-    if (!GetConsoleScreenBufferInfo(hOut, &csbi)) return;
+		// 🔥 play()의 while(isRunning) 자체를 종료시키기
+		isRunning = false;
+	}
 
-    DWORD cellCount = csbi.dwSize.X * csbi.dwSize.Y;
-    DWORD written = 0;
-    COORD home{ 0, 0 };
+	// ---- 아래는 기존 콘솔 클리어 유지 ----
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi{};
+	if (!GetConsoleScreenBufferInfo(hOut, &csbi)) return;
 
-    // 문자 지우기
-    FillConsoleOutputCharacterW(hOut, L' ', cellCount, home, &written);
-    // 속성 지우기(색 포함)
-    FillConsoleOutputAttribute(hOut, csbi.wAttributes, cellCount, home, &written);
+	DWORD cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+	DWORD written = 0;
+	COORD home{ 0, 0 };
 
-    SetConsoleCursorPosition(hOut, home);
+	FillConsoleOutputCharacterW(hOut, L' ', cellCount, home, &written);
+	FillConsoleOutputAttribute(hOut, csbi.wAttributes, cellCount, home, &written);
+	SetConsoleCursorPosition(hOut, home);
 }
 
 void GameManager::createCharacter() {
