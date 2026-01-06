@@ -1,39 +1,28 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "Scene.h"
 #include "Character.h"
 #include "Monster.h"
 #include "Renderer.h"
 #include "BattleService.h"
 #include <vector>
+#include <string>
+#include <utility>
 #include <windows.h>
-#include <fstream>      // ← ifstream 추가
-#include <algorithm>    // ← std::min 추가
-#include <chrono>       // ← 시간 관련 추가
+#include <fstream>
 #include <iostream>
 
 class BattlePhaseScene : public Scene {
 private:
-    enum Phase {
-        ENCOUNTER,   // 등장 애니메이션
-        BATTLE       // 전투
-    };
-
     Character* player;
     Monster* monster;
-    Renderer renderer;
     BattleService* battleService;
 
-    Phase currentPhase = ENCOUNTER;
-
-    // 등장 애니메이션 관련
-    int encounterFrame = 0;
-    float encounterTimer = 0.0f;
-    const float ENCOUNTER_DURATION = 0.5f;  // 프레임당 0.5초
-    std::string monsterArtPath;
+    // 애니메이션
+    int monsterFrame = 0;
+    float animTimer = 0.0f;
+    const float FRAME_DURATION = 0.5f;
     float appearTime = 0.0f;
-
-    // 전투 관련
+    // 전투
     std::vector<std::pair<std::string, std::string>> quizzes;
     int currentQuestionIndex = 0;
     int selectedOption = 0;
@@ -46,10 +35,8 @@ private:
 
 public:
     BattlePhaseScene(Character* p, Monster* m, BattleService* bs = nullptr)
-        : player(p), monster(m), renderer(160, 50), battleService(bs) {
+        : player(p), monster(m), battleService(bs) {
         InitializeQuestions();
-        // 몬스터 이름으로 ASCII 아트 경로 설정
-        monsterArtPath = "Texts/" + monster->getName();
     }
 
     void InitializeQuestions() {
@@ -66,50 +53,26 @@ public:
     }
 
     void Update(float dt) override {
-        if (currentPhase == ENCOUNTER) {
-            UpdateEncounter(dt);
-        } else if (currentPhase == BATTLE) {
-            UpdateBattle(dt);
-        }
-    }
+        animTimer += dt;
+        int frameIndex = (int)(animTimer / (FRAME_DURATION)) % 4; 
+        monsterFrame = frameIndex;
 
-    void UpdateEncounter(float dt) {
-        encounterTimer += dt;
-
-        // 타이핑 효과
-        appearTime = (encounterTimer / 2.0f > 1.0f) ? 1.0f : encounterTimer / 2.0f;
-
-        // 애니메이션 프레임 변경 (4프레임 반복)
-        int frameIndex = (int)(encounterTimer / ENCOUNTER_DURATION) % 4;
-        encounterFrame = frameIndex;
-
-        // Enter 또는 F 키로 전투 시작
-        if ((GetAsyncKeyState(VK_RETURN) & 0x8000) || (GetAsyncKeyState('F') & 0x8000)) {
-            currentPhase = BATTLE;
-            Sleep(300);
-        }
-    }
-
-    void UpdateBattle(float dt) {
+        // 전투 로직
         if (!questionAnswered && !battleFinished) {
-            // W 키: 위로
             if (GetAsyncKeyState('W') & 0x8000) {
                 if (selectedOption > 0) selectedOption--;
                 Sleep(150);
             }
-            // S 키: 아래로
             if (GetAsyncKeyState('S') & 0x8000) {
                 if (selectedOption < 2) selectedOption++;
                 Sleep(150);
             }
-            // Enter 또는 F 키: 선택
             if ((GetAsyncKeyState(VK_RETURN) & 0x8000) || (GetAsyncKeyState('F') & 0x8000)) {
                 AnswerQuestion();
                 questionAnswered = true;
                 Sleep(300);
             }
         } else if (questionAnswered && !battleFinished) {
-            // 다음 질문으로 진행
             if (GetAsyncKeyState(VK_RETURN) & 0x8000 || GetAsyncKeyState('F') & 0x8000) {
                 if (currentQuestionIndex < quizzes.size() - 1) {
                     currentQuestionIndex++;
@@ -122,7 +85,6 @@ public:
                 }
             }
         } else if (battleFinished) {
-            // 전투 종료 후 종료
             if (GetAsyncKeyState(VK_RETURN) & 0x8000 || GetAsyncKeyState('F') & 0x8000) {
                 isRunning = false;
                 Sleep(300);
@@ -131,9 +93,7 @@ public:
     }
 
     void AnswerQuestion() {
-        if (currentQuestionIndex >= quizzes.size()) {
-            return;
-        }
+        if (currentQuestionIndex >= quizzes.size()) return;
 
         auto& quiz = quizzes[currentQuestionIndex];
         std::string correctAnswer = quiz.second;
@@ -151,10 +111,7 @@ public:
             battleResult = "✗ 오답! 정답은 " + correctAnswer + "번입니다. " + std::to_string(damage) + " 피해를 입었다!";
         }
 
-        if (!monster->isAlive()) {
-            FinishBattle();
-            questionAnswered = true;
-        } else if (!player->isAlive()) {
+        if (!monster->isAlive() || !player->isAlive()) {
             FinishBattle();
             questionAnswered = true;
         }
@@ -165,22 +122,14 @@ public:
     }
 
     void Render(Renderer& r) override {
-        if (currentPhase == ENCOUNTER) {
-            RenderEncounter(r);
-        } else if (currentPhase == BATTLE) {
-            RenderBattle(r);
-        }
-    }
-
-    void RenderEncounter(Renderer& r) {
         r.Clear();
 
         int w = r.GetWidth();
         int h = r.GetHeight();
         int centerX = w / 2;
 
-        // ASCII 아트 렌더링
-        std::string artPath = monsterArtPath + std::to_string(encounterFrame + 1) + ".txt";
+        // === 중앙에 큰 ASCII 아트 표시 (MonsterEncounter처럼) ===
+        std::string artPath = "Texts/" + monster->getName() + std::to_string(monsterFrame + 1) + ".txt";
         std::ifstream file(artPath);
         if (file.is_open()) {
             std::string line;
@@ -190,7 +139,6 @@ public:
                 int lineW = (int)line.length();
                 int lineX = centerX - lineW / 2;
                 lineX = Clamp(lineX, 0, w - lineW);
-
                 r.PutString(lineX, lineY, line);
                 lineY++;
             }
@@ -198,9 +146,11 @@ public:
         }
 
         int y = 16;
+
+        // === 구분선 ===
         r.PutString(0, y++, std::string(w, '='));
 
-        // 몬스터 이름
+        // === 몬스터 이름 ===
         std::string monsterName = monster->getName();
         int nameX = centerX - (int)monsterName.size() / 2;
         nameX = Clamp(nameX, 0, w - (int)monsterName.size());
@@ -209,140 +159,122 @@ public:
         r.PutString(0, y++, std::string(w, '='));
         y++;
 
-        // 몬스터 정보 (타이핑)
-        int infoLineY = y;
-        std::string fullInfo = monster->getMobInfo();
-        int visibleLen = (int)(fullInfo.size() * appearTime);
-        std::string visibleInfo = fullInfo.substr(0, visibleLen);
-        int infoX = centerX - (int)visibleInfo.size() / 2;
-        infoX = Clamp(infoX, 0, w - (int)visibleInfo.size());
-        r.PutString(infoX, infoLineY, visibleInfo);
-
-        y = infoLineY + 2;
-        r.PutString(0, y++, std::string(w, '='));
-        y++;
-
-        // 플레이어 정보
-        int px = 2;
-        r.PutString(px, y++, "플레이어 정보");
-        r.PutString(px, y++, "이름: " + player->getName());
-        r.PutString(px, y++, "체력: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->getMaxHealth()));
-        r.PutString(px, y++, "공격: " + std::to_string(player->getAttack()));
-
-        // 안내
-        std::string guide = "Enter 또는 F 키를 눌러 전투 시작";
-        int guideX = centerX - (int)guide.size() / 2;
-        guideX = Clamp(guideX, 0, w - (int)guide.size());
-        r.PutString(guideX, h - 3, guide);
-    }
-
-    void RenderBattle(Renderer& r) {
-        r.Clear();
-
-        int w = r.GetWidth();
-        int h = r.GetHeight();
-        int centerX = w / 2;
-
-        // 1. 제목
-        std::string title = "퀴즈 전투";
-        int titleX = centerX - (int)title.size() / 2;
-        r.PutString(titleX, 1, title);
-        r.PutString(0, 2, std::string(w, '='));
-
-        // 2. 플레이어 vs 몬스터 정보
-        int y = 4;
-        r.PutString(2, y, "[ " + player->getName() + " ]");
-        r.PutString(2, y + 1, "체력: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->getMaxHealth()));
-
-        int monsterInfoX = w - 35;
-        r.PutString(monsterInfoX, y, "[ " + monster->getName() + " ]");
-        r.PutString(monsterInfoX, y + 1, "체력: " + std::to_string(monster->getHealth()) + "/" + std::to_string(monster->getMaxHealth()));
-
-        y = 8;
-        r.PutString(0, y, std::string(w, '-'));
-
-        // 3. 진행 상황
-        y = 10;
-        std::string progress = "Turn " + std::to_string(turn) + " / " + std::to_string(quizzes.size())
-            + " | 정답: " + std::to_string(correctCount) + "/" + std::to_string(turn - 1);
-        int progX = centerX - (int)progress.size() / 2;
-        r.PutString(progX, y, progress);
-
-        // 4. 퀴즈
+        // === 몬스터 정보 (타이핑 효과) ===
         if (!battleFinished) {
-            if (currentQuestionIndex < quizzes.size()) {
-                auto& quiz = quizzes[currentQuestionIndex];
-                std::string question = quiz.first;
+            //animTimer += 0.016f;  // 약 60fps 기준
+            appearTime = (animTimer / 2.0f > 1.0f) ? 1.0f : animTimer / 2.0f;
 
-                y = 13;
-                int qX = 5;
-                int lineCount = 0;
-                std::string line;
-                for (char c : question) {
-                    if (c == '\n') {
-                        r.PutString(qX, y + lineCount, line);
-                        lineCount++;
-                        line.clear();
-                    } else {
-                        line += c;
-                    }
-                }
-                if (!line.empty()) {
-                    r.PutString(qX, y + lineCount, line);
-                }
+            int infoLineY = y;
+            std::string fullInfo = monster->getMobInfo();
+            int visibleLen = (int)(fullInfo.size() * appearTime);
+            std::string visibleInfo = fullInfo.substr(0, visibleLen);
+            int infoX = centerX - (int)visibleInfo.size() / 2;
+            infoX = Clamp(infoX, 0, w - (int)visibleInfo.size());
+            r.PutString(infoX, infoLineY, visibleInfo);
 
-                y += 6;
+            y = infoLineY + 2;
+            r.PutString(0, y++, std::string(w, '='));
+            y++;
 
-                // 선택지
-                std::vector<std::string> options = { "1", "2", "3" };
-                for (int i = 0; i < 3; i++) {
-                    std::string option = options[i] + ")";
+            // === 플레이어 정보 ===
+            int px = 2;
+            r.PutString(px, y++, "플레이어 정보");
+            r.PutString(px, y++, "이름: " + player->getName());
+            r.PutString(px, y++, "체력: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->getMaxHealth()));
+            r.PutString(px, y++, "공격: " + std::to_string(player->getAttack()));
 
-                    if (i == selectedOption) {
-                        r.PutString(qX, y + i, ">> " + option + " <<");
-                    } else {
-                        r.PutString(qX, y + i, "   " + option);
-                    }
-                }
-
-                y += 5;
-                r.PutString(0, y, std::string(w, '-'));
+            // === 가이드 (등장 애니메이션 중) ===
+            if (appearTime < 1.0f) {
+                std::string guide = "Enter 또는 F 키를 눌러 전투 시작";
+                int guideX = centerX - (int)guide.size() / 2;
+                guideX = Clamp(guideX, 0, w - (int)guide.size());
+                r.PutString(guideX, h - 3, guide);
+            }
+            // === 전투 시작 (등장 완료 후) ===
+            else {
+                y = 18;
+                r.PutString(0, y++, std::string(w, '='));
                 y++;
 
-                if (questionAnswered) {
-                    int resultX = 5;
-                    r.PutString(resultX, y, battleResult);
+                // 진행도
+                r.PutString(2, y++, "Turn " + std::to_string(turn) + " / " + std::to_string(quizzes.size()));
+                r.PutString(2, y++, "정답: " + std::to_string(correctCount) + "/" + std::to_string(turn - 1));
+                y += 2;
+
+                if (currentQuestionIndex < quizzes.size()) {
+                    auto& quiz = quizzes[currentQuestionIndex];
+                    std::string fullText = quiz.first;  // "문제?\n1) 선택지1\n2) 선택지2\n3) 선택지3"
+
+                    // === 문제와 선택지 분리 ===
+                    std::vector<std::string> lines;
+                    std::string line;
+                    for (char c : fullText) {
+                        if (c == '\n') {
+                            lines.push_back(line);
+                            line.clear();
+                        } else {
+                            line += c;
+                        }
+                    }
+                    if (!line.empty()) {
+                        lines.push_back(line);
+                    }
+
+                    // 문제는 첫 줄
+                    r.PutString(2, y++, "[ 문제 ]");
+                    r.PutString(2, y++, std::string(w - 4, '-'));
+                    r.PutString(4, y++, lines[0]);  // 문제 텍스트
+                    y++;
+
+                    // 선택지는 나머지
+                    r.PutString(2, y++, "[ 선택지 ]");
+
+                    for (int i = 1; i < lines.size() && i < 4; i++) {
+                        if (i - 1 == selectedOption) {
+                            r.PutString(4, y++, ">> " + lines[i] + " <<");
+                        } else {
+                            r.PutString(4, y++, "   " + lines[i]);
+                        }
+                    }
+
                     y += 2;
 
-                    std::string continueMsg = "아무 키나 눌러 계속...";
-                    int continueX = centerX - (int)continueMsg.size() / 2;
-                    r.PutString(continueX, y, continueMsg);
-                } else {
-                    std::string guide = "W/S: 선택, Enter/F: 확정";
-                    int guideX = centerX - (int)guide.size() / 2;
-                    r.PutString(guideX, y, guide);
+                    // 결과
+                    if (questionAnswered) {
+                        r.PutString(2, y++, battleResult);
+                        y++;
+                        r.PutString(2, y++, "아무 키나 눌러 계속...");
+                    } else {
+                        r.PutString(2, y++, "W/S: 선택, Enter/F: 확정");
+                    }
                 }
             }
-        } else {
-            y = 15;
-            r.PutString(0, y, std::string(w, '='));
+        }
+        // === 전투 종료 ===
+        else {
+            y = 18;
+            r.PutString(0, y++, std::string(w, '='));
             y += 2;
 
             if (player->isAlive()) {
                 std::string victoryMsg = "승 리!";
                 int victoryX = centerX - (int)victoryMsg.size() / 2;
-                r.PutString(victoryX, y, victoryMsg);
+                r.PutString(victoryX, y++, victoryMsg);
                 y += 2;
             } else {
                 std::string defeatMsg = "패 배!";
                 int defeatX = centerX - (int)defeatMsg.size() / 2;
-                r.PutString(defeatX, y, defeatMsg);
+                r.PutString(defeatX, y++, defeatMsg);
                 y += 2;
             }
 
-            std::string scoreMsg = "최종 스코어: " + std::to_string(playerScore) + " | 정답률: " + std::to_string(correctCount) + "/" + std::to_string(quizzes.size());
+            std::string scoreMsg = "최종 스코어: " + std::to_string(playerScore);
             int scoreX = centerX - (int)scoreMsg.size() / 2;
-            r.PutString(scoreX, y, scoreMsg);
+            r.PutString(scoreX, y++, scoreMsg);
+
+            std::string rateMsg = "정답률: " + std::to_string(correctCount) + "/" + std::to_string(quizzes.size());
+            int rateX = centerX - (int)rateMsg.size() / 2;
+            r.PutString(rateX, y++, rateMsg);
 
             y = h - 3;
             std::string exitMsg = "아무 키나 눌러 계속...";
@@ -351,7 +283,7 @@ public:
         }
     }
 
-    bool IsPhaseFinished() const {
+    bool IsFinished() const {
         return !isRunning;
     }
 

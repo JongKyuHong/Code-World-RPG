@@ -344,7 +344,7 @@ void GameManager::runBossBattle() {
 	// BattleService 생성
 	BattleService* battleService = new BattleService(uiManager, rewardService);
 
-	// BattlePhaseScene 등록 (등장 + 전투를 모두 처리)
+	// BattlePhaseScene 등록
 	SceneManager::GetInstance().Register("BattlePhase", [&]() {
 		return std::make_unique<BattlePhaseScene>(player, bossMonster, battleService);
 	});
@@ -367,7 +367,7 @@ void GameManager::runBossBattle() {
 			SceneManager::GetInstance().GetCurrent()
 			);
 
-		if (scene && scene->IsPhaseFinished()) {
+		if (scene && scene->IsFinished()) {  // ← IsPhaseFinished → IsFinished
 			break;
 		}
 	}
