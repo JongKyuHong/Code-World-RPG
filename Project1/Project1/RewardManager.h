@@ -21,6 +21,6 @@ public:
     // 일반몹 일반아이템 랜덤, 골드 랜덤, 경험치 50
     BattleResult generateRewards(const Monster* monster);
 
-    void applyRewards(Character* player, const BattleResult& result);
+    void applyRewards(Character* player, BattleResult& result);
     void displayRewards(const BattleResult& result);
 };

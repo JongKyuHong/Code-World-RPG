@@ -68,7 +68,6 @@ GameManager::GameManager(ItemContext& ctx, BattleRewardService& rewardService)
 void GameManager::play() {
 	isRunning = true;
 	currentState = GameState::MAIN_MENU;
-
 	while (isRunning) {
 		switch (currentState) {
 		case GameState::MAIN_MENU:
@@ -184,6 +183,8 @@ player = Character::getInstance(playerName);
 		player->getLevel(),
 		player->getGold()
 	);
+	battleMode_ = uiManager.askBattleMode();
+
 }
 
 void GameManager::startPhase(PhaseType phase) {
@@ -291,7 +292,7 @@ void GameManager::runBattle() {
     // ✅ BattleService 생성자 변경: UIManager + rewardService 주입
     BattleService battleService(uiManager, rewardService);
     battleService.setInventory(&ctx.inventory);
-
+	battleService.setBattleMode(battleMode_);
     battleService.setOpenInventoryCallback([this]() {
         this->runInventory();
         });
@@ -340,6 +341,7 @@ void GameManager::runBossBattle() {
 	// 실제 전투
 	BattleService battleService(uiManager, rewardService);
 	battleService.setInventory(&ctx.inventory);
+	battleService.setBattleMode(battleMode_);
     battleService.setOpenInventoryCallback([this]() {
         this->runInventory();
         });

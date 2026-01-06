@@ -4,23 +4,10 @@
 #include "Monster.h"
 #include "BattleResult.h"
 #include "UIManager.h"
-
+#include "Types.h"
 #include <vector>
 #include <string>
 #include <functional>
-#include "EffectManager.h"
-#include "EffectSystem.h"
-#include "BattleRewardService.h"
-#pragma once
-
-#include <vector>
-#include <string>
-#include <functional>
-
-#include "Character.h"
-#include "Monster.h"
-#include "BattleResult.h"
-#include "UIManager.h"
 #include "EffectManager.h"
 #include "EffectSystem.h"
 #include "BattleRewardService.h"
@@ -28,11 +15,6 @@
 
 
 class Inventory; // ✅ 전방선언(헤더 의존성 최소화)
-
-enum class BattleMode {
-    Manual,
-    Auto
-};
 
 class BattleService
 {
@@ -58,7 +40,7 @@ private:
     Inventory* inv_ = nullptr;
 
     // 전투 모드
-    BattleMode mode_ = BattleMode::Auto;
+    BattleMode mode_ = BattleMode::Manual;
 
     // 자동전투 AI
     AutoBattleController autoCtrl;

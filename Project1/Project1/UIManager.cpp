@@ -819,3 +819,47 @@ void UIManager::doSell(Shop& shop, Character& player, Inventory& inv) {
     std::cout << "판매 완료! +" << sellPrice << "G\n";
     grid.waitAnyKey();
 }
+
+void UIManager::showLevelUp(int currentLevel, int levelUps) {
+    std::cout << "\n";
+    std::cout << "============================================================\n";
+    std::cout << "\n";
+    std::cout << "                     🎉  LEVEL UP!  🎉\n";
+    std::cout << "\n";
+    std::cout << "            레벨이 상승했습니다!  ( +" << levelUps << " )\n";
+    std::cout << "                 현재 레벨 : Lv." << currentLevel << "\n";
+    std::cout << "\n";
+    std::cout << "============================================================\n";
+}
+
+BattleMode UIManager::askBattleMode() {
+    clearScreen();
+    std::cout << "╔════════════════════════════════════════════════════════════╗\n";
+    std::cout << "║                                                            ║\n";
+    std::cout << "║                  ⚔️  전투 모드 선택  ⚔️                     ║\n";
+    std::cout << "║                                                            ║\n";
+    std::cout << "║   1) 수동 전투 (직접 조작)                                  ║\n";
+    std::cout << "║   2) 자동 전투 (AI 자동 진행)                               ║\n";
+    std::cout << "║                                                            ║\n";
+    std::cout << "╚════════════════════════════════════════════════════════════╝\n";
+
+    int choice = 0;
+
+    while (true) {
+        std::cout << "선택 (1 또는 2): ";
+        std::cin >> choice;
+
+        // 입력 실패(문자 등)
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "잘못된 입력입니다. 숫자를 입력해주세요.\n";
+            continue;
+        }
+
+        if (choice == 1) return BattleMode::Manual;
+        if (choice == 2) return BattleMode::Auto;
+
+        std::cout << "1 또는 2만 선택 가능합니다.\n";
+    }
+}

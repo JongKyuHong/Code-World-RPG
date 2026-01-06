@@ -101,6 +101,10 @@ public:
     void showQuizResult(bool correct, const std::string& message, int playerScore, int bossScore);
 
     void showMessage(const std::string& message);
+    //레벨업 
+    void showLevelUp(int currentLevel, int levelUps);
+    //전투 모드
+    BattleMode askBattleMode(); // ✅ 추가
 private:
     void drawBoxedTitle(const std::string& title, const std::string& subtitle);
     void drawSeparator();
@@ -111,4 +115,7 @@ private:
 
     // ✅ 추가: 그리드 UI/입력 유틸 담당 객체
     UIGrid grid;
+
+
+
 };
