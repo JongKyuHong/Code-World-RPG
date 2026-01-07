@@ -13,6 +13,7 @@
 #include <iostream>
 #include <conio.h>
 #include <mmsystem.h>
+#include <thread>
 
 class BattlePhaseScene : public Scene {
 private:
@@ -36,6 +37,7 @@ private:
     int playerScore = 0;
     int turn = 1;
     int correctCount = 0;
+    int totalQuestions = 0;
     // 오디오 변수
     bool bgmPlaying = false;
     std::string currentBgm = "";
@@ -55,26 +57,24 @@ public:
     }
 
     void OnEnter() override {
-         PlayBackgroundMusic("BossBattle.wav");
+        PlayBackgroundMusic("BossBattle.wav");
 
         //// 입력 버퍼 정리
         //HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
         //FlushConsoleInputBuffer(hStdin);
     }
 
+    void PlaySoundAsync(const std::string& soundFileName) {
+        std::thread([this, soundFileName]() {
+            std::string soundPath = std::string(SOUNDS_FOLDER) + soundFileName;
+            PlaySoundA(soundPath.c_str(), NULL, SND_FILENAME | SND_SYNC);  // SND_SYNC 사용
+        }).detach();
+    }
+
     // 오디오 함수
     void PlaySound(const std::string& soundFileName, int volume = 100) {
-        if (bgmPlaying) {
-            bgmToRestart = currentBgm;
-            PlaySoundA(NULL, NULL, SND_PURGE); // 모든 사운드 중단
-        }
-
         std::string soundPath = std::string(SOUNDS_FOLDER) + soundFileName;
         PlaySoundA(soundPath.c_str(), NULL, SND_FILENAME | SND_ASYNC);
-
-        // 배경음 재시작 플래그 설정
-        needsRestartBGM = true;
-        bgmRestartTime = GetTickCount();
     }
 
     void PlayBackgroundMusic(const std::string& bgmFileName) {
@@ -83,7 +83,6 @@ public:
         }
 
         std::string soundPath = std::string(SOUNDS_FOLDER) + bgmFileName;
-        //PlaySoundA(soundPath.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
         PlaySoundA(soundPath.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
         bgmPlaying = true;
@@ -108,6 +107,8 @@ public:
                 {"전투를 계속하시겠습니까?\n   1) 예\n   2) 아니오\n   3) 모르겠습니다", "1"}
             };
         }
+
+        totalQuestions = quizzes.size();
     }
 
     void Update(float dt) override {
@@ -117,6 +118,7 @@ public:
 
         static DWORD lastKeyTime = 0;
         DWORD now = GetTickCount();
+
 
         if (battleFinished) {
             if ((GetAsyncKeyState(VK_RETURN) & 0x8000 || GetAsyncKeyState('F') & 0x8000)
@@ -152,24 +154,35 @@ public:
         }
     }
 
+    void RestartBackgroundMusic() {
+        // 현재 배경음을 강제로 다시 재생
+        std::string soundPath = std::string(SOUNDS_FOLDER) + currentBgm;
+        PlaySoundA(NULL, NULL, SND_PURGE);  // 현재 루프 중단
+        Sleep(50);  // 짧은 대기
+        PlaySoundA(soundPath.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+        bgmPlaying = true;
+    }
+
     void AnswerQuestion() {
         auto& quiz = quizzes[currentQuestionIndex];
         int correctAnswer = std::stoi(quiz.second);
 
         if (selectedOption == correctAnswer - 1) {
-            needsRestartBGM = true;
-            bgmRestartTime = GetTickCount();
+            PlaySoundAsync("Correct.wav");
 
-            BattleResultI.playerWon = true;
-            BattleResultI.isBossKill = monster->isBossMonster();
-            BattleResultI.monsterName = monster->getName();
-            BattleResultI.expEarned = 100;      // 보스 전투 고정 경험치
-            BattleResultI.goldEarned = 500;     // 보스 전투 고정 골드
             BattleResultI.turnCount++;
             correctCount++;
-            if (correctCount >= quizzes.size()) {
+            if (correctCount >= totalQuestions) {
                 battleFinished = true;
+                BattleResultI.playerWon = true;
+                BattleResultI.isBossKill = monster->isBossMonster();
+                BattleResultI.monsterName = monster->getName();
+                BattleResultI.expEarned = 100;      // 보스 전투 고정 경험치
+                BattleResultI.goldEarned = 500;     // 보스 전투 고정 골드
+                PlaySoundAsync("BossWin.wav");
                 StopBackgroundMusic();
+            } else {
+                RestartBackgroundMusic();
             }
         } else {
             player->takeDamage(player->getMaxHealth());
@@ -177,6 +190,7 @@ public:
             BattleResultI.playerWon = false;
             BattleResultI.turnCount++;
             battleFinished = true;
+            PlaySoundAsync("BossDefeat.wav");
             StopBackgroundMusic();
         }
     }
@@ -263,8 +277,8 @@ public:
             std::to_string(player->getMaxHealth()), Renderer::LIGHT_GREEN);
 
         // 턴/정답 (중앙)
-        std::string turnInfo = "Turn: " + std::to_string(turn) + "/3";
-        std::string correctInfo = "Correct: " + std::to_string(correctCount) + "/3";
+        std::string turnInfo = "Turn: " + std::to_string(turn) + "/" + std::to_string(totalQuestions);
+        std::string correctInfo = "Correct: " + std::to_string(correctCount) + "/" + std::to_string(totalQuestions);
         int midX = headerX + BOX_WIDTH / 2 - 25;
         r.PutString(midX, statsY, turnInfo, Renderer::LIGHT_YELLOW);
         r.PutString(midX, statsY + 1, correctInfo, Renderer::LIGHT_YELLOW);
