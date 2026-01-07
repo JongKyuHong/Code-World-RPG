@@ -59,23 +59,41 @@ Renderer::Renderer(int w, int h)
 // 색상 정보와 함께 한 번에 출력 (깜빡임 최소화)
 void Renderer::Present()
 {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleCursorPosition(hOut, { 0, 0 });
 
-    // ✅ WriteConsoleOutput() 사용
-    std::vector<CHAR_INFO> screenBuffer(width * height);
+    // [핵심] 콘솔 전체 크기에 맞춰 screenBuffer를 동적으로 생성
+    int consoleWidth = csbi.dwSize.X;
+    int consoleHeight = csbi.dwSize.Y;
+    std::vector<CHAR_INFO> screenBuffer(consoleWidth * consoleHeight);
 
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            int idx = y * width + x;
-            screenBuffer[idx].Char.UnicodeChar = buffer[idx];
-            screenBuffer[idx].Attributes = (BLACK << 4) | colorBuffer[idx];
+    // 1. 먼저 콘솔 전체를 buffer 내용으로 채움 (공백으로)
+    for (int y = 0; y < consoleHeight; ++y) {
+        for (int x = 0; x < consoleWidth; ++x) {
+            int idx = y * consoleWidth + x;
+
+            // 게임 영역(width x height) 안이면 실제 buffer 내용, 
+            // 바깥 영역이면 공백(LIGHT_GRAY)으로 채움
+            if (y < height && x < width) {
+                int gameIdx = y * width + x;
+                screenBuffer[idx].Char.UnicodeChar = buffer[gameIdx];
+                screenBuffer[idx].Attributes = (BLACK << 4) | colorBuffer[gameIdx];
+            } else {
+                // 게임 영역 밖은 공백으로 채움 (똥값 방지)
+                screenBuffer[idx].Char.UnicodeChar = ' ';
+                screenBuffer[idx].Attributes = LIGHT_GRAY;
+            }
         }
     }
 
-    COORD bufferSize = { (SHORT)width, (SHORT)height };
+    // 2. 콘솔 전체 영역에 WriteConsoleOutput
+    COORD bufferSize = { (SHORT)consoleWidth, (SHORT)consoleHeight };
     COORD origin = { 0, 0 };
-    SMALL_RECT writeRegion = { 0, 0, (SHORT)(width - 1), (SHORT)(height - 1) };
+    SMALL_RECT writeRegion = { 0, 0, (SHORT)(consoleWidth - 1), (SHORT)(consoleHeight - 1) };
 
     WriteConsoleOutput(hOut, screenBuffer.data(), bufferSize, origin, &writeRegion);
 }
