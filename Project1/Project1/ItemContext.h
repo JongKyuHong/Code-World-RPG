@@ -4,13 +4,13 @@
 #include "MapAsciiArtRepository.h"
 #include "Shop.h"
 #include "DropTable.h"
-#include "RewardRepository.h"   // ✅ 추가
+#include "RewardRepository.h"
 
 struct ItemContext {
     Shop* shop = nullptr;              // singleton or injected
     Inventory inventory;               // 아이템 소유
     DropTable dropTable;               // prototype 소유
-    RewardRepository rewards;          // ✅ 추가: 몬스터 드랍 룰 저장소
+    RewardRepository rewards;          // 몬스터 드랍 룰 저장소
     MapAsciiArtRepository artRepo;      // ASCII 리소스
 
     ItemContext() = default;

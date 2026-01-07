@@ -17,12 +17,11 @@
 #include <cstdlib> 
 #include "MonsterEncounter.h"
 
-#include "BattleRewardService.h"   // ✅ 추가
-// ✅ Effect
+#include "BattleRewardService.h" 
+
 #include "EffectSystem.h"
 #include "EffectManager.h"
 
-// ✅ Item/Inventory
 #include "Inventory.h"
 #include "Item.h"
 #include "Character.h"
@@ -55,11 +54,11 @@ static std::string diffToText(const StatSnapshot& before, const StatSnapshot& af
     return out;
 }
 
-// ✅ 생성자 시그니처 변경: rewardService 주입
+// 생성자 시그니처 변경: rewardService 주입
 GameManager::GameManager(ItemContext& ctx, BattleRewardService& rewardService)
     : ctx(ctx)
-    , uiManager(ctx.artRepo)          // ✅ 기존 그대로
-    , rewardService(rewardService)    // ✅ 추가
+    , uiManager(ctx.artRepo)          
+    , rewardService(rewardService)    
 {
     effectSystem = new EffectSystem();
     effectManager = new EffectManager();
@@ -121,7 +120,7 @@ void GameManager::play() {
 }
 
 void GameManager::showMainMenu() {
-	// ✅ (1) static 플래그 초기화: 이전 실행 값이 남아있는 문제 방지
+	// (1) static 플래그 초기화: 이전 실행 값이 남아있는 문제 방지
 	Engine::exitRequested = false;
 	Engine::isMainMenu = false;
 
@@ -145,13 +144,13 @@ void GameManager::showMainMenu() {
 
 		engine.Update(dt);
 
-		// ✅ (2) exitRequested는 "메뉴 씬 루프 종료" 신호로만 사용
+		// (2) exitRequested는 "메뉴 씬 루프 종료" 신호로만 사용
 		if (Engine::exitRequested) {
 			break;
 		}
 	}
 
-	// ✅ (3) 분기는 isMainMenu로 하고,
+	// (3) 분기는 isMainMenu로 하고,
 	// '종료' 선택이면 게임 전체 루프까지 끊어버림(콘솔 종료의 필수 조건)
 	if (Engine::isMainMenu) {
 		currentState = GameState::CHARACTER_CREATION;
@@ -297,7 +296,7 @@ void GameManager::runBattle() {
 	//applyBuffItems();
 
 	// 실제 전투
-    // ✅ BattleService 생성자 변경: UIManager + rewardService 주입
+    // BattleService 생성자 변경: UIManager + rewardService 주입
     BattleService battleService(uiManager, rewardService);
     battleService.setInventory(&ctx.inventory);
 	battleService.setBattleMode(battleMode_);
@@ -484,7 +483,7 @@ void GameManager::runInventory() {
                 break;
             }
 
-            // ✅ 적용 전/후 스탯 비교
+            // 적용 전/후 스탯 비교
             StatSnapshot before = snap(player);
 
             ctx.inventory.equipItem(player, act.index, it->getEquipSlotHint());
@@ -502,7 +501,7 @@ void GameManager::runInventory() {
         }
 
         case InventoryAction::Unequip: {
-            // ✅ 해제는 아이템명을 알기 어려우니(현재 API 상)
+            // 해제는 아이템명을 알기 어려우니(현재 API 상)
             // 변화량만 보여주는 방식으로 처리
             StatSnapshot before = snap(player);
 
@@ -528,7 +527,7 @@ void GameManager::runInventory() {
                 break;
             }
 
-            // ✅ useItem은 내부에서 delete/erase 되므로 이름을 먼저 저장
+            // useItem은 내부에서 delete/erase 되므로 이름을 먼저 저장
             std::string itemName = it->getName();
 
             StatSnapshot before = snap(player);

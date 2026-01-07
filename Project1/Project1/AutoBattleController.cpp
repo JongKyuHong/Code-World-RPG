@@ -50,13 +50,13 @@ PlayerAction AutoBattleController::decide(Character& player, Monster& /*monster*
         const bool emergency = hpBelow(player, cfg_.emergencyHpRatio);
         const bool needHeal = hpBelow(player, cfg_.healHpRatio);
 
-        // ✅ 1) 응급이면 무조건 힐 최우선
+        // 1) 응급이면 무조건 힐 최우선
         if (emergency) {
             int idx = findBestHealItemIndex(inv);
             if (idx >= 0) return { PlayerActionType::UseItem, idx };
         }
 
-        // ✅ 2) (완화) 전투 초반/보스전이면 버프도 적극 사용
+        // 2) (완화) 전투 초반/보스전이면 버프도 적극 사용
         if (cfg_.allowStatBuffAutoUse && !emergency) {
             const bool earlyTurn = (turnCount_ <= 2);
             if (earlyTurn || isBoss) {
@@ -65,7 +65,7 @@ PlayerAction AutoBattleController::decide(Character& player, Monster& /*monster*
             }
         }
 
-        // ✅ 3) 그 다음에 힐(needHeal이면)
+        // 3) 그 다음에 힐(needHeal이면)
         if (needHeal) {
             int idx = findBestHealItemIndex(inv);
             if (idx >= 0) return { PlayerActionType::UseItem, idx };
@@ -123,6 +123,27 @@ int AutoBattleController::findBestBuffItemIndex(Inventory& inv) const
         }
     }
 
+    return bestIdx;
+}
+
+int AutoBattleController::findBestHealItemIndex(Inventory& inv) const
+{
+    const auto& items = inv.getItems();
+
+    int bestIdx = -1;
+    int bestHeal = -1;
+
+    for (int i = 0; i < (int)items.size(); ++i) {
+        const Item* it = items[i];
+        if (!isCandidateConsumable(it)) continue;
+
+        for (const Effect& e : getEffects(it)) {
+            if (e.type == EffectType::HealFlat && e.value > bestHeal) {
+                bestHeal = e.value;
+                bestIdx = i;
+            }
+        }
+    }
     return bestIdx;
 }
 

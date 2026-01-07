@@ -17,7 +17,7 @@ public:
     {
     }
 
-    // ✅ 승리 시 드랍만 처리 (RewardManager의 gold/exp 로직은 그대로 유지)
+    // 승리 시 드랍만 처리 (RewardManager의 gold/exp 로직은 그대로 유지)
     void applyDrops(const Monster* monster, BattleResult& result);
 
 private:

@@ -101,7 +101,7 @@ void Inventory::equipItem(Character* c, int index, EquipSlot slot) {
     Item* newEq = items[index];
     if (!newEq) return;
 
-    // ✅ 장비 아이템만 장착 가능
+    // 장비 아이템만 장착 가능
     if (!newEq->isEquipItem()) {
         std::cout << "이 아이템은 장비가 아닙니다.\n";
         return;

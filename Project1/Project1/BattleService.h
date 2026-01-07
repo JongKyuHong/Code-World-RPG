@@ -14,7 +14,7 @@
 #include "AutoBattleController.h"
 
 
-class Inventory; // ✅ 전방선언(헤더 의존성 최소화)
+class Inventory;
 
 class BattleService
 {

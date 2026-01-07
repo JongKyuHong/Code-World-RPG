@@ -68,7 +68,6 @@ Item* Shop::buyItem(Character* character, int index) {
         return nullptr;
     }
 
-    // ⚠️ 매우 중요:
     // 지금은 "상점이 소유한 같은 포인터"를 넘기면 위험함.
     // 최소 수정 버전에서는 "소유권 이전" 방식으로 처리:
     Item* boughtItem = Items[index]->clone();
@@ -91,7 +90,7 @@ int Shop::sellItem(Character* character, Item* item) {
 
     std::cout << "[" << item->getName() << "] 판매: +" << sellPrice << "G\n";
 
-    // ⚠️ 여기서 item delete 할지 말지는 "인벤토리 정책"에 따라 결정해야 함.
+    // 여기서 item delete 할지 말지는 "인벤토리 정책"에 따라 결정해야 함.
     // 보통은 인벤토리에서 제거하면서 delete까지 인벤토리가 책임짐.
     return sellPrice;
 }

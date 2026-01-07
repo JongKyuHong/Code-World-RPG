@@ -4,7 +4,7 @@
 
 #include "ItemContext.h"
 #include "ItemBootstrap.h"
-#include "BattleRewardService.h"   // ✅ 추가
+#include "BattleRewardService.h"
 static bool fileExists(const char* path) {
     DWORD attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && !(attr & FILE_ATTRIBUTE_DIRECTORY);
@@ -33,10 +33,10 @@ int main() {
     );
     std::cout << "[BOOT] loadRewards OK. rules.size=" << ctx.rewards.size()
         << " &ctx.rewards=" << &ctx.rewards << "\n" << std::flush;
-    // ✅ ctx를 기반으로 보상 서비스 생성 (참조 주입)
+    // ctx를 기반으로 보상 서비스 생성 (참조 주입)
     BattleRewardService rewardService(ctx.rewards, ctx.dropTable, ctx.inventory);
 
-    // ✅ GameManager가 rewardService를 받아서 BattleService 생성 시 넘겨주도록 변경
+    // GameManager가 rewardService를 받아서 BattleService 생성 시 넘겨주도록 변경
     GameManager game(ctx, rewardService);
     game.play();
 
