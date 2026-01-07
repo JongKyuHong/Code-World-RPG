@@ -256,7 +256,6 @@ void UIManager::showDeathScreen() {
 }
 
 char UIManager::askRetryOrQuit() {
-    clearScreen();
     char choice;
     while (true) {
         std::cin >> choice;

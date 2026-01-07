@@ -569,8 +569,8 @@ void GameManager::showEndingScreen() {
 }
 
 void GameManager::handlePlayerDeath() {
+	uiManager.clearScreen();
 	uiManager.showDeathScreen();
-
 	char choice = uiManager.askRetryOrQuit();
 
 	switch (choice) {
