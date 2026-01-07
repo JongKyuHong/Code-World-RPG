@@ -1,0 +1,50 @@
+﻿# =========================
+# INITIAL INVENTORY ITEMS
+# =========================
+
+ITEM|작은 포션|100
+EFFECT|HealFlat|Health|30|0
+
+ITEM|작은 포션|100
+EFFECT|HealFlat|Health|30|0
+
+ITEM|초보자의 검(+5)|150
+EFFECT|AddStatFlat|Attack|5|0
+
+ITEM|초보자의 갑옷(+10)|200
+EFFECT|AddStatFlat|MaxHealth|10|0
+
+
+# =========================
+# ASCII ART (1:1 by item name)
+# =========================
+
+ASCII|작은 포션
+   ______
+  / ____ \
+ | |    | |
+ | |____| |
+  \______/
+     ||
+END
+
+ASCII|초보자의 검(+5)
+     /\
+    /  \
+    ||||
+     ||
+     ||
+     ||
+    /__\
+END
+
+ASCII|초보자의 갑옷(+10)
+    .----.
+   / .--.\
+  / /    \\
+ | |  __  |
+ | | |  | |
+ | | |__| |
+  \ \____/
+   '----'
+END

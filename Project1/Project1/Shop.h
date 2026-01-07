@@ -1,43 +1,29 @@
-#pragma once
-
-#include "Item.h"
-
+﻿#pragma once
 #include <vector>
+#include "Item.h"
+#include "Character.h"
 
-class Shop
-{
+class Shop {
 private:
-    // 상점 품목
-    std::vector<Item*> Items;
+    std::vector<Item*> Items;    // 상점 품목(상점이 소유한다고 가정)
     static Shop* instance;
 
-    Shop() {
-        intializeItem();
-    }
-
-    // 초기아이템 뭐넣을지 여기서 생성
-    void intializeItem() {
-        // Items.push_back(new HealthPotion("체력물약", 50));
-    }
+    Shop();
+    void initializeItem();
 
 public:
-    static Shop* getInstance() {
-        if (instance == nullptr) {
-            instance = new Shop();
-        }
-        return instance;
-    };
+    ~Shop();
 
-    // 품목 보기
-    void displayItems() {}
+    static Shop* getInstance();
 
-    // 구매하기
-    Item* buyItem(int index) {}
-
-    // 아이템 추가하기
-    void addItem(Item* item) {}
-
-    // 아이팀 구매하기, 돈 반환
-    int sellItem(Item* item) {}
+    void displayItems();
+    Item* buyItem(Character* character, int index);
+    void addItem(Item* item);
+    int sellItem(Character* character, Item* item);
+    int size() const { return (int)Items.size(); }
+    Item* peek(int index) const {
+        if (index < 0 || index >= (int)Items.size()) return nullptr;
+        return Items[index];
+    }
+    void clearItems();
 };
-

@@ -1,16 +1,31 @@
-#pragma once
-
+﻿#pragma once
 #include "Character.h"
-
+#include "Types.h"
+#include<vector>
+#include<string>
 class Item
 {
+protected:
+    std::string name;
+    int price;
+    std::vector<Effect> effect;
 public:
-    // 아이템 이름
-    virtual std::string getName() = 0;
-    
-    // 아이템 사용
-    virtual void use(Character* character) = 0;
+    Item(std::string name, int price, std::vector<Effect> effect);
 
-    virtual ~Item() {}
+    virtual ~Item() = default;
+
+    //아이템 이름
+    virtual std::string getName() const;
+    virtual int getPrice() const;
+
+    //아이템이 “어떤 효과를 내는지” 데이터로 제공
+    virtual const std::vector<Effect>& getEffect() const;
+
+    //상점, 캐릭터 아이템 포인터 공유 문제 해결 위해 상점용 새 인스턴스 추가
+    // 상점에 있는  아이템을 플레이어 개인 소유의** 독립된 새 아이템으로 복사하기 위해 사용
+    virtual Item* clone() const = 0;
+    bool isHealItem() const;
+    bool isBuffItem() const;
+    bool isEquipItem() const;
+    EquipSlot getEquipSlotHint() const; // 장비면 Weapon/Armor 반환, 아니면 기본값
 };
-
