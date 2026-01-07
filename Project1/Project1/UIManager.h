@@ -104,16 +104,16 @@ public:
     //레벨업 
     void showLevelUp(int currentLevel, int levelUps);
     //전투 모드
-    BattleMode askBattleMode(); // ✅ 추가
+    BattleMode askBattleMode();
 private:
     void drawBoxedTitle(const std::string& title, const std::string& subtitle);
     void drawSeparator();
-       // ✅ 상점의 실제 “행동 처리”는 UIManager에 남겨두는게 깔끔함(통솔)
+       // 상점의 실제 “행동 처리”는 UIManager에 남겨두는게 깔끔함(통솔)
     void doBuy(Shop& shop, Character& player, Inventory& inv);
     void doSell(Shop& shop, Character& player, Inventory& inv);
     MapAsciiArtRepository& artRepo;
 
-    // ✅ 추가: 그리드 UI/입력 유틸 담당 객체
+    // 그리드 UI/입력 유틸 담당 객체
     UIGrid grid;
 
 

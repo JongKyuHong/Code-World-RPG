@@ -6,9 +6,9 @@
 #include "Item.h"
 #include "Character.h"
 #include "UIManager.h"
-#include "Types.h"        // ✅ PhaseType, EquipSlot 등은 여기서 가져온다고 가정
-#include "UIManager.h"    // ✅ InventoryAction, UIManager
-#include "ItemContext.h"  // ✅ ctx
+#include "Types.h"        // PhaseType, EquipSlot 등은 여기서 가져온다고 가정
+#include "UIManager.h"    // InventoryAction, UIManager
+#include "ItemContext.h"  // ctx
 #include "BattleRewardService.h" 
 #include "BattleService.h" // BattleMode
 
@@ -55,7 +55,7 @@ private:
     ItemContext& ctx;
     UIManager uiManager;
     Character* player;
-    BattleMode battleMode_ = BattleMode::Manual; // ✅ 기본값
+    BattleMode battleMode_ = BattleMode::Manual;
     GameState currentState;
     PhaseType currentPhase = PhaseType::NONE;
 
@@ -68,7 +68,7 @@ private:
     std::vector<MonsterData> phase3Monsters;
     std::map<std::string, int> mobKillCounts;
 
-    // ✅ Effect는 incomplete type 문제 때문에 포인터로 보유
+    //Effect는 incomplete type 문제 때문에 포인터로 보유
     EffectSystem* effectSystem = nullptr;
     EffectManager* effectManager = nullptr;
 
@@ -92,7 +92,7 @@ private:
 
 public:
     GameManager(ItemContext& ctx, BattleRewardService& rewardService);
-    ~GameManager() = default;  // ✅ 이 한 줄로 해결 가능
+    ~GameManager() = default; 
 
     // call Main Menu에서 게임시작을했을때
     // 여기로 불러와서 게임진행

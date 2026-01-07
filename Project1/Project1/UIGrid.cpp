@@ -219,7 +219,7 @@ void UIGrid::printItemGrid(const std::vector<Item*>& list,
     cols = std::max(1, cols);
     artH = std::max(0, artH);
 
-    // ✅ 비어있을 때도: printTitle일 때만 헤더 출력
+    // 비어있을 때도: printTitle일 때만 헤더 출력
     if (list.empty()) {
         if (printTitle && !title.empty()) {
             printGridHeader(title, 40);
@@ -238,7 +238,7 @@ void UIGrid::printItemGrid(const std::vector<Item*>& list,
 
     const int gridWidth = cols * cellW + (cols - 1) * sepW;
 
-    // ✅ 핵심: printTitle일 때만 헤더 출력 (중복 헤더 방지)
+    // 핵심: printTitle일 때만 헤더 출력 (중복 헤더 방지)
     if (printTitle && !title.empty()) {
         printGridHeader(title, gridWidth);
     }
@@ -312,7 +312,7 @@ void UIGrid::printShopGrid(Shop& shop, Character& player, int cols, int cellW, i
         return label;
         };
 
-    // ✅ UIManager가 상단 헤더를 찍기 때문에 여기서는 타이틀 출력 끔
+    // UIManager가 상단 헤더를 찍기 때문에 여기서는 타이틀 출력 끔
     printItemGrid(temp, "🏪 상점", labelShop, cols, cellW, artH, false);
 }
 

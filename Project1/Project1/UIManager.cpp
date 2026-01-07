@@ -16,7 +16,7 @@
 
 UIManager::UIManager(MapAsciiArtRepository& artRepo)
     : artRepo(artRepo)
-    , grid(artRepo)   // ✅ 핵심
+    , grid(artRepo)  
 {
 }
 
@@ -68,14 +68,14 @@ std::string UIManager::getPlayerName() {
     while (true) {
         std::getline(std::cin, playerName);
 
-        // ✅ 공백만 입력한 경우(스페이스/탭/개행 등)
+        // 공백만 입력한 경우(스페이스/탭/개행 등)
         if (playerName.find_first_not_of(" \t\r\n\v\f") == std::string::npos) {
             std::cout << "\n이름은 공백만 입력할 수 없습니다. 다시 입력해주세요.\n";
             std::cout << "  📝 캐릭터 이름: ";
             continue;
         }
 
-        // ✅ (기존 동작 유지) 그냥 엔터만 쳐서 빈 입력이면 기본 이름
+        // (기존 동작 유지) 그냥 엔터만 쳐서 빈 입력이면 기본 이름
         if (playerName.empty()) {
             std::cout << "\n이름을 입력하지 않았습니다. 기본 이름 'Hero'로 설정합니다.\n";
             return "Hero";
@@ -558,7 +558,7 @@ void UIManager::showVictoryScreen(bool isBoss,
     std::cout << "💰 골드: " << gold << " G\n";
     std::cout << "⭐ 경험치: " << exp << " EXP\n";
 
-    // ✅ 아이템 출력
+    // 아이템 출력
     if (!droppedItems.empty()) {
         std::cout << "\n🎁 획득 아이템:\n";
         for (const auto& name : droppedItems) {
@@ -653,7 +653,7 @@ void UIManager::showMessage(const std::string& message) {
 }
 
 // ===========================
-// ✅ Shop 통솔(흐름)
+// Shop 통솔(흐름)
 // ===========================
 void UIManager::runShop(Shop& shop, Character& player, Inventory& inv) {
     const int cols = 3;
@@ -664,19 +664,19 @@ void UIManager::runShop(Shop& shop, Character& player, Inventory& inv) {
     while (shopping) {
         clearScreen();
 
-        // ✅ 그리드 폭 계산 (헤더 줄 길이 맞추기)
+        // 그리드 폭 계산 (헤더 줄 길이 맞추기)
         int gridW = grid.calcShopGridWidth(shop, player, cols, cellW);
 
-        // ✅ 상단 헤더: 너비를 그리드폭으로 통일
+        // 상단 헤더: 너비를 그리드폭으로 통일
         if (gridW < 10) gridW = 10;
         std::cout << std::string(gridW, '=') << "\n";
         std::cout << "  🏪 상점\n";
         std::cout << std::string(gridW, '=') << "\n";
 
-        // ✅ 골드 표시: 매 루프마다 다시 출력되니 자동 갱신됨
+        // 골드 표시: 매 루프마다 다시 출력되니 자동 갱신됨
         std::cout << "보유 골드: " << player.getGold() << "G\n\n";
 
-        // ✅ 여기서 그리드는 타이틀을 출력하지 않게(=중복 헤더 방지)
+        // 여기서 그리드는 타이틀을 출력하지 않게(=중복 헤더 방지)
         grid.printShopGrid(shop, player, cols, cellW, artH);
         std::cout << "\n";
 
@@ -696,7 +696,7 @@ void UIManager::runShop(Shop& shop, Character& player, Inventory& inv) {
     }
 }
 // ===========================
-// ✅ Inventory 통솔(흐름)
+// Inventory 통솔(흐름)
 // ===========================
 InventoryAction UIManager::askInventoryAction(Inventory& inv) {
     while (true) {
@@ -718,7 +718,7 @@ InventoryAction UIManager::askInventoryAction(Inventory& inv) {
 
         int c = grid.askInt("선택: ", 0, 4);
 
-        InventoryAction act{}; // ✅ 안전 초기화
+        InventoryAction act{}; // 안전 초기화
 
         if (c == 0) {
             act.type = InventoryAction::Exit;
@@ -758,7 +758,7 @@ InventoryAction UIManager::askInventoryAction(Inventory& inv) {
 }
 
 // ===========================
-// ✅ 상점 행동 처리(구매/판매)
+// 상점 행동 처리(구매/판매)
 // ===========================
 void UIManager::doBuy(Shop& shop, Character& player, Inventory& inv) {
     int max = shop.size() - 1;

@@ -89,7 +89,7 @@ BattleResult BattleService::battle(Character* p, Monster* m) {
     RewardManager* rewardManager = RewardManager::getInstance();
     BattleResult result = rewardManager->generateRewards(monster);
 
-    // ✅ 모드에 따라 wait 동작 통합
+    // 모드에 따라 wait 동작 통합
     auto waitIfManual = [&]() {
         if (mode_ == BattleMode::Manual) {
             uiManager.waitForKeyPress();
@@ -140,7 +140,7 @@ BattleResult BattleService::normalBattle() {
     while (player->isAlive() && monster->isAlive()) {
         turnCount++;
 
-        // ✅ 자동 컨트롤러 턴 훅 (수동이어도 호출해도 무방)
+        //자동 컨트롤러 턴 훅 (수동이어도 호출해도 무방)
         autoCtrl.onTurnStart(turnCount);
 
         uiManager.showTurnNumber(turnCount);
@@ -296,7 +296,7 @@ void BattleService::playerTurnAuto()
 
             std::string effectText = diffToText(before, after);
 
-            // ✅ 여기서 UI 출력
+            // 여기서 UI 출력
             uiManager.showItemActionScreen(
                 "🧍 " + player->getName() + "의 아이템 사용",
                 usedName,

@@ -13,7 +13,7 @@ bool ItemBootstrap::build(
     const std::string& invDat,
     const std::string& dropDat
 ) {
-    // ✅ build가 진짜 호출되는지 무조건 확인
+    // build가 진짜 호출되는지 무조건 확인
     std::cout << "[BOOT] build ENTER ctx=" << &ctx
         << " &ctx.rewards=" << &ctx.rewards << "\n" << std::flush;
 
@@ -74,7 +74,7 @@ bool ItemBootstrap::build(
             return false;
         }
 
-        // ✅ 여기서 rewards가 진짜 채워졌는지 확인하려면 RewardRepository::size() 필요
+        //여기서 rewards가 진짜 채워졌는지 확인하려면 RewardRepository::size() 필요
         // (아직 size()가 없다면 우선 주소라도 찍혀서 "같은 객체"인지 확인 가능)
         std::cout << "[BOOT] loadRewards OK. &ctx.rewards=" << &ctx.rewards
             << " (add RewardRepository::size() to print count)\n" << std::flush;

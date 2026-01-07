@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <vector>          // ✅ std::vector 사용
+#include <vector>          // std::vector 사용
 #include "Types.h"         // Effect, EffectType, StatType
 
 class Character;
