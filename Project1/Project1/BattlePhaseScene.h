@@ -172,6 +172,7 @@ public:
                 StopBackgroundMusic();
             }
         } else {
+            player->takeDamage(player->getMaxHealth());
             // 오답 시 즉시 패배
             BattleResultI.playerWon = false;
             BattleResultI.turnCount++;

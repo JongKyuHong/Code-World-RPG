@@ -222,6 +222,7 @@ int UIManager::askShopVisit() {
 }
 
 void UIManager::showDeathScreen() {
+    clearScreen();
     std::cout << "\n";
     std::cout << "╔════════════════════════════════════════════════════════════╗\n";
     std::cout << "║                                                            ║\n";
@@ -249,7 +250,6 @@ void UIManager::showDeathScreen() {
 }
 
 char UIManager::askRetryOrQuit() {
-    clearScreen();
     char choice;
     while (true) {
         std::cin >> choice;

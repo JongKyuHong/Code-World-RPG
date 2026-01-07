@@ -339,6 +339,8 @@ void GameManager::runBossBattle() {
 
 	delete battleService;
 
+	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+
 	BattlePhaseScene* finalScene = dynamic_cast<BattlePhaseScene*>(
 		SceneManager::GetInstance().GetCurrent()
 		);
@@ -351,6 +353,7 @@ void GameManager::runBossBattle() {
 	// 전투 결과 처리
 	if (player->isAlive()) {
 		mobKillCounts[bossName]++;
+		uiManager.clearScreen();
 		uiManager.showVictoryScreen(
 			result.isBossKill,
 			result.goldEarned,
@@ -373,6 +376,19 @@ void GameManager::runBossBattle() {
 		}
 	} else {
 		delete bossMonster;
+
+		FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+
+		while (GetAsyncKeyState(VK_RETURN) & 0x8000 ||
+			GetAsyncKeyState('F') & 0x8000 ||
+			GetAsyncKeyState('W') & 0x8000 ||
+			GetAsyncKeyState('S') & 0x8000 ||
+			GetAsyncKeyState(VK_SPACE) & 0x8000) {
+			Sleep(10);
+		}
+
+		FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+		Sleep(500);
 		handlePlayerDeath();
 	}
 }
@@ -560,6 +576,8 @@ void GameManager::showEndingScreen() {
 }
 
 void GameManager::handlePlayerDeath() {
+	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+
 	uiManager.showDeathScreen();
 
 	char choice = uiManager.askRetryOrQuit();
@@ -578,7 +596,7 @@ void GameManager::handlePlayerDeath() {
 
 void GameManager::retryCurrentBattle() {
 	// 체력 회복
-	// player->heal();
+	player->heal(player->getMaxHealth());
 
 	std::string phaseName;
 

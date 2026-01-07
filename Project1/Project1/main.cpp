@@ -4,16 +4,44 @@
 
 #include "ItemContext.h"
 #include "ItemBootstrap.h"
-#include "BattleRewardService.h"   // ✅ 추가
+#include "BattleRewardService.h"
 static bool fileExists(const char* path) {
     DWORD attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && !(attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
+void SetupConsole(int width, int height) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    // 1. 창 크기 조절 막기 (가장 먼저 수행해서 유저 개입 차단)
+    HWND consoleWindow = GetConsoleWindow();
+    LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
+    style = style & ~(WS_MAXIMIZEBOX | WS_SIZEBOX);
+    SetWindowLong(consoleWindow, GWL_STYLE, style);
+
+    // 2. 창 크기를 일단 최소로 줄임 (버퍼 줄일 때 에러 방지)
+    SMALL_RECT rect = { 0, 0, 1, 1 };
+    SetConsoleWindowInfo(hConsole, TRUE, &rect);
+
+    // 3. 버퍼 크기 설정
+    COORD coord = { (SHORT)width, (SHORT)height };
+    SetConsoleScreenBufferSize(hConsole, coord);
+
+    // 4. 창 크기를 버퍼에 맞춰서 확장
+    rect = { 0, 0, (SHORT)(width - 1), (SHORT)(height - 1) };
+    SetConsoleWindowInfo(hConsole, TRUE, &rect);
+
+    DWORD mode;
+    GetConsoleMode(hConsole, &mode);
+    mode &= ~ENABLE_WRAP_AT_EOL_OUTPUT; // 줄 끝에서 자동 줄바꿈 끄기
+    SetConsoleMode(hConsole, mode);
+}
+
 int main() {
+    SetupConsole(160, 50);
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-
+    system("cls");
     if (!fileExists("data/shop_items.dat") ||
         !fileExists("data/inventory_items.dat") ||
         !fileExists("data/monster_drops.dat")) {
@@ -33,10 +61,10 @@ int main() {
     );
     std::cout << "[BOOT] loadRewards OK. rules.size=" << ctx.rewards.size()
         << " &ctx.rewards=" << &ctx.rewards << "\n" << std::flush;
-    // ✅ ctx를 기반으로 보상 서비스 생성 (참조 주입)
     BattleRewardService rewardService(ctx.rewards, ctx.dropTable, ctx.inventory);
 
-    // ✅ GameManager가 rewardService를 받아서 BattleService 생성 시 넘겨주도록 변경
+    
+
     GameManager game(ctx, rewardService);
     game.play();
 
